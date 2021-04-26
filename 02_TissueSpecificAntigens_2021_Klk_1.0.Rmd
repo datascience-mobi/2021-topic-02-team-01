@@ -1,6 +1,6 @@
 ---
 title: "02_TissueSpecificAntigens_2021_Klk_1.0"
-author: "Anouk Doupé, David Eckey, Dustin Schilling, Maria Yemane"
+author: "Anouk Dupé, David Eckey, Dustin Schilling, Maria Yemane"
 date: "25 4 2021"
 output: html_document
 ---
