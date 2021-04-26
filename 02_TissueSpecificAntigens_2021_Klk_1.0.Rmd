@@ -1,0 +1,102 @@
+---
+title: "Projekt_Kalikrein_Load_In_Data"
+author: "Dustin Schilling"
+date: "25 4 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(affy, lib.loc ="/Users/Dusti/Documents/R/win-library/4.0")
+
+library(vsn, lib.loc ="/Users/Dusti/Documents/R/win-library/4.0")
+
+library(AnnotationDbi, "/Users/Dusti/Documents/R/win-library/4.0")
+
+library(hgu133plus2hsenstcdf, lib.loc = "/Users/Dusti/Documents/R/win-library/4.0")
+library(hgu133plus2hsenstprobe, lib.loc = "/Users/Dusti/Documents/R/win-library/4.0")
+
+library(hexbin)
+```
+
+```{r}
+# Setwd = Set working directory -> sets workspace to given folder path
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/rawdata/rawdata breast GSE27830")
+# read in CEL files
+data.breast = ReadAffy()
+data.breast@cdfName <- "HGU133Plus2_Hs_ENST"
+
+orig=colnames(exprs(data.breast))
+new = substr(orig, 1, nchar(orig) - 4)
+colnames(exprs(data.breast)) = new
+
+# Save image in different path by first defining new workspace and then saving the data
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/sessions/rda")
+save.image(file ="rawdata.breast.rda")
+```
+```{r}
+# Quality control of data.breast
+
+## Single chip control
+image(data.breast, col=rainbow(100,start=0,end = 0.75)[100:1])
+
+#GSM687017 - GSM687023 -> 10 chips
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/plots")
+dev.copy2eps(file="QC_")
+
+```
+
+
+
+```{r}
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/TRA Daten")
+
+# Import of tra.human.5median
+tra.human.5median=read.csv(file="Human_protein_atlas_TRA_5median_genes_annotated.tsv", sep="\t")
+ind=grep("Klk",symbols)
+Kallikreins=symbols[ind]
+
+# Import of tra.human
+tra.human=read.csv(file="tra.2014.human.5x.table.tsv", sep="\t")
+
+# Import of tra.human.roth
+tra.human.roth=read.csv(file="tra.2014.human.roth.5x.table.tsv", sep="\t")
+
+# Import of tra.mouse.4301
+tra.mouse.4301=read.csv(file="tra.2014.mouse.4301.5x.table.tsv", sep="\t")
+
+# Import of tra.human.gtex
+tra.mouse.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
+
+
+```
+
+```{r}
+
+#Import of tra.mouse and location of Klk
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/TRA Daten")
+
+
+tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
+
+ind=grep("^Klk",symbols)
+
+Kallikreins=symbols[ind]
+
+#tiss=tra.mouse[,11]
+
+#ind=which("^Klk")
+  
+#Kallikreins=symbols[ind]
+
+#TRA.symbol=tra.mouse[,3]
+
+#thyroid.TRA1=TRA.symbol[ind]
+```
+
+
+
