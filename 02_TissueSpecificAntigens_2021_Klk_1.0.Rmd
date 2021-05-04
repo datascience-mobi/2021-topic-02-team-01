@@ -3,6 +3,8 @@ title: "02_TissueSpecificAntigens_2021_Klk_1.0"
 author: "Anouk Dupé, David Eckey, Dustin Schilling, Maria Yemane"
 date: "25 4 2021"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -75,25 +77,107 @@ meanSdPlot(breast.vsnrma)
 
 setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/plots")
 dev.copy2eps(file="meanSdPlot_breast_vsnrma_normalized.eps")
+```
 
+
+```{r}
 ##Boxplot before normalization
 x11(w=10, h=7)
 par(las=2)
 
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
-boxplot(data.breast, col=rainbow(150),cex.axis=0.5,main="Gene expression in human breast cancer")
+boxplot(data.breast, col=rainbow(150),cex.axis=0.5,main="Gene expression in human breast cancer", las = 2)
 
 setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/plots")
 dev.copy2eps(file="boxplot_breast_rawdata.eps")
 
 
 ##Boxplot after normalization
+x11(w=10, h=7)
+par(las=2)
+mmi=c(1,0.7,1.0477939,0.5366749)
+par(mai=mmi)
+boxplot(exprs(breast.vsnrma),col=rainbow(150),cex.axis=0.5,main="Gene expression in human breast cancer" , las=2)
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/plots")
+dev.copy2eps(file="boxplot_breast_rawdata_normalized.eps")
+```
+```{r}
+## Density function before normalization
+x11(w=10, h=7)
+hist(data.breast, col=rainbow(150), main = "Density function of log Intensity of human breast cancer")
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/plots")
+dev.copy2eps(file="hist_breast_rawdata.eps")
+
+## Density function after normalization
+##vsnrma
+eset = exprs(breast.vsnrma)
+
+plot(density(eset[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "Density function of log Intensity of human breast cancer")
+for(i in 1:ncol(eset)){
+  lines(density(eset[,i]), col=rainbow(150)[i])
+}
+```
+
+```{r}
+## RNA degeneration plot
+#-----------------------
+
+rnadeg.raw = AffyRNAdeg(data.breast)
+
+plotAffyRNAdeg(rnadeg.raw, col = rainbow(150))
+title(sub="human breast cancer rawdata")
+
+
+dev.copy2eps(file="rnadeg.huan_breast_cancer.rawdata.eps")
+
+plotAffyRNAdeg(rnadeg.raw, col = rainbow(150), transform = "shift.only")
+title(sub="human breast cancer rawdata")
+
+dev.copy2eps(file="rnadeg1.human_breast_cancer1.rawdata.eps")
+```
+
+```{r}
+## Scatter plots
+x11(w=9, h=5)
+par(mfrow=c(1,2))
+
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/plots")
+
+
+for(i in 1:10){
+  
+plot(exprs(breast.vsnrma)[,c(i, i+1)], pch=".")
+abline(0,1,col="red")
+
+title(main=paste("Scaterplot of probe", substr(colnames(breast.vsnrma)[i],1,
+nchar(colnames(breast.vsnrma)[i])-4),"and",substr(colnames(breast.vsnrma)[i+1],1,
+nchar(colnames(breast.vsnrma)[i+1])-4), sep = " ", collapse = NULL))
+
+permission = readline(prompt = "type y for next image: ")
+
+if(permission == "y"){
+  
+}
+else{
+break}
+}
+
+file.name=paste("scatterplot_", as.character(substr(colnames(breast.vsnrma)[i], 1,
+nchar(colnames(breast.vsnrma)[i])-4)),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
+nchar(colnames(breast.vsnrma)[i+1])-4)),".eps",sep="")
+
+dev.copy2eps(file=file.name)
+dev.off()
+
+## None of the scatterplots seem to deviate significantly from the red line
+
 
 
 ```
-
-
 
 ```{r}
 
@@ -118,6 +202,7 @@ tra.mouse.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
 
 
 ```
+
 
 ```{r}
 
