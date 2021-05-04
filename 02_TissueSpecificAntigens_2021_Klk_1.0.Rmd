@@ -252,5 +252,73 @@ Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
 
 ```
 
+```{r}
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB")
+# Reading in klk breast cancer data set
+data.Klk.breast=ReadAffy()
+
+data.Klk.breast.norm=vsnrma(data.Klk.breast)
+data.Klk.breast.matrix=exprs(data.Klk.breast.norm)
+
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of skin specific genes in skin cancer/tables")
+
+#read in ensembl annotation file
+annotation.103 = read.csv("ensembl.103.txt",sep="\t")
+
+setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/sessions/rda")
+
+#Setting up annotation
+affy.ensembl=as.character(annotation.103[,5])
+symbol.ensembl=as.character(annotation.103[,4])
+
+names(symbol.ensembl) =affy.ensembl
+
+
+affyIDs =rownames(data.Klk.breast.matrix)
+symbol=symbol.ensembl[affyIDs]
+
+head(symbol)
+
+dim(data.Klk.breast.matrix)
+
+length(symbol) ##same length as data.breast.matrix
+
+#re-apply rownames to gene symbols in the data.matrix
+
+rownames(data.Klk.breast.matrix)=as.character(symbol)
+
+head(data.Klk.breast.matrix) # Matrix to work with
+
+```
+
+```{r}
+## Selecting from the vector symbol genes of Klk
+
+# Tissue in prostate as an example -> Here do the process with combined TRA data set
+
+#But firstly executing it on whole TRA mouse dataset
+tiss=tra.human[,11]
+
+ind.prostate=which(tiss=="Prostate")
+
+TRA.symbol=tra.human[,3]
+
+prostate.TRA1=TRA.symbol[ind.prostate]
+
+row.ind=which(toupper(prostate.TRA1) %in% as.character(symbol))
+
+data.breast.matrix.prostate =data.Klk.breast.matrix[row.ind,] ##Only genes in prostate! 
+
+#How many do we got, just in the case of prostate Tissue in tra.human
+dim(data.breast.matrix.prostate) #93 genes
+
+# Extract the expression values for your genes with
+
+
+```
+
+
 
 
