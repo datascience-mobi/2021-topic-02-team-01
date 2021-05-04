@@ -181,12 +181,15 @@ dev.off()
 
 ```{r}
 
+```
+
+
+```{r}
+
 setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/TRA Daten")
 
 # Import of tra.human.5median
 tra.human.5median=read.csv(file="Human_protein_atlas_TRA_5median_genes_annotated.tsv", sep="\t")
-ind=grep("Klk",symbols)
-Kallikreins=symbols[ind]
 
 # Import of tra.human
 tra.human=read.csv(file="tra.2014.human.5x.table.tsv", sep="\t")
@@ -205,26 +208,48 @@ tra.mouse.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
 
 
 ```{r}
-
 #Import of tra.mouse and location of Klk
 setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/TRA Daten")
 
 
 tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
+```
 
-#ind=grep("^Klk",symbols)
 
-#Kallikreins=symbols[ind]
+```{r}
+# Filter all Klk from the TRA data sets
 
-#tiss=tra.mouse[,11]
+# For tra.human  
+ind.human=grepl("^KLK",tra.human$gene.symbol)
+ind.human =which(ind.human == TRUE)
+Klk.TRA1 = as.data.frame(tra.human[ind.human,])
 
-#ind=which("^Klk")
-  
-#Kallikreins=symbols[ind]
+# For tra.human.5median ####DOESNT WORK SINCE CONFLICT DURING IMPORT
+ind.5median=grepl("^Klk",tra.human.5median$gene.symbol)
+ind.5median =which(ind.5median == TRUE)
+Klk.TRA2 = as.data.frame(tra.human.5median[ind.5median,])
 
-#TRA.symbol=tra.mouse[,3]
+# For tra.human.roth
+ind.roth=grepl("^KLK",tra.human.roth$gene.symbol)
+ind.roth =which(ind.roth == TRUE)
+Klk.TRA3 = as.data.frame(tra.human.roth[ind.roth,])
 
-#thyroid.TRA1=TRA.symbol[ind]
+# For tra.mouse
+ind.mouse=grepl("^Klk",tra.mouse$gene.symbol)
+ind.mouse =which(ind.mouse == TRUE)
+Klk.TRA4 = as.data.frame(tra.mouse[ind.mouse,])
+
+# For tra.mouse.4301
+ind.4301=grepl("^Klk",tra.mouse.4301$gene.symbol)
+ind.4301 =which(ind.4301 == TRUE)
+Klk.TRA5 = as.data.frame(tra.mouse.4301[ind.4301,])
+
+# For tra.mouse.gtex ###Here the genes are listed in ensembl.symbol 
+#-> should rearrange all genes in same columns before putting it all in one data frame 
+ind.gtex=grepl("^KLK",tra.mouse.gtex$ensembl.symbol)
+ind.gtex=which(ind.gtex == TRUE)
+Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
+
 ```
 
 
