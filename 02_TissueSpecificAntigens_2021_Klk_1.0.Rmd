@@ -14,7 +14,6 @@ library(affy, lib.loc ="/Users/Dusti/Documents/R/win-library/4.0")
 
 library(vsn, lib.loc ="/Users/Dusti/Documents/R/win-library/4.0")
 
-library(AnnotationDbi, "/Users/Dusti/Documents/R/win-library/4.0")
 
 library(hgu133plus2hsenstcdf, lib.loc = "/Users/Dusti/Documents/R/win-library/4.0")
 library(hgu133plus2hsenstprobe, lib.loc = "/Users/Dusti/Documents/R/win-library/4.0")
@@ -37,6 +36,7 @@ colnames(exprs(data.breast)) = new
 setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/Bioinformatik TRA Projekt/The role of Klk in cancer/sessions/rda")
 save.image(file ="rawdata.breast.rda")
 ```
+
 ```{r}
 # Quality control of data.breast
 
