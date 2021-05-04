@@ -11,12 +11,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(affy, lib.loc ="/Users/Dusti/Documents/R/win-library/4.0")
+library(affy)
 
 library(vsn, lib.loc ="/Users/Dusti/Documents/R/win-library/4.0")
+library(vsn)
 
+library(AnnotationDbi)
 
 library(hgu133plus2hsenstcdf, lib.loc = "/Users/Dusti/Documents/R/win-library/4.0")
 library(hgu133plus2hsenstprobe, lib.loc = "/Users/Dusti/Documents/R/win-library/4.0")
+library(hgu133plus2hsenstcdf)
+library(hgu133plus2hsenstprobe)
 
 library(hexbin)
 ```
