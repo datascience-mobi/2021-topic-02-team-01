@@ -309,7 +309,7 @@ prostate.TRA1=TRA.symbol[ind.prostate]
 
 row.ind=which(toupper(prostate.TRA1) %in% as.character(symbol))
 
-data.breast.matrix.prostate =data.Klk.breast.matrix[row.ind,] ##Only genes in prostate! 
+data.breast.matrix.prostate =data.Klk.breast.matrix[row.ind,] ##Only genes in prostate! ##HERES PROBABLY A MISTAKE SINCE row.ind just counts fro m1 to 97 and so picks wrong rows
 
 #How many do we got, just in the case of prostate Tissue in tra.human
 dim(data.breast.matrix.prostate) #93 genes
