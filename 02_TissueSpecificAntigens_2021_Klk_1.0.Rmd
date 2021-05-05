@@ -189,7 +189,7 @@ dev.off()
 setwd("/Users/Dusti/Documents/Studium/Bioinfo/Data_Analysis/TRA Daten")
 
 # Import of tra.human.5median
-tra.human.5median=read.csv(file="Human_protein_atlas_TRA_5median_genes_annotated.tsv", sep="\t")
+tra.human.5median=read.csv(file="Human_protein_atlas_TRA_5median_genes_annotated.tsv", sep=",")
 
 # Import of tra.human
 tra.human=read.csv(file="tra.2014.human.5x.table.tsv", sep="\t")
@@ -307,10 +307,9 @@ TRA.symbol=tra.human[,3]
 
 prostate.TRA1=TRA.symbol[ind.prostate]
 
-row.ind=which(toupper(prostate.TRA1) %in% as.character(symbol))
+row.ind=which(as.character(symbol) %in% toupper(prostate.TRA1))
 
-data.breast.matrix.prostate =data.Klk.breast.matrix[row.ind,] ##Only genes in prostate! ##HERES PROBABLY A MISTAKE SINCE row.ind just counts fro m1 to 97 and so picks wrong rows
-
+data.breast.matrix.prostate =data.Klk.breast.matrix[row.ind,] 
 #How many do we got, just in the case of prostate Tissue in tra.human
 dim(data.breast.matrix.prostate) #93 genes
 
