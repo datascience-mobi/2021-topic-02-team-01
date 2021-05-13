@@ -24,6 +24,32 @@ library(ggplot2)
 library(pheatmap)
 ```
 
+```{r Annotation Data Sets, eval=FALSE, include=FALSE}
+
+#Cancer data Sets 
+###"rawdata breast GSE27830": Nagel JH, Peeters JK, Smid M, Sieuwerts AM et al. Gene expression profiling assigns CHEK2 1100delC breast cancers to the luminal intrinsic subtypes. Breast Cancer Res Treat 2012 Apr
+
+###"GSE65216 breast cancer": Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15
+
+###"GSE149507 lung cancer": Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
+
+# Su et al. 2002, Large-scale analysis of the human and mouse transcriptomes. Proc Natl Acad Sci U S A. 2002 Apr 2;99(7):4465-70. https://pubmed.ncbi.nlm.nih.gov/11904358/
+
+# Su et al. 2004, A gene atlas of the mouse and human protein-encoding transcriptomes. Proc Natl Acad Sci U S A. 2004 Apr 20;101(16):6062-7. https://pubmed.ncbi.nlm.nih.gov/15075390/
+
+# Roth et al. 2006, Gene expression analyses reveal molecular relationships among 20 regions of the human CNS. Neurogenetics. 2006 May;7(2):67-80. https://pubmed.ncbi.nlm.nih.gov/16572319/
+
+# Lattin et al. 2008, Expression analysis of G Protein-Coupled Receptors in mouse macrophages. Immunome Res. 2008 Apr 29;4:5. 
+
+### GTEX 2013, The Genotype-Tissue Expression (GTEx) project. GTEx Consortium. Nat Genet. 2013 Jun;45(6):580-5. 
+
+### GTEX 2015, Human genomics. The Genotype-Tissue Expression (GTEx) pilot analysis: multitissue gene regulation in humans. GTEx Consortium. Science. 2015 May 8;348(6235):648-60. 
+
+### Uhlén et al. 2015, Proteomics. Tissue-based map of the human proteome. Science. 2015 Jan 23;347(6220):1260419. 
+
+```
+
+
 ###here package 
 package for better work directory 
 ```{r}
