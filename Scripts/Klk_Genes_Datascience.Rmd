@@ -63,6 +63,7 @@ here::here()
 ```{r, hide = TRUE}
 #creating a list of the CEL file names, for all thre data sets
 setwd(here("Rawdata/rawdata breast GSE27830"))
+cels.rawdata <- c("GSM687017.CEL", "GSM687018.CEL", "GSM687019.CEL", "GSM687020.CEL", "GSM687021.CEL", "GSM687022.CEL", "GSM687023.CEL", "GSM687024.CEL", "GSM687025.CEL", "GSM687026.CEL")
 cels.rawdata <- list.files(pattern = 'CEL')
 
 setwd(here("Rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB"))
