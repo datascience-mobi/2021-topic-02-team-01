@@ -1,0 +1,716 @@
+---
+title: "Klk_Genes_Data_Analysis"
+author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
+date: "4 5 2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###load library
+```{r, hide=TRUE}
+library(affy)
+library(vsn)
+library(AnnotationDbi)
+library(hgu133plus2hsenstcdf)
+library(hgu133plus2hsenstprobe)
+library(hexbin)
+library(ggplot2)
+
+library(pheatmap)
+```
+
+###here package 
+package for better work directory 
+```{r}
+library(here)
+#set the top level folder with here
+here::here()
+```
+
+###Read .CEL Files
+```{r, hide = TRUE}
+#creating a list of the CEL file names, for all thre data sets
+setwd(here("Rawdata/rawdata breast GSE27830"))
+cels.rawdata <- list.files(pattern = 'CEL')
+
+setwd(here("Rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB"))
+cels.breast <- list.files(pattern = 'CEL')
+
+setwd(here("Rawdata/GSE149507 lung cancer"))
+cels.lung <- list.files(pattern = 'CEL')
+
+
+```
+
+
+```{r, hide = TRUE}
+#read the CEL files into an Affybatch
+
+#Rawdata
+rawdata <- ReadAffy(filenames = paste(here("Rawdata/rawdata breast GSE27830"), cels.rawdata, sep = "/"), verbose = TRUE)
+rawdata@cdfName <- "HGU133Plus2_Hs_ENST"
+
+
+orig.rawdata=colnames(exprs(rawdata))
+new.rawdata <- substr(orig.rawdata, 1, nchar(cels.rawdata)-4)
+colnames(exprs(rawdata)) <- new.rawdata
+rownames(rawdata@phenoData) <- new.rawdata
+rownames(rawdata@protocolData) <- new.rawdata
+
+save(rawdata, file = paste0(paste(here("Tables")), "/rawdata.rda"))
+
+
+
+#Breast 
+breast <- ReadAffy(filenames = paste(here("Rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB"), cels.breast, sep = "/"), verbose = TRUE)
+breast@cdfName <- "HGU133Plus2_Hs_ENST"
+
+orig.breast=colnames(exprs(breast))
+new.breast <- substr(orig.breast, 1, nchar(cels.breast)-4)
+colnames(exprs(breast)) <- new.breast
+rownames(breast@phenoData) <- new.breast
+rownames(breast@protocolData) <- new.breast
+
+save(breast, file = paste0(paste(here("Tables")), "/breast.rda"))
+
+
+#Lung
+lung <- ReadAffy(filenames = paste(here("Rawdata/GSE149507 lung cancer"), cels.lung, sep = "/"), verbose = TRUE)
+lung@cdfName <- "HGU133Plus2_Hs_ENST"
+
+orig.lung=colnames(exprs(lung))
+new.lung <- substr(orig.lung, 1, nchar(cels.lung)-4)
+colnames(exprs(lung)) <- new.lung
+rownames(lung@phenoData) <- new.lung
+rownames(lung@protocolData) <- new.lung
+
+save(lung, file = paste0(paste(here("Tables")), "/lung.rda"))
+```
+```{r}
+# save normalized version of rawdata before continuing
+
+rawdata.vsnrma <- vsnrma(rawdata)
+setwd(here("Tables"))
+save.image(file = "rawdataNorm.rda")
+
+```
+
+
+##Quality control - GSE65216 breast cancer TNBC Her2 LumA LumB
+Single chip
+```{r}
+# read images for GSE65216 breast cancer TNBC Her2 LumA LumB
+
+image(breast, col=rainbow(100,start=0,end = 0.75)[100:1])
+# the individual chips look fine
+```
+
+
+```{r}
+## Normalization
+breast.vsnrma <- vsnrma(breast)
+
+setwd(here("Tables"))
+
+save.image(file = "breastNorm.rda")
+
+## MeanSdPlot
+meanSdPlot(breast.vsnrma)
+###The line is approximately horizontal, so there shouldn't be a variance-mean dependence 
+
+setwd(here("Plots"))
+ggsave("meanSdPlot_breast_vsnrma_normalized.png")
+dev.off()
+```
+
+```{r}
+
+##Boxplot before normalization
+
+x11(w=10, h=7)
+par(las=2)
+
+mmi=c(1,0.7,1.0477939,0.5366749)
+par(mai=mmi)
+boxplot(breast, col=rainbow(150),cex.axis=0.5,main="Gene expression", las = 2)
+
+setwd(here("Plots"))
+dev.copy2eps(file="boxplot_breast.eps")
+
+
+##Boxplot after normalization
+x11(w=10, h=7)
+par(las=2)
+mmi=c(1,0.7,1.0477939,0.5366749)
+par(mai=mmi)
+boxplot(exprs(breast.vsnrma),col=rainbow(150),cex.axis=0.5,main="Gene expression after normalization" , las=2)
+
+setwd(here("Plots"))
+dev.copy2eps(file="boxplot_breast_normalized.eps")
+```
+
+```{r}
+## Density function before normalization
+x11(w=10, h=7)
+hist(breast, col=rainbow(150), main = "Density function of log Intensity of breast cancer")
+
+
+setwd(here("Plots"))
+dev.copy2eps(file="hist_breast.eps")
+
+## Density function after normalization
+##vsnrma
+breastExprs = exprs(breast.vsnrma) ####IMPORTANT
+
+plot(density(breastExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "Density function of log Intensity of breast cancer")
+for(i in 1:ncol(breastExprs)){
+  lines(density(breastExprs[,i]), col=rainbow(150)[i])
+}
+
+setwd(here("Plots"))
+
+dev.copy2eps(file="hist_breast_normalized.eps")
+```
+
+```{r}
+
+## RNA degeneration plot
+#-----------------------
+setwd(here("Plots"))
+rnadeg.breast = AffyRNAdeg(breast)
+
+plotAffyRNAdeg(rnadeg.breast, col = rainbow(150))
+title(sub="human breast cancer RNA degeneration")
+dev.copy2eps(file="rnadeg.breast.eps")
+
+plotAffyRNAdeg(rnadeg.raw, col = rainbow(150), transform = "shift.only")
+title(sub="human breast cancer rawdata")
+
+dev.copy2eps(file="rnadeg1.breast1.eps")
+```
+
+
+
+
+```{r}
+# Scatter plots
+x11(w=9, h=5)
+par(mfrow=c(1,2))
+
+
+setwd(here("Plots"))
+
+
+for(i in 1:150){
+  
+plot(breastExprs[,c(i, i+1)], pch=".")
+abline(0,1,col="red")
+
+title(main=paste("Scaterplot of probe", substr(colnames(breast.vsnrma)[i],1,
+nchar(colnames(breast.vsnrma)[i])-4),"and",substr(colnames(breast.vsnrma)[i+1],1,
+nchar(colnames(breast.vsnrma)[i+1])-4), sep = " ", collapse = NULL))
+
+permission = readline(prompt = "type y for next image: ")
+
+if(permission == "y"){
+  
+}
+else{
+break}
+}
+
+file.name=paste("scatterplot_", as.character(substr(colnames(breast.vsnrma)[i], 1,
+nchar(colnames(breast.vsnrma)[i])-4)),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
+nchar(colnames(breast.vsnrma)[i+1])-4)),".eps",sep="")
+
+dev.copy2eps(file=file.name)
+dev.off()
+
+
+## None of the scatterplots seem to deviate significantly from the red line
+
+```
+
+
+
+# Quality control - GSE149507 lung cancer
+```{r}
+# read images for GSE149507 lung cancer
+
+image(lung, col=rainbow(100,start=0,end = 0.75)[100:1])
+# the individual chips look fine
+```
+
+
+```{r}
+## Normalization
+lung.vsnrma <- vsnrma(lung)
+
+setwd(here("Tables"))
+
+save.image(file = "lungNorm.rda")
+
+## MeanSdPlot
+meanSdPlot(lung.vsnrma)
+###The line is approximately horizontal, so there shouldn't be a variance-mean dependence 
+
+setwd(here("Plots"))
+
+dev.copy2eps(file="meanSdPlot_lung_vsnrma_normalized.eps")
+```
+
+```{r}
+
+##Boxplot before normalization
+x11(w=10, h=7)
+par(las=2)
+
+mmi=c(1,0.7,1.0477939,0.5366749)
+par(mai=mmi)
+boxplot(lung, col=rainbow(150),cex.axis=0.5,main="Gene expression of lung cancer", las = 2)
+
+setwd(here("Plots"))
+      
+dev.copy2eps(file="boxplot_lung.eps")
+
+
+##Boxplot after normalization
+x11(w=10, h=7)
+par(las=2)
+mmi=c(1,0.7,1.0477939,0.5366749)
+par(mai=mmi)
+boxplot(exprs(lung.vsnrma),col=rainbow(150),cex.axis=0.5,main="Gene expression of lung cancer after normalization" , las=2)
+
+setwd(here("Plots"))
+
+dev.copy2eps(file="boxplot_lung_normalized.eps")
+```
+
+```{r}
+## Density function before normalization
+x11(w=10, h=7)
+hist(lung, col=rainbow(150), main = "Density function of log Intensity of lung cancer")
+
+setwd(here("Plots"))
+
+dev.copy2eps(file="hist_lung.eps")
+
+## Density function after normalization
+##vsnrma
+lungExprs = exprs(lung.vsnrma) ####IMPORTANT
+
+plot(density(lungExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "Density function of log Intensity of lung cancer")
+for(i in 1:ncol(lungExprs)){
+  lines(density(lungExprs[,i]), col=rainbow(150)[i])
+}
+
+setwd(here("Plots"))
+
+dev.copy2eps(file="hist_breast_normalized.eps")
+```
+
+```{r}
+
+## RNA degeneration plot
+#-----------------------
+setwd(here("Plots"))
+rnadeg.breast = AffyRNAdeg(lung)
+
+plotAffyRNAdeg(rnadeg.breast, col = rainbow(150))
+title(sub="human lung cancer RNA degeneration")
+dev.copy2eps(file="rnadeg.lung.eps")
+
+plotAffyRNAdeg(rnadeg.raw, col = rainbow(150), transform = "shift.only")
+title(sub="human lung cancer RNA degeneration")
+
+dev.copy2eps(file="rnadeg1.lung1.eps")
+```
+
+
+
+
+```{r}
+# Scatter plots
+x11(w=9, h=5)
+par(mfrow=c(1,2))
+
+
+setwd(here("Plots"))
+
+
+for(i in 1:150){
+  
+plot(lungExprs[,c(i, i+1)], pch=".")
+abline(0,1,col="red")
+
+title(main=paste("Scaterplot of probe", substr(colnames(lung.vsnrma)[i],1,
+nchar(colnames(lung.vsnrma)[i])-4),"and",substr(colnames(lung.vsnrma)[i+1],1,
+nchar(colnames(lung.vsnrma)[i+1])-4), sep = " ", collapse = NULL))
+
+permission = readline(prompt = "type y for next image: ")
+
+if(permission == "y"){
+  
+}
+else{
+break}
+}
+
+
+##GSM4504108 or GSM4504109 might be broken
+#GSM4504109 or GSM4503110 too
+
+file.name=paste("scatterplot_", as.character(substr(colnames(lung.vsnrma)[i], 1,
+nchar(colnames(lung.vsnrma)[i])-4)),"_",as.character(substr(colnames(lung.vsnrma)[i+1],1,
+nchar(colnames(lung.vsnrma)[i+1])-4)),".eps",sep="")
+
+dev.copy2eps(file=file.name)
+dev.off()
+
+
+## None of the scatterplots seem to deviate significantly from the red line
+## maybe the plot GSM4504109_SCLC_0 and GSM4504110_SCLC_
+```
+
+#Important
+```{r}
+breastExprs = exprs(breast.vsnrma)
+lungExprs = exprs(lung.vsnrma)
+
+rawdata.vsnrma <- vsnrma(rawdata)
+rawdataExprs = exprs(rawdata.vsnrma)
+```
+
+
+# Import of TRA data
+
+```{r}
+setwd(here("TRA Daten"))
+
+
+# Import of tra.human.5median
+tra.human.5median=read.csv(file="Human_protein_atlas_TRA_5median_genes_annotated.tsv", sep=",")
+
+# Import of tra.human
+tra.human=read.csv(file="tra.2014.human.5x.table.tsv", sep="\t")
+
+# Import of tra.human.roth
+tra.human.roth=read.csv(file="tra.2014.human.roth.5x.table.tsv", sep="\t")
+
+# Import of tra.mouse.4301
+tra.mouse.4301=read.csv(file="tra.2014.mouse.4301.5x.table.tsv", sep="\t")
+
+# Import of tra.human.gtex
+tra.mouse.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
+
+#Import of tra.mouse 
+tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
+
+```
+
+
+# Filter all Klk from the TRA data sets
+
+```{r}
+
+# For tra.human  
+ind.human=grepl("^KLK",tra.human$gene.symbol)
+ind.human =which(ind.human == TRUE)
+Klk.TRA1 = as.data.frame(tra.human[ind.human,])
+
+# For tra.human.5median ####DOESNT WORK SINCE CONFLICT DURING IMPORT
+ind.5median=grepl("^Klk",tra.human.5median$gene.symbol)
+ind.5median =which(ind.5median == TRUE)
+Klk.TRA2 = as.data.frame(tra.human.5median[ind.5median,])
+
+# For tra.human.roth
+ind.roth=grepl("^KLK",tra.human.roth$gene.symbol)
+ind.roth =which(ind.roth == TRUE)
+Klk.TRA3 = as.data.frame(tra.human.roth[ind.roth,])
+
+# For tra.mouse
+ind.mouse=grepl("^Klk",tra.mouse$gene.symbol)
+ind.mouse =which(ind.mouse == TRUE)
+Klk.TRA4 = as.data.frame(tra.mouse[ind.mouse,])
+
+# For tra.mouse.4301
+ind.4301=grepl("^Klk",tra.mouse.4301$gene.symbol)
+ind.4301 =which(ind.4301 == TRUE)
+Klk.TRA5 = as.data.frame(tra.mouse.4301[ind.4301,])
+
+# For tra.mouse.gtex ###Here the genes are listed in ensembl.symbol 
+#-> should rearrange all genes in same columns before putting it all in one data frame 
+ind.gtex=grepl("^KLK",tra.mouse.gtex$ensembl.symbol)
+ind.gtex=which(ind.gtex == TRUE)
+Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
+
+```
+
+#read in ensembl annotation file
+```{r}
+
+setwd(here("Tables"))
+
+ensembl_df = read.csv("ensembl.103.txt",sep="\t")
+```
+
+
+# Creating rawdata breast cancer data set to work with
+```{r}
+rawdataExprs <- rawdataExprs[grepl("ENST", rownames(rawdataExprs)), ]
+#dim = 95659    10
+
+# remove .x_at suffix
+rownames(rawdataExprs) <- unlist(lapply(strsplit(rownames(rawdataExprs), split = "\\."), "[", 1))
+
+setwd(here("Scripts"))
+
+#Setting up annotation
+
+transcriptIDs <- as.character(ensembl_df[, "Transcript.stable.ID"])
+geneSymbol <- as.character(ensembl_df[, "HGNC.symbol"])
+names(geneSymbol) <- transcriptIDs
+
+# replace ensemble IDs with HGNC symbol
+chipIDs <- rownames(rawdataExprs)
+noMatchIDs <- chipIDs[!chipIDs %in% transcriptIDs] # transcript IDs that are not in ensemble_103.txt
+length(noMatchIDs) #112
+
+newChipIDs <- chipIDs[chipIDs %in% transcriptIDs]
+rawdataExprs <- rawdataExprs[newChipIDs, ]
+dim(rawdataExprs) ## 95547    10
+
+
+# 
+symbol <- geneSymbol[newChipIDs]
+rownames(rawdataExprs) <- as.character(symbol)  # Matrix to work with
+
+head(rawdataExprs)
+
+```
+
+
+# Creating GSE65216 breast cancer (TNBC Her2 LumA LumB) data set to work with
+```{r}
+breastExprs <- breastExprs[grepl("ENST", rownames(breastExprs)), ]
+dim(breastExprs) #  95659    20
+
+# remove .x_at suffix
+rownames(breastExprs) <- unlist(lapply(strsplit(rownames(breastExprs), split = "\\."), "[", 1))
+
+setwd(here("Scripts"))
+
+# replace ensemble IDs with HGNC symbol
+chipIDs.breast <- rownames(breastExprs)
+noMatchIDs.breast <- chipIDs.breast[!chipIDs.breast %in% transcriptIDs]
+# transcript IDs that are not in ensemble_103.txt
+length(noMatchIDs.breast) #112
+
+newChipIDs.breast <- chipIDs.breast[chipIDs.breast %in% transcriptIDs]
+breastExprs <- breastExprs[newChipIDs.breast, ]
+dim(breastExprs) ## 95547    10
+
+
+# 
+symbol.breast <- geneSymbol[newChipIDs.breast]
+rownames(breastExprs) <- as.character(symbol.breast)  # Matrix to work with
+
+head(breastExprs)
+
+```
+# Creating lung cancer data set to work with
+```{r}
+lungExprs <- lungExprs[grepl("ENST", rownames(lungExprs)), ]
+dim(lungExprs) #  95659    20
+
+# remove .x_at suffix
+rownames(lungExprs) <- unlist(lapply(strsplit(rownames(lungExprs), split = "\\."), "[", 1))
+
+setwd(here("Scripts"))
+
+# replace ensemble IDs with HGNC symbol
+chipIDs.lung <- rownames(lungExprs)
+noMatchIDs.lung <- chipIDs.lung[!chipIDs.lung %in% transcriptIDs]
+# transcript IDs that are not in ensemble_103.txt
+length(noMatchIDs.lung) #112
+
+newChipIDs.lung <- chipIDs.lung[chipIDs.lung %in% transcriptIDs]
+lungExprs <- lungExprs[newChipIDs.lung, ]
+dim(lungExprs) ## 95547    10
+
+
+# 
+symbol.lung <- geneSymbol[newChipIDs.lung]
+rownames(lungExprs) <- as.character(symbol.lung)  # Matrix to work with
+
+head(lungExprs)
+
+```
+
+
+
+# Prostate tissue 
+
+```{r}
+# Klk genes in any cancer -> filter after tissue or genes?
+
+
+
+## Selecting from the vector symbol genes of Klk
+
+# Tissue in prostate as an example -> Here do the process with combined TRA data set
+
+#But firstly executing it on whole TRA mouse dataset
+tiss=tra.human[,11]
+
+ind.prostate=which(tiss=="Prostate")
+
+TRA.symbol=tra.human[,3]
+
+prostate.TRA1=TRA.symbol[ind.prostate]
+
+row.ind.prostate=which(as.character(symbol) %in% prostate.TRA1)
+
+
+## For rawdata
+rawdataExprs.prostate = rawdataExprs[row.ind.prostate,] #How genes in prostate Tissue of human TRAs? 
+dim(rawdataExprs.prostate) #over the 10 patients there are 151 genes for each 
+## Prostate matrix -> "KLK", WATCH OUT, do not write "Klk"
+
+## For breast cancer 
+breastExprs.prostate = breastExprs[row.ind.prostate,] #How genes in prostate Tissue of human TRAs? 
+dim(breastExprs.prostate)#over the 10 patients there are 151 genes for each 
+
+# For lung cancer
+lungExprs.prostate = lungExprs[row.ind.prostate,] #How genes in prostate Tissue of human TRAs? 
+dim(lungExprs.prostate)#over the 10 patients there are 151 genes for each 
+
+
+pheatmap(t(rawdataExprs.prostate))
+pheatmap(t(breastExprs.prostate))
+pheatmap(t(lungExprs.prostate))
+
+```
+
+# Example Analysis
+## KLK genes
+
+## Überlegung: Ich glaube wir sollten nicht nur die Klk gene einzeln nehmen, sondern eher im Gesamtbild eines spezifischen Gewebes wie etwa Prostata oder.. schauen, ob die wenig vorhandenen KLK gene stärker exprimiert werden als andere Gene
+## Aufklärung: Die 6 tra... Datensätze sind eher für den spezifischen Gewebetyp gedacht, denke mal hier kann man entweder nach dem gewebe wie prostata filtern und darauf eine Analyse machen (auch wichtig) oder nachschauen in welchem Gewebe die einzelnen TRAs vorhanden sind!! Allerdings nicht zum filtern nach KLK gene geeignet, siehe unten, da dadurch nur 7 KLK gene bei raus kommen
+```{r}
+
+## NOw only with KLK genes
+# Use Klk.TRA1 for this, filtered for Klk genes -> use ind.human 
+
+KLK.genes.TRA1 = TRA.symbol[ind.human]
+
+row.ind.klk1=which(as.character(symbol) %in% KLK.genes.TRA1)
+
+data.KLK.rawdata = rawdataExprs[row.ind.klk1,]
+
+data.KLK.rawdata =t(data.KLK.rawdata)
+dim(data.KLK.rawdata) ## 39 KLK genes in breast cancer rawdata 
+
+pheatmap(cor(data.KLK.rawdata))
+
+
+
+
+## For mouse  ###-> not right, since toupper() turns mouse into human genes :/
+TRA.symbol.mouse=tra.mouse[,3]
+KLK.genes.TRA4 = TRA.symbol.mouse[ind.mouse]
+
+row.ind.klk4=which(as.character(symbol) %in% toupper(KLK.genes.TRA4))
+
+data.KLK.TRA4 = rawdataExprs[row.ind.klk4,]
+data.KLK.TRA4 = t(data.KLK.TRA4)
+dim(data.KLK.TRA4) # 34 KLK genes
+## For mouse and other TRA dat sets 
+## IMPORTANT -> not correct, since toupper() turns mouse into human genes :/
+
+
+
+
+### FOR ALL KLK genes
+
+ind.all.KLK=grep("^KLK",symbol)
+Kallikreins=symbol[ind.all.KLK]
+
+###FOR rawdata
+all.KLK.rawdata = rawdataExprs[ind.all.KLK,] 
+### MATRIX data.all.KLK -> all KLK genes in breast cancer
+all.KLK.rawdata = t(all.KLK.rawdata)
+head(all.KLK.rawdata)
+dim(all.KLK.rawdata) #10 112
+#112 single KLK genes in breast cancer rawdata
+#Lets test out a boxplot
+par(las=2)
+##Experimental
+boxplot(all.KLK.rawdata,col=rainbow(length(rownames(data.KLK.TRA1))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
+pheatmap(all.KLK.rawdata)
+
+x1 = cor(data.all.KLK)
+head(x1)
+pheatmap(x1) # corr between patients
+x2 = cor(t(data.all.KLK))
+head(x2)
+pheatmap(x2)
+
+###FOR breast cancer
+all.KLK.breast = breastExprs[ind.all.KLK,] 
+all.KLK.breast = t(all.KLK.breast)
+dim(all.KLK.breast) #20 112
+pheatmap(all.KLK.breast)
+
+###FOR lung cancer
+all.KLK.lung = lungExprs[ind.all.KLK,] 
+all.KLK.lung = t(all.KLK.lung)
+dim(all.KLK.lung) # 112  12
+pheatmap(all.KLK.lung)
+
+####HERE YOU CAN SEE BACKUP 
+lungExprsBACKUP = exprs(lung.vsnrma)
+
+KLK4_expression <- grep("^KLK4", rownames(lungExprs))
+KLK4_expression <- lungExprs[KLK12_expression,]
+boxplot(t(KLK12_expression),
+        col=rainbow(length(rownames(data.KLK.TRA1))),
+        main="gene expression of KLK 4 genes in lung cancer",
+        ylab ="log2(gene expression)",xlab = "KLK4 genes" ,cex.axis=0.8)
+
+
+prost_exp <- grep("^KLK", rownames(rawdataExprs.prostate))
+prost_exp <- rawdataExprs.prostate[prost_exp,]
+
+boxplot(t(prost_exp),col=rainbow(length(rownames(data.KLK.TRA1))),main="gene expression of KLK genes in prostate tissue for breast cancer patients",cex.axis=0.8) #Ergibt keinen Sinn mit porstata in breast cancer
+
+##test
+ind.HER2 = grep(pattern = "Her2", rownames(all.KLK.breast)) ###GREP FOR Her2
+ind.TNBC = grep(pattern = "TNBC", rownames(all.KLK.breast)) ###GREP FOR TNBC
+ind.LumA = grep(pattern = "LumA", rownames(all.KLK.breast)) ###GREP FOR LumA
+ind.LumB = grep(pattern = "LumB", rownames(all.KLK.breast)) ###GREP FOR LumB
+
+
+data.new <-rbind(all.KLK.breast[ind.HER2,],all.KLK.breast[ind.TNBC,],all.KLK.breast[ind.LumA,],all.KLK.breast[ind.LumB,])
+
+pheatmap(data.new)
+boxplot(data.new,col=rainbow(length(rownames(data.new))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
+```
+
+
+```{r}
+ind.all.KLK=grep("^KLK",symbol)
+
+all.KLK.lung = lungExprs[ind.all.KLK,] 
+
+dim(all.KLK.lung) 
+```
+
+
+
+
