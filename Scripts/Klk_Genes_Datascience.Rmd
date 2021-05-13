@@ -4,7 +4,7 @@ author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
 date: "4 5 2021"
 output: html_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -103,10 +103,13 @@ save.image(file = "rawdataNorm.rda")
 
 ##Quality control - GSE65216 breast cancer TNBC Her2 LumA LumB
 Single chip
-```{r}
+```{r Single Chip control}
 # read images for GSE65216 breast cancer TNBC Her2 LumA LumB
-
+setwd(here("Output"))
+pdf("brast_chip_control.pdf")
 image(breast, col=rainbow(100,start=0,end = 0.75)[100:1])
+dev.off()
+
 # the individual chips look fine
 ```
 
@@ -120,12 +123,13 @@ setwd(here("Tables"))
 save.image(file = "breastNorm.rda")
 
 ## MeanSdPlot
+setwd(here("Plots"))
+pdf("breast_meansdPlot.pdf")
 meanSdPlot(breast.vsnrma)
+dev.off()
 ###The line is approximately horizontal, so there shouldn't be a variance-mean dependence 
 
-setwd(here("Plots"))
-ggsave("meanSdPlot_breast_vsnrma_normalized.png")
-dev.off()
+
 ```
 
 ```{r}
@@ -137,10 +141,11 @@ par(las=2)
 
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
-boxplot(breast, col=rainbow(150),cex.axis=0.5,main="Gene expression", las = 2)
 
 setwd(here("Plots"))
-dev.copy2eps(file="boxplot_breast.eps")
+pdf("breast_box_bfnorm.pdf")
+boxplot(breast, col=rainbow(150),cex.axis=0.5,main="GSE65216 gene expression before normalization", las = 2)
+dev.off()
 
 
 ##Boxplot after normalization
@@ -148,10 +153,10 @@ x11(w=10, h=7)
 par(las=2)
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
-boxplot(exprs(breast.vsnrma),col=rainbow(150),cex.axis=0.5,main="Gene expression after normalization" , las=2)
+pdf("breast_box_afnorm.pdf")
+boxplot(exprs(breast.vsnrma),col=rainbow(150),cex.axis=0.5,main="GSE65216 gene expression after normalization" , las=2)
+dev.off()
 
-setwd(here("Plots"))
-dev.copy2eps(file="boxplot_breast_normalized.eps")
 ```
 
 ```{r}
