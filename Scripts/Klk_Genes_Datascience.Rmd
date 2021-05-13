@@ -34,19 +34,26 @@ library(pheatmap)
 
 ###"GSE149507 lung cancer": Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
 
-# Su et al. 2002, Large-scale analysis of the human and mouse transcriptomes. Proc Natl Acad Sci U S A. 2002 Apr 2;99(7):4465-70. https://pubmed.ncbi.nlm.nih.gov/11904358/
 
-# Su et al. 2004, A gene atlas of the mouse and human protein-encoding transcriptomes. Proc Natl Acad Sci U S A. 2004 Apr 20;101(16):6062-7. https://pubmed.ncbi.nlm.nih.gov/15075390/
 
-# Roth et al. 2006, Gene expression analyses reveal molecular relationships among 20 regions of the human CNS. Neurogenetics. 2006 May;7(2):67-80. https://pubmed.ncbi.nlm.nih.gov/16572319/
+#To cite the origin of the TRA data
+### (Su et al. 2002, 2004) ->  mouse Novartis data
+####Su et al. 2002, Large-scale analysis of the human and mouse transcriptomes. Proc Natl Acad Sci U S A. 2002 Apr 2
+#### AND: Su et al. 2004, A gene atlas of the mouse and human protein-encoding transcriptomes. Proc Natl Acad Sci U S A. 2004 Apr 20
 
-# Lattin et al. 2008, Expression analysis of G Protein-Coupled Receptors in mouse macrophages. Immunome Res. 2008 Apr 29;4:5. 
+###(Roth et al. 2008) -> human Roth data
+####Roth et al. 2006, Gene expression analyses reveal molecular relationships among 20 regions of the human CNS. Neurogenetics. 2006 May
 
-### GTEX 2013, The Genotype-Tissue Expression (GTEx) project. GTEx Consortium. Nat Genet. 2013 Jun;45(6):580-5. 
+### (Lattin et al. 2006) -> mouse Lattin data
+#### Lattin et al. 2008, Expression analysis of G Protein-Coupled Receptors in mouse macrophages. Immunome Res. 2008 Apr 29
 
-### GTEX 2015, Human genomics. The Genotype-Tissue Expression (GTEx) pilot analysis: multitissue gene regulation in humans. GTEx Consortium. Science. 2015 May 8;348(6235):648-60. 
+### (human GTEX data 2015) -> RNAseq data
+#### GTEX 2013, The Genotype-Tissue Expression (GTEx) project. GTEx Consortium. Nat Genet. 2013 Jun. 
 
-### Uhlén et al. 2015, Proteomics. Tissue-based map of the human proteome. Science. 2015 Jan 23;347(6220):1260419. 
+###
+#### GTEX 2015, Human genomics. The Genotype-Tissue Expression (GTEx) pilot analysis: multitissue gene regulation in humans. GTEx Consortium. Science. 2015 May 8
+
+### Uhlén et al. 2015, Proteomics. Tissue-based map of the human proteome. Science. 2015 Jan 23
 
 ```
 
