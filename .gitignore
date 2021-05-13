@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.rawdata.klk.rda
+.normalized_data.rda
+.meanSdPlot_rawdata_vsnrma_normalized.eps
+.ensembl.103.txt
+
+/Rawdata
+/Output
+/Plots
+/TRA Daten
+/Tables
