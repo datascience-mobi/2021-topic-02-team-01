@@ -29,7 +29,8 @@ library(pheatmap)
 #Cancer data Sets 
 ###"rawdata breast GSE27830": Nagel JH, Peeters JK, Smid M, Sieuwerts AM et al. Gene expression profiling assigns CHEK2 1100delC breast cancers to the luminal intrinsic subtypes. Breast Cancer Res Treat 2012 Apr
 
-###"GSE65216 breast cancer": Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15
+###"GSE65216 breast cancer": Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15 
+#(Maire et al. 2013)
 
 ###"GSE149507 lung cancer": Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
 
@@ -131,8 +132,8 @@ save.image(file = "rawdataNorm.rda")
 Single chip
 ```{r Single Chip control}
 # read images for GSE65216 breast cancer TNBC Her2 LumA LumB
-setwd(here("Output"))
-pdf("brast_chip_control.pdf")
+setwd(here("Plots/Plots_breast_qc"))
+pdf("breast_chip_control.pdf")
 image(breast, col=rainbow(100,start=0,end = 0.75)[100:1])
 dev.off()
 
@@ -149,9 +150,12 @@ setwd(here("Tables"))
 save.image(file = "breastNorm.rda")
 
 ## MeanSdPlot
-setwd(here("Plots"))
+setwd(here("Plots/Plots_breast_qc"))
+msd.breast <- meanSdPlot(breast.vsnrma)
+msd.breast.title <- msd.breast$gg + ggtitle("Mean sd GSE65216 (Maire et al. 2013)")
+
 pdf("breast_meansdPlot.pdf")
-meanSdPlot(breast.vsnrma)
+print(msd.breast.title)
 dev.off()
 ###The line is approximately horizontal, so there shouldn't be a variance-mean dependence 
 
@@ -168,7 +172,7 @@ par(las=2)
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
 
-setwd(here("Plots"))
+setwd(here("Plots/Plots_breast_qc"))
 pdf("breast_box_bfnorm.pdf")
 boxplot(breast, col=rainbow(150),cex.axis=0.5,main="GSE65216 gene expression before normalization", las = 2)
 dev.off()
@@ -191,7 +195,7 @@ x11(w=10, h=7)
 hist(breast, col=rainbow(150), main = "Density function of log Intensity of breast cancer")
 
 
-setwd(here("Plots"))
+setwd(here("Plots/Plots_breast_qc"))
 dev.copy2eps(file="hist_breast.eps")
 
 ## Density function after normalization
@@ -203,7 +207,7 @@ for(i in 1:ncol(breastExprs)){
   lines(density(breastExprs[,i]), col=rainbow(150)[i])
 }
 
-setwd(here("Plots"))
+setwd(here("Plots/Plots_breast_qc"))
 
 dev.copy2eps(file="hist_breast_normalized.eps")
 ```
@@ -212,7 +216,7 @@ dev.copy2eps(file="hist_breast_normalized.eps")
 
 ## RNA degeneration plot
 #-----------------------
-setwd(here("Plots"))
+setwd(here("Plots/Plots_breast_qc"))
 rnadeg.breast = AffyRNAdeg(breast)
 
 plotAffyRNAdeg(rnadeg.breast, col = rainbow(150))
@@ -234,7 +238,7 @@ x11(w=9, h=5)
 par(mfrow=c(1,2))
 
 
-setwd(here("Plots"))
+setwd(here("Plots/Plots_breast_qc"))
 
 
 for(i in 1:150){
