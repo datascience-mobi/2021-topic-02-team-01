@@ -382,7 +382,8 @@ x11(w=9, h=5)
 par(mfrow=c(1,2))
 
 
-setwd(here("Plots"))
+setwd(here("Plots/Plots_lung_qc"))
+pdf("Scatterplots_lungcancer_chips.pdf")
 
 
 for(i in 1:150){
@@ -402,7 +403,7 @@ if(permission == "y"){
 else{
 break}
 }
-
+dev.off()
 
 ##GSM4504108 or GSM4504109 might be broken
 #GSM4504109 or GSM4503110 too
@@ -417,6 +418,9 @@ dev.off()
 
 
 ## maybe the plot GSM4504109_SCLC_0 might be broken:
+
+setwd(here("Plots/Plots_lung_qc"))
+pdf("lung_cancer_broken_chip.pdf")
 
 for(i in 1:12){
   
@@ -435,6 +439,7 @@ if(permission == "y"){
 else{
 break}
 }
+dev.off()
 
 ###GSM4504109_SCLC_05_ca is broken!!! -> bana-like shaped scatter plots
 ### Thereby, change the whole patient 05, so chip GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_n
