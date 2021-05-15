@@ -254,8 +254,8 @@ plot(breastExprs[,c(i, i+1)], pch=".")
 abline(0,1,col="red")
 
 title(main=paste("Scaterplot of probe", substr(colnames(breast.vsnrma)[i],1,
-nchar(colnames(breast.vsnrma)[i])-4),"and",substr(colnames(breast.vsnrma)[i+1],1,
-nchar(colnames(breast.vsnrma)[i+1])-4), sep = " ", collapse = NULL))
+nchar(colnames(breast.vsnrma)[i])),"and",substr(colnames(breast.vsnrma)[i+1],1,
+nchar(colnames(breast.vsnrma)[i+1])), sep = " ", collapse = NULL))
 
 permission = readline(prompt = "type y for next image: ")
 
@@ -267,8 +267,8 @@ break}
 }
 
 file.name=paste("scatterplot_", as.character(substr(colnames(breast.vsnrma)[i], 1,
-nchar(colnames(breast.vsnrma)[i])-4)),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
-nchar(colnames(breast.vsnrma)[i+1])-4)),".eps",sep="")
+nchar(colnames(breast.vsnrma)[i]))),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
+nchar(colnames(breast.vsnrma)[i+1]))),".eps",sep="")
 
 dev.copy2eps(file=file.name)
 dev.off()
@@ -391,8 +391,8 @@ plot(lungExprs[,c(i, i+1)], pch=".")
 abline(0,1,col="red")
 
 title(main=paste("Scaterplot of probe", substr(colnames(lung.vsnrma)[i],1,
-nchar(colnames(lung.vsnrma)[i])-4),"and",substr(colnames(lung.vsnrma)[i+1],1,
-nchar(colnames(lung.vsnrma)[i+1])-4), sep = " ", collapse = NULL))
+nchar(colnames(lung.vsnrma)[i])),"and",substr(colnames(lung.vsnrma)[i+1],1,
+nchar(colnames(lung.vsnrma)[i+1])), sep = " ", collapse = NULL))
 
 permission = readline(prompt = "type y for next image: ")
 
@@ -407,16 +407,38 @@ break}
 ##GSM4504108 or GSM4504109 might be broken
 #GSM4504109 or GSM4503110 too
 
-file.name=paste("scatterplot_", as.character(substr(colnames(lung.vsnrma)[i], 1,
-nchar(colnames(lung.vsnrma)[i])-4)),"_",as.character(substr(colnames(lung.vsnrma)[i+1],1,
-nchar(colnames(lung.vsnrma)[i+1])-4)),".eps",sep="")
+file.name1=paste("scatterplot_", as.character(substr(colnames(lung.vsnrma)[i], 1,
+nchar(colnames(lung.vsnrma)[i]))),"_",as.character(substr(colnames(lung.vsnrma)[i+1],1,
+nchar(colnames(lung.vsnrma)[i+1]))),".eps",sep="")
 
-dev.copy2eps(file=file.name)
+dev.copy2eps(file=file.name1)
 dev.off()
 
 
-## None of the scatterplots seem to deviate significantly from the red line
-## maybe the plot GSM4504109_SCLC_0 and GSM4504110_SCLC_
+
+## maybe the plot GSM4504109_SCLC_0 might be broken:
+
+for(i in 1:12){
+  
+plot(lungExprs[,c(9, i)], pch=".")
+abline(0,1,col="red")
+
+title(main=paste("Scaterplot of probe", substr(colnames(lung.vsnrma)[9],1,
+nchar(colnames(lung.vsnrma)[9])),"and",substr(colnames(lung.vsnrma)[i],1,
+nchar(colnames(lung.vsnrma)[i])), sep = " ", collapse = NULL))
+
+permission = readline(prompt = "type y for next image: ")
+
+if(permission == "y"){
+  
+}
+else{
+break}
+}
+
+###GSM4504109_SCLC_05_ca is broken!!! -> bana-like shaped scatter plots
+### Thereby, change the whole patient 05, so chip GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_n
+### Get 2 new chips for patient 5 in Gene Expression omnbius for GSE149507 lung cancer and do quality control over again
 ```
 
 #Important
