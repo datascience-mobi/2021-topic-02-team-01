@@ -32,12 +32,14 @@ here::here()
 ```{r Annotation Data Sets, eval=FALSE, include=FALSE}
 
 #Cancer data Sets 
-###"rawdata breast GSE27830": Nagel JH, Peeters JK, Smid M, Sieuwerts AM et al. Gene expression profiling assigns CHEK2 1100delC breast cancers to the luminal intrinsic subtypes. Breast Cancer Res Treat 2012 Apr
+###"rawdata breast GSE27830": Nagel JH, Peeters JK, Smid M, Sieuwerts AM et al. Gene expression profiling assigns CHEK2 1100delC breast cancers to the luminal intrinsic subtypes. Breast Cancer Res Treat 2012 Apr 
+#(Nagel et al. 2012)
 
 ###"GSE65216 breast cancer": Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15 
 #(Maire et al. 2013)
 
 ###"GSE149507 lung cancer": Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
+#(Cai et al. 2021)
 
 
 
@@ -667,39 +669,55 @@ pheatmap(t(lungExprs.prostate))
 ## Überlegung: Ich glaube wir sollten nicht nur die Klk gene einzeln nehmen, sondern eher im Gesamtbild eines spezifischen Gewebes wie etwa Prostata oder.. schauen, ob die wenig vorhandenen KLK gene stärker exprimiert werden als andere Gene
 ## Aufklärung: Die 6 tra... Datensätze sind eher für den spezifischen Gewebetyp gedacht, denke mal hier kann man entweder nach dem gewebe wie prostata filtern und darauf eine Analyse machen (auch wichtig) oder nachschauen in welchem Gewebe die einzelnen TRAs vorhanden sind!! Allerdings nicht zum filtern nach KLK gene geeignet, siehe unten, da dadurch nur 7 KLK gene bei raus kommen
 ```{r}
-
-## NOw only with KLK genes
+## Now how many KLK genes are TRAs
 # Use Klk.TRA1 for this, filtered for Klk genes -> use ind.human 
 
-KLK.genes.TRA1 = TRA.symbol[ind.human]
 
-row.ind.klk1=which(as.character(symbol) %in% KLK.genes.TRA1)
+TRA.symbol=tra.human[,3] # lists all TRAs names for humans
 
+KLK.genes.TRA1 = TRA.symbol[ind.human] #ind.human (see chunk 21) filters for KLKs in tra.human
+
+row.ind.klk1=which(as.character(symbol) %in% KLK.genes.TRA1) #row.ind.klk1 gives respective column 
+
+# For first breast cancer data set
 data.KLK.rawdata = rawdataExprs[row.ind.klk1,]
 
-data.KLK.rawdata =t(data.KLK.rawdata)
 dim(data.KLK.rawdata) ## 39 KLK genes in breast cancer rawdata 
 
-pheatmap(cor(data.KLK.rawdata))
+setwd(here("Plots/Plots_raw_breast"))
+pdf("KLK_TRAs_Heatmap_rawdata.pdf")
+pheatmap(data.KLK.rawdata, main = "Expression values of KLK TRAs in human breast cancer GSE27830 ")
+## (Nagel et al. 2012)
+dev.off()
+
+
+# For GSE65216 breast cancer
+data.KLK.breast = breastExprs[row.ind.klk1,]
+dim(data.KLK.breast) ## 39 KLK genes in breast cancer rawdata 
+
+setwd(here("Plots/Plots_breast"))
+pdf("KLK_TRAs_Heatmap_breast.pdf")
+pheatmap(data.KLK.breast, main = "Expression values of KLK TRAs in human breast cancer GSE65216")
+## (Maire et al. 2013)
+dev.off()
+
+
+# For GSE149507 lung cancer
+data.KLK.lung = lungExprs[row.ind.klk1,]
+dim(data.KLK.lung) ## 39 KLK genes in breast cancer rawdata 
+
+setwd(here("Plots/Plots_lung"))
+pdf("KLK_TRAs_Heatmap_lung.pdf")
+pheatmap(data.KLK.lung, main = "Expression values of KLK TRAs in human lung cancer GSE149507")
+## (Cai et al. 2021)
+dev.off()
 
 
 
+```
 
-## For mouse  ###-> not right, since toupper() turns mouse into human genes :/
-TRA.symbol.mouse=tra.mouse[,3]
-KLK.genes.TRA4 = TRA.symbol.mouse[ind.mouse]
-
-row.ind.klk4=which(as.character(symbol) %in% toupper(KLK.genes.TRA4))
-
-data.KLK.TRA4 = rawdataExprs[row.ind.klk4,]
-data.KLK.TRA4 = t(data.KLK.TRA4)
-dim(data.KLK.TRA4) # 34 KLK genes
-## For mouse and other TRA dat sets 
-## IMPORTANT -> not correct, since toupper() turns mouse into human genes :/
-
-
-
-
+Nicht Sinn der Sache alle KLKs zu nehmen, da TRAs entscheidend
+```{r}
 ### FOR ALL KLK genes
 
 ind.all.KLK=grep("^KLK",symbol)
@@ -712,6 +730,7 @@ all.KLK.rawdata = t(all.KLK.rawdata)
 head(all.KLK.rawdata)
 dim(all.KLK.rawdata) #10 112
 #112 single KLK genes in breast cancer rawdata
+
 #Lets test out a boxplot
 par(las=2)
 ##Experimental
@@ -736,23 +755,10 @@ all.KLK.lung = lungExprs[ind.all.KLK,]
 all.KLK.lung = t(all.KLK.lung)
 dim(all.KLK.lung) # 112  12
 pheatmap(all.KLK.lung)
-
-####HERE YOU CAN SEE BACKUP 
-lungExprsBACKUP = exprs(lung.vsnrma)
-
-KLK4_expression <- grep("^KLK4", rownames(lungExprs))
-KLK4_expression <- lungExprs[KLK12_expression,]
-boxplot(t(KLK12_expression),
-        col=rainbow(length(rownames(data.KLK.TRA1))),
-        main="gene expression of KLK 4 genes in lung cancer",
-        ylab ="log2(gene expression)",xlab = "KLK4 genes" ,cex.axis=0.8)
+```
 
 
-prost_exp <- grep("^KLK", rownames(rawdataExprs.prostate))
-prost_exp <- rawdataExprs.prostate[prost_exp,]
-
-boxplot(t(prost_exp),col=rainbow(length(rownames(data.KLK.TRA1))),main="gene expression of KLK genes in prostate tissue for breast cancer patients",cex.axis=0.8) #Ergibt keinen Sinn mit porstata in breast cancer
-
+```{r}
 ##test
 ind.HER2 = grep(pattern = "Her2", rownames(all.KLK.breast)) ###GREP FOR Her2
 ind.TNBC = grep(pattern = "TNBC", rownames(all.KLK.breast)) ###GREP FOR TNBC
