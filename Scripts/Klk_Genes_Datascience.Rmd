@@ -179,7 +179,7 @@ par(mai=mmi)
 
 setwd(here("Plots/Plots_breast_qc"))
 pdf("breast_box_bfnorm.pdf")
-boxplot(breast, col=rainbow(150),cex.axis=0.5,main="GSE65216 gene expression before normalization", las = 2)
+boxplot(breast, horizontal = TRUE , col=rainbow(150),cex.axis=0.38,main="GSE65216 gene expression before normalization", las = 2)
 dev.off()
 
 
@@ -189,7 +189,7 @@ par(las=2)
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
 pdf("breast_box_afnorm.pdf")
-boxplot(exprs(breast.vsnrma),col=rainbow(150),cex.axis=0.5,main="GSE65216 gene expression after normalization" , las=2)
+boxplot(exprs(breast.vsnrma),horizontal = TRUE,col=rainbow(150),cex.axis=0.5,main="GSE65216 gene expression after normalization" , las=2)
 dev.off()
 
 ```
@@ -321,7 +321,7 @@ mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
 
 pdf("lung_box_bfnorm.pdf")
-boxplot(lung, col=rainbow(150),cex.axis=0.5,main="GSE149507 gene expression before normalization", las = 2)
+boxplot(lung, horizontal = TRUE ,col=rainbow(150),cex.axis=0.5,main="GSE149507 gene expression before normalization", las = 2)
 dev.off()
 
 ##Boxplot after normalization
@@ -331,7 +331,7 @@ mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
 
 pdf("lung_box_afnorm.pdf")
-boxplot(exprs(lung.vsnrma),col=rainbow(150),cex.axis=0.5,main="GSE149507 gene expression after normalization" , las=2)
+boxplot(exprs(lung.vsnrma), horizontal = TRUE, col=rainbow(150),cex.axis=0.5,main="GSE149507 gene expression after normalization" , las=2)
 dev.off()
 ```
 
