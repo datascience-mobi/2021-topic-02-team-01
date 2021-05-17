@@ -225,14 +225,14 @@ dev.off()
 setwd(here("Plots/Plots_breast_qc"))
 rnadeg.breast = AffyRNAdeg(breast)
 
-pdf("breast_RNAdeg_bfnorm.pdf")
+pdf("breast_RNAdeg_ss.pdf")
 plotAffyRNAdeg(rnadeg.breast, col = rainbow(150))
-title(sub="GSE65216 (Maire et al. 2013) before normalization")
+title(sub="GSE65216 (Maire et al. 2013)")
 dev.off()
 
-pdf("breast_RNAdeg_afnorm.pdf")
+pdf("breast_RNAdeg_s.pdf")
 plotAffyRNAdeg(rnadeg.breast, col = rainbow(150), transform = "shift.only")
-title(sub="GSE65216 (Maire et al. 2013) after normalization")
+title(sub="GSE65216 (Maire et al. 2013)")
 dev.off()
 ```
 
@@ -246,9 +246,8 @@ par(mfrow=c(1,2))
 
 setwd(here("Plots/Plots_breast_qc"))
 
-
-for(i in 1:21){
 pdf("breast_scatter.pdf")  
+for(i in 1:21){
 plot(breastExprs[,c(i, i+1)], pch=".")
 abline(0,1,col="red")
 
@@ -264,12 +263,13 @@ if(permission == "y"){
 else{
 break}
 }
+dev.off()
 
 file.name=paste("scatterplot_", as.character(substr(colnames(breast.vsnrma)[i], 1,
 nchar(colnames(breast.vsnrma)[i]))),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
 nchar(colnames(breast.vsnrma)[i+1]))),".eps",sep="")
 
-dev.off()
+
 
 
 
@@ -363,14 +363,14 @@ dev.off()
 setwd(here("Plots/Plots_lung_qc"))
 rnadeg.lung = AffyRNAdeg(lung)
 
-pdf("lung_RNAdeg_bfnorm.pdf")
+pdf("lung_RNAdeg_ss.pdf")
 plotAffyRNAdeg(rnadeg.lung, col = rainbow(150))
 title(sub="GSE149507 (Cai et al. 2021) before normalization")
 dev.off()
 
-pdf("lung_RNAdeg_afnorm.pdf")
+pdf("lung_RNAdeg_s.pdf")
 plotAffyRNAdeg(rnadeg.lung, col = rainbow(150), transform = "shift.only")
-title(sub="GSE149507 (Cai et al. 2021) after normalization")
+title(sub="GSE149507 (Cai et al. 2021)")
 dev.off()
 ```
 
@@ -405,6 +405,7 @@ dev.off()
 ##GSM4504108 or GSM4504109 might be broken
 #GSM4504109 or GSM4503110 too
 setwd(here("Plots/Plots_lung_qc"))
+
 pdf("lung_scatter_brokenchip1.pdf")
 file.name1=paste("scatterplot_", as.character(substr(colnames(lung.vsnrma)[i], 1,
 nchar(colnames(lung.vsnrma)[i]))),"_",as.character(substr(colnames(lung.vsnrma)[i+1],1,
