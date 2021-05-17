@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ###load library
-```{r, hide=TRUE}
+```{r Load Libaries, hide=TRUE}
 library(affy)
 library(vsn)
 library(AnnotationDbi)
@@ -22,6 +22,11 @@ library(hexbin)
 library(ggplot2)
 
 library(pheatmap)
+
+###here package 
+library(here)
+#set the top level folder with here
+here::here()
 ```
 
 ```{r Annotation Data Sets, eval=FALSE, include=FALSE}
@@ -58,16 +63,9 @@ library(pheatmap)
 ```
 
 
-###here package 
-package for better work directory 
-```{r}
-library(here)
-#set the top level folder with here
-here::here()
-```
 
 ###Read .CEL Files
-```{r, hide = TRUE}
+```{r Read CEL Files, hide=}
 #creating a list of the CEL file names, for all thre data sets
 setwd(here("Rawdata/rawdata breast GSE27830"))
 cels.rawdata <- list.files(pattern = 'CEL')
@@ -82,7 +80,7 @@ cels.lung <- list.files(pattern = 'CEL')
 ```
 
 
-```{r, hide = TRUE}
+```{r Addybatch, hide=}
 #read the CEL files into an Affybatch
 
 #Rawdata
@@ -125,7 +123,7 @@ rownames(lung@protocolData) <- new.lung
 
 save(lung, file = paste0(paste(here("Tables")), "/lung.rda"))
 ```
-```{r}
+```{r Rawdata breast}
 # save normalized version of rawdata before continuing
 
 rawdata.vsnrma <- vsnrma(rawdata)
@@ -137,7 +135,7 @@ save.image(file = "rawdataNorm.rda")
 
 ##Quality control - GSE65216 breast cancer TNBC Her2 LumA LumB
 Single chip
-```{r Single Chip control}
+```{r Breast - Single Chip control}
 # read images for GSE65216 breast cancer TNBC Her2 LumA LumB
 setwd(here("Plots/Plots_breast_qc"))
 pdf("breast_chip_control.pdf")
@@ -148,7 +146,7 @@ dev.off()
 ```
 
 
-```{r}
+```{r Breast - Normalization}
 ## Normalization
 breast.vsnrma <- vsnrma(breast)
 
@@ -169,7 +167,7 @@ dev.off()
 
 ```
 
-```{r}
+```{r Breast - Boxplots}
 
 ##Boxplot before normalization
 
@@ -196,50 +194,51 @@ dev.off()
 
 ```
 
-```{r}
+```{r Breast - Density function}
 ## Density function before normalization
-x11(w=10, h=7)
-hist(breast, col=rainbow(150), main = "Density function of log Intensity of breast cancer")
-
-
 setwd(here("Plots/Plots_breast_qc"))
-dev.copy2eps(file="hist_breast.eps")
+
+x11(w=10, h=7)
+pdf("breast_dlogf_bfnorm.pdf")
+hist(breast, col=rainbow(150), main = "GSE65216 (Maire et al. 2013) density function before normalization")
+dev.off()
+
+
 
 ## Density function after normalization
 ##vsnrma
 breastExprs = exprs(breast.vsnrma) ####IMPORTANT
 
-plot(density(breastExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "Density function of log Intensity of breast cancer")
+pdf("breast_dflog_afnorm.pdf")
+plot(density(breastExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "GSE65216 (Maire et al. 2013) density function after normalization")
 for(i in 1:ncol(breastExprs)){
   lines(density(breastExprs[,i]), col=rainbow(150)[i])
 }
+dev.off()
 
-setwd(here("Plots/Plots_breast_qc"))
 
-dev.copy2eps(file="hist_breast_normalized.eps")
 ```
 
-```{r}
+```{r Breast - RNA deg Plot}
 
 ## RNA degeneration plot
-#-----------------------
 setwd(here("Plots/Plots_breast_qc"))
 rnadeg.breast = AffyRNAdeg(breast)
 
+pdf("breast_RNAdeg_bfnorm.pdf")
 plotAffyRNAdeg(rnadeg.breast, col = rainbow(150))
-title(sub="human breast cancer RNA degeneration")
-dev.copy2eps(file="rnadeg.breast.eps")
+title(sub="GSE65216 (Maire et al. 2013) before normalization")
+dev.off()
 
-plotAffyRNAdeg(rnadeg.raw, col = rainbow(150), transform = "shift.only")
-title(sub="human breast cancer rawdata")
-
-dev.copy2eps(file="rnadeg1.breast1.eps")
+pdf("breast_RNAdeg_afnorm.pdf")
+plotAffyRNAdeg(rnadeg.breast, col = rainbow(150), transform = "shift.only")
+title(sub="GSE65216 (Maire et al. 2013) after normalization")
+dev.off()
 ```
 
 
 
-
-```{r}
+```{r Breast - Scatter plots}
 # Scatter plots
 x11(w=9, h=5)
 par(mfrow=c(1,2))
@@ -248,12 +247,12 @@ par(mfrow=c(1,2))
 setwd(here("Plots/Plots_breast_qc"))
 
 
-for(i in 1:150){
-  
+for(i in 1:21){
+pdf("breast_scatter.pdf")  
 plot(breastExprs[,c(i, i+1)], pch=".")
 abline(0,1,col="red")
 
-title(main=paste("Scaterplot of probe", substr(colnames(breast.vsnrma)[i],1,
+title(main=paste("Scatterplot of probe", substr(colnames(breast.vsnrma)[i],1,
 nchar(colnames(breast.vsnrma)[i])),"and",substr(colnames(breast.vsnrma)[i+1],1,
 nchar(colnames(breast.vsnrma)[i+1])), sep = " ", collapse = NULL))
 
@@ -270,8 +269,8 @@ file.name=paste("scatterplot_", as.character(substr(colnames(breast.vsnrma)[i], 
 nchar(colnames(breast.vsnrma)[i]))),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
 nchar(colnames(breast.vsnrma)[i+1]))),".eps",sep="")
 
-dev.copy2eps(file=file.name)
 dev.off()
+
 
 
 ## None of the scatterplots seem to deviate significantly from the red line
@@ -281,15 +280,17 @@ dev.off()
 
 
 # Quality control - GSE149507 lung cancer
-```{r}
+```{r Lung - chip control}
 # read images for GSE149507 lung cancer
-
+setwd(here("Plots/Plots_lung_qc"))
+pdf("lung_chip_control.pdf") 
 image(lung, col=rainbow(100,start=0,end = 0.75)[100:1])
+dev.off()
 # the individual chips look fine
 ```
 
 
-```{r}
+```{r Lung - Normalization and meansd Plot}
 ## Normalization
 lung.vsnrma <- vsnrma(lung)
 
@@ -298,100 +299,96 @@ setwd(here("Tables"))
 save.image(file = "lungNorm.rda")
 
 ## MeanSdPlot
-meanSdPlot(lung.vsnrma)
+setwd(here("Plots/Plots_lung_qc"))
+
+msd.lung <- meanSdPlot(lung.vsnrma)
+msd.lung.title <- msd.lung$gg + ggtitle("Mean sd GSE149507 (Cai et al. 2021)")
+
+pdf("breast_meansdPlot.pdf")
+print(msd.lung.title)
+dev.off()
+
 ###The line is approximately horizontal, so there shouldn't be a variance-mean dependence 
-
-setwd(here("Plots"))
-
-dev.copy2eps(file="meanSdPlot_lung_vsnrma_normalized.eps")
 ```
 
-```{r}
+```{r Lung - Boxplots}
+setwd(here("Plots/Plots_lung_qc"))
 
 ##Boxplot before normalization
 x11(w=10, h=7)
 par(las=2)
-
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
-boxplot(lung, col=rainbow(150),cex.axis=0.5,main="Gene expression of lung cancer", las = 2)
 
-setwd(here("Plots"))
-      
-dev.copy2eps(file="boxplot_lung.eps")
-
+pdf("lung_box_bfnorm.pdf")
+boxplot(lung, col=rainbow(150),cex.axis=0.5,main="GSE149507 gene expression before normalization", las = 2)
+dev.off()
 
 ##Boxplot after normalization
 x11(w=10, h=7)
 par(las=2)
 mmi=c(1,0.7,1.0477939,0.5366749)
 par(mai=mmi)
-boxplot(exprs(lung.vsnrma),col=rainbow(150),cex.axis=0.5,main="Gene expression of lung cancer after normalization" , las=2)
 
-setwd(here("Plots"))
-
-dev.copy2eps(file="boxplot_lung_normalized.eps")
+pdf("lung_box_afnorm.pdf")
+boxplot(exprs(lung.vsnrma),col=rainbow(150),cex.axis=0.5,main="GSE149507 gene expression after normalization" , las=2)
+dev.off()
 ```
 
-```{r}
+```{r Lung- Density function}
 ## Density function before normalization
+setwd(here("Plots/Plots_lung_qc"))
+
 x11(w=10, h=7)
-hist(lung, col=rainbow(150), main = "Density function of log Intensity of lung cancer")
+pdf("lung_df_bfnorm.pdf")
+hist(lung, col=rainbow(150), main = "GSE149507 (Cai et al. 2021) density function before normalization")
+dev.off()
 
-setwd(here("Plots"))
-
-dev.copy2eps(file="hist_lung.eps")
 
 ## Density function after normalization
 ##vsnrma
 lungExprs = exprs(lung.vsnrma) ####IMPORTANT
 
-plot(density(lungExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "Density function of log Intensity of lung cancer")
+pdf("lung_df_afnorm.pdf")
+plot(density(lungExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "GSE149507 (Cai et al. 2021) density function after normalization")
 for(i in 1:ncol(lungExprs)){
   lines(density(lungExprs[,i]), col=rainbow(150)[i])
 }
-
-setwd(here("Plots"))
-
-dev.copy2eps(file="hist_breast_normalized.eps")
+dev.off()
 ```
 
-```{r}
+```{r Lung -RNA deg}
 
 ## RNA degeneration plot
-#-----------------------
-setwd(here("Plots"))
-rnadeg.breast = AffyRNAdeg(lung)
+setwd(here("Plots/Plots_lung_qc"))
+rnadeg.lung = AffyRNAdeg(lung)
 
-plotAffyRNAdeg(rnadeg.breast, col = rainbow(150))
-title(sub="human lung cancer RNA degeneration")
-dev.copy2eps(file="rnadeg.lung.eps")
+pdf("lung_RNAdeg_bfnorm.pdf")
+plotAffyRNAdeg(rnadeg.lung, col = rainbow(150))
+title(sub="GSE149507 (Cai et al. 2021) before normalization")
+dev.off()
 
-plotAffyRNAdeg(rnadeg.raw, col = rainbow(150), transform = "shift.only")
-title(sub="human lung cancer RNA degeneration")
-
-dev.copy2eps(file="rnadeg1.lung1.eps")
+pdf("lung_RNAdeg_afnorm.pdf")
+plotAffyRNAdeg(rnadeg.lung, col = rainbow(150), transform = "shift.only")
+title(sub="GSE149507 (Cai et al. 2021) after normalization")
+dev.off()
 ```
 
 
 
-
-```{r}
+```{r Lung - Scatter plots}
 # Scatter plots
+setwd(here("Plots/Plots_lung_qc"))
 x11(w=9, h=5)
 par(mfrow=c(1,2))
 
-
-setwd(here("Plots/Plots_lung_qc"))
-pdf("Scatterplots_lungcancer_chips.pdf")
-
-
-for(i in 1:150){
+pdf("lung_scatter.pdf")
+for(i in 1:12){
   
 plot(lungExprs[,c(i, i+1)], pch=".")
 abline(0,1,col="red")
 
-title(main=paste("Scaterplot of probe", substr(colnames(lung.vsnrma)[i],1,
+title(main=paste("Scatterplot of probe", substr(colnames(lung.vsnrma)[i],1,
 nchar(colnames(lung.vsnrma)[i])),"and",substr(colnames(lung.vsnrma)[i+1],1,
 nchar(colnames(lung.vsnrma)[i+1])), sep = " ", collapse = NULL))
 
@@ -407,27 +404,24 @@ dev.off()
 
 ##GSM4504108 or GSM4504109 might be broken
 #GSM4504109 or GSM4503110 too
-
+setwd(here("Plots/Plots_lung_qc"))
+pdf("lung_scatter_brokenchip1.pdf")
 file.name1=paste("scatterplot_", as.character(substr(colnames(lung.vsnrma)[i], 1,
 nchar(colnames(lung.vsnrma)[i]))),"_",as.character(substr(colnames(lung.vsnrma)[i+1],1,
 nchar(colnames(lung.vsnrma)[i+1]))),".eps",sep="")
-
-dev.copy2eps(file=file.name1)
 dev.off()
 
 
 
 ## maybe the plot GSM4504109_SCLC_0 might be broken:
-
 setwd(here("Plots/Plots_lung_qc"))
-pdf("lung_cancer_broken_chip.pdf")
-
+pdf("lung_scatter_brokenchip2.pdf")
 for(i in 1:12){
   
 plot(lungExprs[,c(9, i)], pch=".")
 abline(0,1,col="red")
 
-title(main=paste("Scaterplot of probe", substr(colnames(lung.vsnrma)[9],1,
+title(main=paste("Scatterplot of probe", substr(colnames(lung.vsnrma)[9],1,
 nchar(colnames(lung.vsnrma)[9])),"and",substr(colnames(lung.vsnrma)[i],1,
 nchar(colnames(lung.vsnrma)[i])), sep = " ", collapse = NULL))
 
