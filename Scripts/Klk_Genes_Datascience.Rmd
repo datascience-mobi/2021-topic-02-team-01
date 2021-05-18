@@ -714,6 +714,14 @@ dev.off()
 
 
 
+##Anmerkung: Es kommen 39 Einträge für KLK TRAs bei den Cancer Datensätzen
+## obwohl nur 38 KLK TRAs sind, das liegt daran dass eine Zeile doppelt ist
+## -> das wäre Zeile 1 und 10 
+length(data.KLK.breast[1,] == data.KLK.breast[10,] )
+# expression values identical for all 20 samples :( -> row 10 needs to be deleted 
+# Maybe delete it out of first data frame
+
+
 ```
 
 Nicht Sinn der Sache alle KLKs zu nehmen, da TRAs entscheidend
