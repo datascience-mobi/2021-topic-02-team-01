@@ -781,6 +781,21 @@ all.KLK.lung = lungExprs[ind.all.KLK,]
 dim(all.KLK.lung) 
 ```
 
+```{r}
+### Expression analysis for lungExprs
+
+# get familiar with dataset
+head(lungExprs)
+colnames(lungExprs)
+rownames(lungExprs)
+dim(lungExprs)
+class(lungExprs)
+
+#filter for klk,try to save klkexpr as data frame
+
+klkexprs_lung = lungExprs[grep('KLK',rownames(lungExprs)),]
+class(klkexprs_lung)
+dim(klkexprs_lung)
 
 
 
