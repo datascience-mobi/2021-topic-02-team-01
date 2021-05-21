@@ -431,9 +431,13 @@ dev.off()
 ### Get 2 new chips for patient 5 in Gene Expression omnbius for GSE149507 lung cancer and do quality control over again
 ```
 
-#Important
-```{r}
+
+
+```{r Load in Data, eval=FALSE, include=FALSE}
+breast.vsnrma <- vsnrma(breast)
 breastExprs = exprs(breast.vsnrma)
+
+lung.vsnrma <- vsnrma(lung)
 lungExprs = exprs(lung.vsnrma)
 
 rawdata.vsnrma <- vsnrma(rawdata)
