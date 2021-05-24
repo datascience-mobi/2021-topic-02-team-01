@@ -474,7 +474,7 @@ tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
 
 # Filter all Klk from the TRA data sets
 
-```{r}
+```{r Filter all Klk from the TRA data sets}
 
 # For tra.human  
 ind.human=grepl("^KLK",tra.human$gene.symbol)
@@ -510,7 +510,7 @@ Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
 ```
 
 #read in ensembl annotation file
-```{r}
+```{r Read ensembl}
 
 setwd(here("Tables"))
 
