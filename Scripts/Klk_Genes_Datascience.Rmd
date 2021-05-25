@@ -95,7 +95,7 @@ cels.lung <- c("GSM4504101_SCLC_01_ca.CEL", "GSM4504102_SCLC_01_n.CEL", "GSM4504
 
 
 
-```{r Addybatch, hide=}
+```{r Affybatch, hide=}
 #read the CEL files into an Affybatch
 
 #Rawdata
@@ -538,11 +538,9 @@ rawdataExprs <- rawdataExprs[grepl("ENST", rownames(rawdataExprs)), ]
 
 # remove .x_at suffix
 rownames(rawdataExprs) <- unlist(lapply(strsplit(rownames(rawdataExprs), split = "\\."), "[", 1))
-
 setwd(here("Scripts"))
 
 #Setting up annotation
-
 transcriptIDs <- as.character(ensembl_df[, "Transcript.stable.ID"])
 geneSymbol <- as.character(ensembl_df[, "HGNC.symbol"])
 names(geneSymbol) <- transcriptIDs
@@ -738,7 +736,7 @@ Kallikreins=symbol[ind.all.KLK]
 
 ###FOR rawdata
 all.KLK.rawdata = rawdataExprs[ind.all.KLK,] 
-### MATRIX data.all.KLK -> all KLK genes in breast cancer
+### MATRIX data.all.KLK -> all KLK genes in breast cancer (where is the matrix generated?)
 all.KLK.rawdata = t(all.KLK.rawdata)
 head(all.KLK.rawdata)
 dim(all.KLK.rawdata) #10 112
@@ -747,15 +745,16 @@ dim(all.KLK.rawdata) #10 112
 #Lets test out a boxplot
 par(las=2)
 ##Experimental
-boxplot(all.KLK.rawdata,col=rainbow(length(rownames(data.KLK.TRA1))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
-pheatmap(all.KLK.rawdata)
+boxplot(all.KLK.rawdata,col=rainbow(length(rownames(data.KLK.rawdata))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
+pheatmap(all.KLK.rawdata, main = "Heatmap genes expression KLK genes in human breast cancer")
 
-x1 = cor(data.all.KLK)
+x1 = cor(all.KLK.rawdata)
 head(x1)
-pheatmap(x1) # corr between patients
-x2 = cor(t(data.all.KLK))
+pheatmap(x1, main = "Correlation between the KLK TRAs ") 
+# corr between patients
+x2 = cor(t(all.KLK.rawdata))
 head(x2)
-pheatmap(x2)
+pheatmap(x2, main = "Correlation between the patients of breast cancer")
 
 ###FOR breast cancer
 all.KLK.breast = breastExprs[ind.all.KLK,] 
@@ -769,6 +768,29 @@ all.KLK.lung = t(all.KLK.lung)
 dim(all.KLK.lung) # 112  12
 pheatmap(all.KLK.lung)
 ```
+Test for correlation between KLKs
+```{r}
+#test turning all.KLK.rawdata into dataframe
+KLK.dat.rawdata <- data.frame(all.KLK.rawdata)
+KLK.dat.rawdata
+
+#calculate correlation
+cor.rawdata.breast <- cor(all.KLK.rawdata, method = "pearson")
+round(cor.rawdata.breast, 2)
+cor.rawdata.breast <- data.frame(cor.rawdata.breast)
+#delete diagonal 
+diag(cor.rawdata.breast)=NA
+cor.rawdata.breast
+which(cor.rawdata.breast == 1)
+#There are identical columns! corr=1
+
+
+#Remove identical columns
+KLK.rawdata.removed <- KLK.dat.rawdata[!duplicated(unclass(KLK.dat.rawdata))]
+dim(KLK.rawdata.removed)
+KLK.rawdata.removed
+```
+
 
 
 ```{r}
@@ -811,5 +833,5 @@ class(klkexprs_lung)
 dim(klkexprs_lung)
 
 
-.......
+```
 
