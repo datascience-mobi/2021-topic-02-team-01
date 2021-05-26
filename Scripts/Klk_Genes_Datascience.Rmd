@@ -727,7 +727,7 @@ dim(all.KLK.rawdata) #10 112
 par(las=2)
 ##Experimental
 
-boxplot(all.KLK.rawdata,col=rainbow(length(rownames(data.KLK.rawdata))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
+boxplot(all.KLK.rawdata,col=rainbow(length(rownames(all.KLK.rawdata))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
 pheatmap(all.KLK.rawdata, main = "Heatmap genes expression KLK genes in human breast cancer")
 
 x1 = cor(all.KLK.rawdata)
@@ -751,29 +751,62 @@ all.KLK.lung = t(all.KLK.lung)
 dim(all.KLK.lung) # 112  12
 pheatmap(all.KLK.lung)
 ```
-Test for correlation between KLKs
+
+
+Test for correlation between KLKs rawdata breast
 ```{r}
 #test turning all.KLK.rawdata into dataframe
 KLK.dat.rawdata <- data.frame(all.KLK.rawdata)
-KLK.dat.rawdata
-
+dim(KLK.dat.rawdata)
 #calculate correlation
 cor.rawdata.breast <- cor(all.KLK.rawdata, method = "pearson")
 round(cor.rawdata.breast, 2)
 cor.rawdata.breast <- data.frame(cor.rawdata.breast)
 #delete diagonal 
-diag(cor.rawdata.breast)=NA
+diag(cor.rawdata.breast)=0
+cor.rawdata.breast[upper.tri(cor.rawdata.breast)]= 0
+
 cor.rawdata.breast
-which(cor.rawdata.breast == 1)
+length(which(cor.rawdata.breast == 1))
 #There are identical columns! corr=1
 
+#Example KLK7, KLK7.1
+plot(KLK.dat.rawdata$KLK7, KLK.dat.rawdata$KLK7.1,
+     pch=20,
+     xlab = "KLK7 gene expression",
+     ylab = "KLK7.1 gene expression")
+abline(0,1, col="gray")
+
+cor(KLK.dat.rawdata$KLK7, KLK.dat.rawdata$KLK7.1)
 
 #Remove identical columns
 KLK.rawdata.removed <- KLK.dat.rawdata[!duplicated(unclass(KLK.dat.rawdata))]
 dim(KLK.rawdata.removed)
 KLK.rawdata.removed
-```
 
+#check for identical 
+cor.KLK.rawdata.removed <- data.frame(cor(KLK.rawdata.removed))
+diag(cor.KLK.rawdata.removed)=0
+cor.KLK.rawdata.removed[upper.tri(cor.KLK.rawdata.removed)]= 0
+length(which(KLK.rawdata.removed == 1))
+
+```
+Analysis rawdata breast: Boxplot, Heatmap
+```{r}
+#Boxplot:
+boxplot(KLK.rawdata.removed,col=rainbow(length(rownames(KLK.rawdata.removed))),main="Gene expression of KLK genes in human breast cancer",cex.axis=0.8, sub = "Identical genes removed")
+
+pheatmap(all.KLK.rawdata, main = "Heatmap genes expression KLK genes in human breast cancer")
+
+x1 = cor(all.KLK.rawdata)
+head(x1)
+pheatmap(x1, main = "Correlation between the KLK TRAs ") 
+# corr between patients
+x2 = cor(t(all.KLK.rawdata))
+
+head(x2)
+pheatmap(x2, main = "Correlation between the patients of breast cancer")
+```
 
 
 ```{r}
@@ -814,7 +847,38 @@ class(lungExprs)
 klkexprs_lung = lungExprs[grep('KLK',rownames(lungExprs)),]
 class(klkexprs_lung)
 dim(klkexprs_lung)
+KLK.lung <- data.frame(t(klkexprs_lung))
+KLK.lung
 
+#calculate correlation
+cor.KLK.lung <- cor(KLK.lung, method = "pearson")
+round(cor.KLK.lung, 2)
+cor.KLK.lung <- data.frame(cor.KLK.lung)
+#delete diagonal and upper triangle
+cor.KLK.lung[upper.tri(cor.KLK.lung)]= 0
+diag(cor.KLK.lung)=0
+cor.KLK.lung
+which(cor.KLK.lung == 1)
+length(which(cor.KLK.lung == 1))
+#There are identical columns! corr=1
+
+#Remove identical columns
+KLK.lung.removed <- KLK.lung[!duplicated(unclass(KLK.lung))]
+dim(KLK.lung.removed)
+KLK.lung.removed
+
+#check for identical 
+cor.KLK.lung.removed <- data.frame(cor(KLK.lung.removed))
+diag(cor.KLK.lung.removed)=0
+cor.KLK.lung.removed[upper.tri(cor.KLK.lung.removed)]= 0
+length(which(cor.KLK.lung.removed == 1))
+
+
+```
+
+
+Check correlation breast 
+```{r}
 
 ```
 
