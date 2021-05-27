@@ -147,9 +147,10 @@ save.image(file = "rawdataNorm.rda")
 
 ```
 
+# 1. Quality Control
 
 ##Quality control - GSE65216 breast cancer TNBC Her2 LumA LumB
-Single chip
+###Single chip
 ```{r Breast - Single Chip control}
 # read images for GSE65216 breast cancer TNBC Her2 LumA LumB
 setwd(here("Plots/Plots_breast_qc"))
@@ -160,7 +161,7 @@ dev.off()
 # the individual chips look fine
 ```
 
-
+### Normalization
 ```{r Breast - Normalization}
 ## Normalization
 breast.vsnrma <- vsnrma(breast)
@@ -182,6 +183,7 @@ dev.off()
 
 ```
 
+### Visualization via boxplots
 ```{r Breast - Boxplots}
 
 ##Boxplot before normalization
@@ -203,6 +205,7 @@ dev.off()
 
 ```
 
+### Density function
 ```{r Breast - Density function}
 ## Density function before normalization
 setwd(here("Plots/Plots_breast_qc"))
@@ -228,6 +231,7 @@ dev.off()
 
 ```
 
+### RNA degeneration plot
 ```{r Breast - RNA deg Plot}
 
 ## RNA degeneration plot
@@ -246,7 +250,8 @@ dev.off()
 ```
 
 
-
+### Scatter plots
+#### Examining scatter plots and looking for individual chips with non-linear relationship that indicate  broken chips.
 ```{r Breast - Scatter plots}
 # Scatter plots
 x11(w=9, h=5)
@@ -288,7 +293,8 @@ nchar(colnames(breast.vsnrma)[i+1]))),".eps",sep="")
 
 
 
-# Quality control - GSE149507 lung cancer
+## Quality control - GSE149507 lung cancer
+### Chip control
 ```{r Lung - chip control}
 # read images for GSE149507 lung cancer
 setwd(here("Plots/Plots_lung_qc"))
@@ -298,7 +304,7 @@ dev.off()
 # the individual chips look fine
 ```
 
-
+### Normalization and meansd Plot
 ```{r Lung - Normalization and meansd Plot}
 ## Normalization
 lung.vsnrma <- vsnrma(lung)
@@ -320,6 +326,7 @@ dev.off()
 ###The line is approximately horizontal, so there shouldn't be a variance-mean dependence 
 ```
 
+### Boxplots
 ```{r Lung - Boxplots}
 setwd(here("Plots/Plots_lung_qc"))
 
@@ -338,6 +345,7 @@ boxplot(exprs(lung.vsnrma), horizontal = TRUE, col=rainbow(150),cex.axis=0.5,mai
 dev.off()
 ```
 
+### Density function
 ```{r Lung- Density function}
 ## Density function before normalization
 setwd(here("Plots/Plots_lung_qc"))
@@ -360,6 +368,7 @@ for(i in 1:ncol(lungExprs)){
 dev.off()
 ```
 
+### RNA degenaration plot
 ```{r Lung -RNA deg}
 
 ## RNA degeneration plot
@@ -378,7 +387,8 @@ dev.off()
 ```
 
 
-
+### Scatter plots
+#### Examining scatter plots and looking for individual chips with non-linear relationship that indicate  broken chips.
 ```{r Lung - Scatter plots}
 # Scatter plots
 setwd(here("Plots/Plots_lung_qc"))
@@ -458,7 +468,8 @@ rawdataExprs = exprs(rawdata.vsnrma)
 ```
 
 
-# Import of TRA data
+## 2. Further Data acquistion
+### Importing TRA data
 
 ```{r}
 setwd(here("TRA Daten"))
@@ -485,7 +496,7 @@ tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
 ```
 
 
-# Filter all Klk from the TRA data sets
+### Filter all Klk from the TRA data sets
 
 ```{r Filter all Klk from the TRA data sets}
 
@@ -522,7 +533,7 @@ Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
 
 ```
 
-#read in ensembl annotation file
+### ensembl annotation file
 ```{r Read ensembl}
 
 setwd(here("Tables"))
@@ -531,7 +542,7 @@ ensembl_df = read.csv("ensembl.103.txt",sep="\t")
 ```
 
 
-# Creating rawdata breast cancer data set to work with
+### Creating rawdata breast cancer data set of expression values
 ```{r}
 rawdataExprs <- rawdataExprs[grepl("ENST", rownames(rawdataExprs)), ]
 #dim = 95659    10
@@ -564,7 +575,7 @@ head(rawdataExprs)
 ```
 
 
-# Creating GSE65216 breast cancer (TNBC Her2 LumA LumB) data set to work with
+### Creating GSE65216 breast cancer (TNBC Her2 LumA LumB) data of expression values
 ```{r}
 breastExprs <- breastExprs[grepl("ENST", rownames(breastExprs)), ]
 dim(breastExprs) #  95659    20
@@ -621,9 +632,9 @@ head(lungExprs)
 
 ```
 
-# Example Analysis
-## KLK genes
 
+
+2.
 
 ```{r}
 ## Now how many KLK genes are TRAs
