@@ -863,6 +863,7 @@ length(which(cor.KLK.lung == 1))
 #There are identical columns! corr=1
 
 #Remove identical columns
+KLK.lung.duplicated #! muss weg 
 KLK.lung.removed <- KLK.lung[!duplicated(unclass(KLK.lung))]
 dim(KLK.lung.removed)
 KLK.lung.removed
