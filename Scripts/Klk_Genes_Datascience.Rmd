@@ -656,9 +656,6 @@ dim(all.KLK.lung) # 112  12
 ```
 
 
-
-
-
 ###Isolating TRAs from the rawdata breast dataset
 ```{r Isolating KLK TRAs rawdata breast + Heatmaps}
 ## Now how many KLK genes are TRAs
@@ -728,38 +725,96 @@ Further reason for removing the identicals
 Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
 
 
-
-```{r}
-
-
-data.frame(all.KLK.breast)
-
+###Isolating TRAs from the breast cancer dataset
+```{r, Isolating KLK TRAs breast + Heatmaps}
 # For GSE65216 breast cancer
-TRA.KLK.breast = breastExprs[ind.KLK.tra.human,]
-TRA.KLK.breast = TRA.KLK.breast[-10,]
-dim(TRA.KLK.breast) ## 38 KLK genes in breast cancer rawdata 
+TRA.KLK.breast = data.frame(t(breastExprs[ind.KLK.tra.human,]))
+dim(TRA.KLK.breast) ## 39 KLK genes in breast cancer rawdata 
 
+#number of identical columns
+cor.TRA.KLK.breast <- cor.genes(TRA.KLK.breast)
+length(which(cor.TRA.KLK.breast == 1))
+#17 identical columns 
+
+#cleanup function 
+genes.cleanup <- function(df){
+  df[!duplicated(unclass(df))]
+}
+
+#remove identical columns
+TRA.KLK.breast.clean <- genes.cleanup(TRA.KLK.breast)
+dim(TRA.KLK.breast.clean)
+
+#check clean dataframe for correlations
+length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
+TRA.KLK.breast
+
+#heatmap with duplicates
 setwd(here("Plots/Plots_breast"))
-pdf("KLK_TRAs_Heatmap_breast.pdf")
-pheatmap(TRA.KLK.breast, main = "Expression values of KLK TRAs in human breast cancer GSE65216")
-## (Maire et al. 2013)
+pdf("KLK_TRAs_Heatmap_breast_wid.pdf")
+pheatmap(t(TRA.KLK.breast),
+         main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
+         cellwidth = 15,
+         cellheight = 8,
+         treeheight_col = 20,
+         fontsize_row = 8,
+         fontsize_col = 7)
 dev.off()
 
-
-# For GSE149507 lung cancer
-TRA.KLK.lung = lungExprs[ind.KLK.tra.human,]
-TRA.KLK.lung = TRA.KLK.lung[-10,]
-dim(TRA.KLK.lung) ## 38 KLK genes in breast cancer rawdata 
-
-setwd(here("Plots/Plots_lung"))
-pdf("KLK_TRAs_Heatmap_lung.pdf")
-pheatmap(TRA.KLK.lung, main = "Expression values of KLK TRAs in human lung cancer GSE149507")
-## (Cai et al. 2021)
+#heatmap withOUT duplicates
+setwd(here("Plots/Plots_breast"))
+pdf("KLK_TRAs_Heatmap_breast_noid.pdf")
+pheatmap(t(TRA.KLK.breast.clean),
+         main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
+         cellwidth = 15,
+         cellheight = 8,
+         treeheight_col = 20,
+         fontsize_row = 8,
+         fontsize_col = 7)
 dev.off()
-
-
 ```
 
+
+###Isolating TRAs from lung cancer dataset
+```{r, Isolating KLK TRAs lung + Heatmaps}
+# For GSE149507 lung cancer
+TRA.KLK.lung = lungExprs[ind.KLK.tra.human,]
+TRA.KLK.lung = t(TRA.KLK.lung)
+dim(TRA.KLK.lung) ## 39 KLK genes in breast cancer rawdata 
+
+#finding duplicates
+cor.TRA.KLK.lung <- cor.genes(TRA.KLK.lung)
+length(which(cor.TRA.KLK.lung == 1)) #18 identical columns 
+
+#removing identical columns
+TRA.KLK.lung <- data.frame(TRA.KLK.lung)
+TRA.KLK.lung.clean <- genes.cleanup(TRA.KLK.lung)
+length(which(cor.genes(TRA.KLK.lung.clean) == 1))
+
+#heatmap with duplicates
+setwd(here("Plots/Plots_lung"))
+pdf("KLK_TRAs_Heatmap_lung_wid.pdf")
+pheatmap(t(TRA.KLK.lung),
+         main = "Expression values of KLK TRAs GSE149507 (Cai et al. 2021)",
+         cellwidth = 20,
+         cellheight = 8,
+         treeheight_col = 20,
+         fontsize_row = 7,
+         fontsize_col = 7)
+dev.off()
+
+#heatmap withOUT duplicates
+setwd(here("Plots/Plots_lung"))
+pdf("KLK_TRAs_Heatmap_lung_noid.pdf")
+pheatmap(t(TRA.KLK.lung.clean),
+         main = "Expression values of KLK TRAs GSE149507 (Cai et al. 2021)",
+         cellwidth = 20,
+         cellheight = 8,
+         treeheight_col = 20,
+         fontsize_row = 8,
+         fontsize_col = 7)
+dev.off()
+```
 
 
 
