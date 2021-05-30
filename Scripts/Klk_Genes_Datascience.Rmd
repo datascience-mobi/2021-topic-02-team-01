@@ -28,6 +28,10 @@ library(here)
 #set the top level folder with here
 here::here()
 ```
+# 0. Introduction
+#Relevance of TRAs in cancer therapy: Tumor restricted antigens only occur in cancer tissue, which makes them a great immunological target. Identifying TRAs overexpressed in specific cancer tissue is imporant for the development of immunotherapeutic drugs....
+# Biological question considering KLKs:..
+
 
 ```{r Annotation Data Sets, eval=FALSE, include=FALSE}
 
@@ -497,7 +501,7 @@ tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
 
 
 ### Filter all Klk from the TRA data sets
-
+###Union of all six table to visualize 
 ```{r Filter all Klk from the TRA data sets}
 
 # For tra.human  
@@ -505,8 +509,8 @@ ind.human=grepl("^KLK",tra.human$gene.symbol)
 ind.human =which(ind.human == TRUE)
 Klk.TRA1 = as.data.frame(tra.human[ind.human,])
 
-# For tra.human.5median ####DOESNT WORK SINCE CONFLICT DURING IMPORT
-ind.5median=grepl("^Klk",tra.human.5median$gene.symbol)
+# For tra.human.5median 
+ind.5median=grepl("^KLK",tra.human.5median$Symbol)
 ind.5median =which(ind.5median == TRUE)
 Klk.TRA2 = as.data.frame(tra.human.5median[ind.5median,])
 
@@ -525,13 +529,57 @@ ind.4301=grepl("^Klk",tra.mouse.4301$gene.symbol)
 ind.4301 =which(ind.4301 == TRUE)
 Klk.TRA5 = as.data.frame(tra.mouse.4301[ind.4301,])
 
-# For tra.mouse.gtex ###Here the genes are listed in ensembl.symbol 
-#-> should rearrange all genes in same columns before putting it all in one data frame 
+# For tra.mouse.gtex
 ind.gtex=grepl("^KLK",tra.mouse.gtex$ensembl.symbol)
 ind.gtex=which(ind.gtex == TRUE)
 Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
 
+
+### Creating a unified TRA data set, that only contains important information for our overview
+nrow.x = nrow(Klk.TRA1) + nrow(Klk.TRA2) + nrow(Klk.TRA3) +nrow(Klk.TRA4)+ nrow(Klk.TRA5) + nrow(Klk.TRA6)
+Union.TRA = as.data.frame(matrix(ncol = 5, nrow=nrow.x))
+union.names <- c("ensembl_genes", "Chromosome", "gene.symbol", "max.tissue", "dataset") ## assigning the unified columns
+colnames(Union.TRA) <- union.names 
+## now assign the rows, we poorly need to do this manually since there is no strict order of the columns of the 5 TRA data sets
+## Watch out!! Chromosomes on the mice are not comparable to humans!!!
+Union.TRA[1:nrow(Klk.TRA1),c(1:4)] <- Klk.TRA1[,c(2, 7, 3, 11)] # For Klk.TRA1
+Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),c(1:4)] <- Klk.TRA2[,c(1, 2, 6, 11)] # For Klk.TRA2
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),c(1:4)] <- Klk.TRA3[,c(2, 7, 3, 11)] # For Klk.TRA3
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),c(1:4)] <- Klk.TRA4[,c(2, 7, 3, 11)] # For Klk.TRA4
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),c(1:4)] <- Klk.TRA5[,c(2, 7, 3, 11)] # For Klk.TRA5
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),c(1:4)] <- Klk.TRA6[,c(2,6,3, 10)] # For Klk.TRA6
+
+## now annotate the the data set
+#->> VERY HELPFUL for later plots -> e.g. selecting rows that only apply for the human KLKs: 
+#(Union.TRA$dataset == "tra.human")!!!!
+Union.TRA[1:nrow(Klk.TRA1), 5] <- "tra.human"
+Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),5] <- "tra.human.5median"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),5] <- "tra.human.roth"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),5] <- "tra.mouse"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),5] <- "tra.mouse.4301"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),5] <- " tra.mouse.gtex"
+
+
+## Da Frau Dinkelacker eine Übersicht zu der Verteilung der KLKs auf den Chromosomen und die Filterung nach max.tissue haben möchte, hier kann jetzt bei Union.TRA beliebig nach allem gesucht werden übersichts-plots erstellt werden. Nur vorsicht das Mausdatensätze und Menschen in einem sind.
+# Kann für die folgenden Analysen dafür genutzt werden um nach Datensatz
+
+
+
+
+
+# unique KLK names
+all.KLK.gene.symbols <- unique(Union.TRA$gene.symbol)
+all.KLK.gene.symbols
+
+# Now show overview of KLK distribution
+# Max.tissue for tra.human
+length.pancreas <- length(which(Union.TRA[which(Union.TRA$dataset == "tra.human"), 4] == "Pancreas") == TRUE)
+length.prostate <- length(which(Union.TRA[which(Union.TRA$dataset == "tra.human"), 4] == "Prostate") == TRUE)
+barplot(c(length.pancreas,length.prostate) ,main ="Distribution of tissue types for human KLK TRAs", )
 ```
+
+
+
 
 ### ensembl annotation file
 ```{r Read ensembl}
@@ -662,6 +710,10 @@ dim(all.KLK.lung) # 112  12
 # Use Klk.TRA1 for this, filtered for Klk genes -> use ind.human 
 TRA.symbol=tra.human[,3] # lists all TRAs names for humans
 
+ind.human=grepl("^KLK",tra.human$gene.symbol)
+ind.human =which(ind.human == TRUE)
+#Klk.TRA1 = as.data.frame(tra.human[ind.human,])
+
 KLK.genes.TRA.human = TRA.symbol[ind.human] #ind.human (see chunk 21) filters for KLKs in tra.human
 
 ind.KLK.tra.human =which(as.character(symbol) %in% KLK.genes.TRA.human) #ind.KLK.tra.human gives respective column 
@@ -669,7 +721,7 @@ ind.KLK.tra.human =which(as.character(symbol) %in% KLK.genes.TRA.human) #ind.KLK
 # For first breast cancer data set
 TRA.KLK.rawdata = rawdataExprs[ind.KLK.tra.human,]
 #transform dataset - genes on columns
-TRA.KLK.rawdata <- data.frame(TRA.KLK.rawdata)
+TRA.KLK.rawdata <- data.frame(t(TRA.KLK.rawdata))
 
 #Define function for calculating correlation 
 cor.genes <- function(df){
@@ -682,19 +734,19 @@ cor.genes <- function(df){
 #test function 
 cor.TRA.KLK.rawdata <- cor.genes(TRA.KLK.rawdata)
 length(which(cor.TRA.KLK.rawdata == 1))
-#we got 10 identical TRAs!!! e.g. KLK1 and KLK1.1
+#we got 18 identical isoform KLK TRAs!!! e.g. KLK1 and KLK1.1
 #Identical transcripts can cause issues later on for statistical testing ect. 
 
-#remove identical columns
+#remove identical isoforms
 TRA.KLK.rawdata.clean <- TRA.KLK.rawdata[!duplicated(unclass(TRA.KLK.rawdata))]
 dim(TRA.KLK.rawdata)
 dim(TRA.KLK.rawdata.clean)
-#removed 12 identical columns
+#removed 12 identical isoforms
 
-#check for identicals 
+#check for identical isoforms again 
 cor.TRA.KLK.rawdata.clean <- cor.genes(TRA.KLK.rawdata.clean)
 length(which(cor.TRA.KLK.rawdata.clean == 1))
-#no more identical columns!
+#no more left
 
 TRA.KLK.rawdata
 #Heatmap of KLK TRAs expression with identicals
@@ -703,7 +755,7 @@ pdf("KLK_TRAs_Heatmap_rawdata_wid.pdf")
 pheatmap(t(TRA.KLK.rawdata),
          main = "Expression values of KLK TRAs GSE27830 (Nagel et al. 2012)",
          cellwidth = 30,
-         cellheight = 8,
+         cellheight = 10,
          treeheight_col = 20,
          fontsize_row = 8)
 dev.off()
@@ -731,23 +783,22 @@ Now, there are no KLK TRA genes that have identical expression values. This coul
 TRA.KLK.breast = data.frame(t(breastExprs[ind.KLK.tra.human,]))
 dim(TRA.KLK.breast) ## 39 KLK genes in breast cancer rawdata 
 
-#number of identical columns
+#number of identical isoforms
 cor.TRA.KLK.breast <- cor.genes(TRA.KLK.breast)
 length(which(cor.TRA.KLK.breast == 1))
-#17 identical columns 
+#15 identical isoforms 
 
 #cleanup function 
 genes.cleanup <- function(df){
   df[!duplicated(unclass(df))]
 }
 
-#remove identical columns
+#remove identical isoforms
 TRA.KLK.breast.clean <- genes.cleanup(TRA.KLK.breast)
 dim(TRA.KLK.breast.clean)
 
 #check clean dataframe for correlations
 length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
-TRA.KLK.breast
 
 #heatmap with duplicates
 setwd(here("Plots/Plots_breast"))
@@ -784,9 +835,9 @@ dim(TRA.KLK.lung) ## 39 KLK genes in breast cancer rawdata
 
 #finding duplicates
 cor.TRA.KLK.lung <- cor.genes(TRA.KLK.lung)
-length(which(cor.TRA.KLK.lung == 1)) #18 identical columns 
+length(which(cor.TRA.KLK.lung == 1)) #8 identical isoforms 
 
-#removing identical columns
+#removing identical isoforms
 TRA.KLK.lung <- data.frame(TRA.KLK.lung)
 TRA.KLK.lung.clean <- genes.cleanup(TRA.KLK.lung)
 length(which(cor.genes(TRA.KLK.lung.clean) == 1))
@@ -815,7 +866,11 @@ pheatmap(t(TRA.KLK.lung.clean),
          fontsize_col = 7)
 dev.off()
 ```
+If we have have a look onto the 3 generated Heatmaps of 
 
+```{r}
+# We can even build a comparison with additional plots to non-TRA 
+```
 
 
 
