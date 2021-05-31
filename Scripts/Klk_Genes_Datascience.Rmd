@@ -28,6 +28,9 @@ library(here)
 #set the top level folder with here
 here::here()
 ```
+# 0. Introduction
+#Relevance of TRAs in cancer therapy: Tumor restricted antigens only occur in cancer tissue, which makes them a great immunological target. Identifying TRAs overexpressed in specific cancer tissue is imporant for the development of immunotherapeutic drugs....
+# Biological question considering KLKs:..
 
 ```{r Annotation Data Sets, eval=FALSE, include=FALSE}
 
@@ -488,7 +491,7 @@ tra.human.roth=read.csv(file="tra.2014.human.roth.5x.table.tsv", sep="\t")
 tra.mouse.4301=read.csv(file="tra.2014.mouse.4301.5x.table.tsv", sep="\t")
 
 # Import of tra.human.gtex
-tra.mouse.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
+tra.human.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
 
 #Import of tra.mouse 
 tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
@@ -497,7 +500,7 @@ tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
 
 
 ### Filter all Klk from the TRA data sets
-
+###Union of all six table to visualize 
 ```{r Filter all Klk from the TRA data sets}
 
 # For tra.human  
@@ -505,8 +508,8 @@ ind.human=grepl("^KLK",tra.human$gene.symbol)
 ind.human =which(ind.human == TRUE)
 Klk.TRA1 = as.data.frame(tra.human[ind.human,])
 
-# For tra.human.5median ####DOESNT WORK SINCE CONFLICT DURING IMPORT
-ind.5median=grepl("^Klk",tra.human.5median$gene.symbol)
+# For tra.human.5median
+ind.5median=grepl("^KLK",tra.human.5median$Symbol)
 ind.5median =which(ind.5median == TRUE)
 Klk.TRA2 = as.data.frame(tra.human.5median[ind.5median,])
 
@@ -525,14 +528,13 @@ ind.4301=grepl("^Klk",tra.mouse.4301$gene.symbol)
 ind.4301 =which(ind.4301 == TRUE)
 Klk.TRA5 = as.data.frame(tra.mouse.4301[ind.4301,])
 
-# For tra.mouse.gtex ###Here the genes are listed in ensembl.symbol 
-#-> should rearrange all genes in same columns before putting it all in one data frame 
-ind.gtex=grepl("^KLK",tra.mouse.gtex$ensembl.symbol)
+# For tra.human.gtex 
+ind.gtex=grepl("^KLK",tra.human.gtex$ensembl.symbol)
 ind.gtex=which(ind.gtex == TRUE)
-Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
+Klk.TRA6=as.data.frame(tra.human.gtex[ind.gtex,])
 
-```
-+
+
+
 ### Creating a unified TRA data set, that only contains important information for our overview
 nrow.x = nrow(Klk.TRA1) + nrow(Klk.TRA2) + nrow(Klk.TRA3) +nrow(Klk.TRA4)+ nrow(Klk.TRA5) + nrow(Klk.TRA6)
 Union.TRA = as.data.frame(matrix(ncol = 5, nrow=nrow.x))
@@ -555,25 +557,18 @@ Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),5] <- "tra.human.5median"
 Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),5] <- "tra.human.roth"
 Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),5] <- "tra.mouse"
 Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),5] <- "tra.mouse.4301"
-Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),5] <- " tra.mouse.gtex"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),5] <- "tra.human.gtex"
 
 
-## Da Frau Dinkelacker eine Übersicht zu der Verteilung der KLKs auf den Chromosomen und die Filterung nach max.tissue haben möchte, hier kann jetzt bei Union.TRA beliebig nach allem gesucht werden übersichts-plots erstellt werden. Nur vorsicht das Mausdatensätze und Menschen in einem sind.
-# Kann für die folgenden Analysen dafür genutzt werden um nach Datensatz
+### all human KLK genes across all TRA data sets
+
+ind.all.tra.human.KLK <- grep("^tra.human", Union.TRA$dataset)
+tra.all.human <- Union.TRA[ind.all.tra.human.KLK,]
 
 
-
-
-
-# unique KLK names
-all.KLK.gene.symbols <- unique(Union.TRA$gene.symbol)
-all.KLK.gene.symbols
-
-# Now show overview of KLK distribution
-# Max.tissue for tra.human
-length.pancreas <- length(which(Union.TRA[which(Union.TRA$dataset == "tra.human"), 4] == "Pancreas") == TRUE)
-length.prostate <- length(which(Union.TRA[which(Union.TRA$dataset == "tra.human"), 4] == "Prostate") == TRUE)
-barplot(c(length.pancreas,length.prostate) ,main ="Distribution of tissue types for human KLK TRAs", )
+# all unique human KLK names that are present as TRAs
+all.human.KLK.gene.symbols <- unique(Union.TRA$gene.symbol[grep("tra.human", Union.TRA$dataset)])
+all.human.KLK.gene.symbols # These are all the available KLK TRAs we can possibly work with
 ```
 
 ### ensembl annotation file
@@ -650,7 +645,7 @@ Creating lung cancer data set to work with
 ```{r Dataset lung cancer }
 lungExprs <- lungExprs[grepl("ENST", rownames(lungExprs)), ]
 dim(lungExprs) #  95659    20
-
+ 
 # remove .x_at suffix
 rownames(lungExprs) <- unlist(lapply(strsplit(rownames(lungExprs), split = "\\."), "[", 1))
 
@@ -674,30 +669,22 @@ rownames(lungExprs) <- as.character(symbol.lung)  # Matrix to work with
 head(lungExprs)
 
 ```
+# 3. Expression Analysis
+
 Ioslating all KLK genes from each dataset 
 ```{r Isolating KLK genes, results=FALSE}
-### FOR ALL KLK genes
+## FOR ALL KLK genes
 ind.all.KLK=grep("^KLK",symbol)
 Kallikreins=symbol[ind.all.KLK]
 
-###FOR rawdata
-all.KLK.rawdata = rawdataExprs[ind.all.KLK,] 
-all.KLK.rawdata = t(all.KLK.rawdata)
-dim(all.KLK.rawdata) #10 112
-#112 single KLK genes in breast cancer rawdata
+## All possible human KLK genes symbols that identify as TRA
+all.human.KLK.gene.symbols
+ind.human =which(ind.human == TRUE)
+KLK.TRA1x = as.data.frame(tra.human[ind.human,])
 
-
-###FOR breast cancer
-all.KLK.breast = breastExprs[ind.all.KLK, ] 
-all.KLK.breast = t(all.KLK.breast)
-dim(all.KLK.breast) #20 112
-
-###FOR lung cancer
-all.KLK.lung = lungExprs[ind.all.KLK,] 
-all.KLK.lung = t(all.KLK.lung)
-dim(all.KLK.lung) # 112  12
 ```
 
+## 3.1 breast cancer GSE27830 (Nagel et al. 2012)
 
 ###Isolating TRAs from the rawdata breast dataset
 ```{r Isolating KLK TRAs rawdata breast + Heatmaps}
@@ -767,12 +754,20 @@ TRA.KLK.rawdata.clean = data.frame(t(TRA.KLK.rawdata.clean[order(colnames(TRA.KL
 TRA.KLK.rawdata.clean
 ```
 
-
 Further reason for removing the identicals
 Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
+## Visualization of gene expression
+Boxplot, Heatmap
+```{r}
+#Boxplot:
+boxplot(KLK.rawdata.removed,col=rainbow(length(rownames(KLK.rawdata.removed))),main="Gene expression of KLK genes in human breast cancer",cex.axis=0.8, sub = "Identical genes removed")
+```
 
 
-###Isolating TRAs from the breast cancer dataset
+
+# 3.2 Breast cancer GSE65216
+
+##Isolating TRAs from the breast cancer dataset
 ```{r, Isolating KLK TRAs breast + Heatmaps}
 # For GSE65216 breast cancer
 TRA.KLK.breast = data.frame(t(breastExprs[ind.KLK.tra.human,]))
@@ -841,6 +836,8 @@ dev.off()
 #no difference to previous heatmap
 
 ```
+
+## Visualization of gene expression
 Boxplots 
 ```{r}
 #boxplots 
@@ -851,6 +848,8 @@ dev.off()
 
 ```
 
+
+## 3.3 Lung cancer GSE149507
 
 ###Isolating TRAs from lung cancer dataset
 ```{r, Isolating KLK TRAs lung + Heatmaps}
@@ -891,43 +890,6 @@ pheatmap(t(TRA.KLK.lung.clean),
          fontsize_row = 8,
          fontsize_col = 7)
 dev.off()
-```
-
-
-
-
-
-
-Analysis rawdata breast: Boxplot, Heatmap
-```{r}
-#Boxplot:
-boxplot(KLK.rawdata.removed,col=rainbow(length(rownames(KLK.rawdata.removed))),main="Gene expression of KLK genes in human breast cancer",cex.axis=0.8, sub = "Identical genes removed")
-
-pheatmap(all.KLK.rawdata, main = "Heatmap genes expression KLK genes in human breast cancer")
-
-x1 = cor(all.KLK.rawdata)
-head(x1)
-pheatmap(x1, main = "Correlation between the KLK TRAs ") 
-# corr between patients
-x2 = cor(t(all.KLK.rawdata))
-
-head(x2)
-pheatmap(x2, main = "Correlation between the patients of breast cancer")
-```
-
-
-```{r}
-##test
-ind.HER2 = grep(pattern = "Her2", rownames(all.KLK.breast)) ###GREP FOR Her2
-ind.TNBC = grep(pattern = "TNBC", rownames(all.KLK.breast)) ###GREP FOR TNBC
-ind.LumA = grep(pattern = "LumA", rownames(all.KLK.breast)) ###GREP FOR LumA
-ind.LumB = grep(pattern = "LumB", rownames(all.KLK.breast)) ###GREP FOR LumB
-
-
-data.new <-rbind(all.KLK.breast[ind.HER2,],all.KLK.breast[ind.TNBC,],all.KLK.breast[ind.LumA,],all.KLK.breast[ind.LumB,])
-
-pheatmap(data.new)
-boxplot(data.new,col=rainbow(length(rownames(data.new))),main="gene expression of KLK genes in human breast cancer",cex.axis=0.8)
 ```
 
 
