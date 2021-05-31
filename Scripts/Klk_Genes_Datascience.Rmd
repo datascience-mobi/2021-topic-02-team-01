@@ -532,6 +532,49 @@ ind.gtex=which(ind.gtex == TRUE)
 Klk.TRA6=as.data.frame(tra.mouse.gtex[ind.gtex,])
 
 ```
++
+### Creating a unified TRA data set, that only contains important information for our overview
+nrow.x = nrow(Klk.TRA1) + nrow(Klk.TRA2) + nrow(Klk.TRA3) +nrow(Klk.TRA4)+ nrow(Klk.TRA5) + nrow(Klk.TRA6)
+Union.TRA = as.data.frame(matrix(ncol = 5, nrow=nrow.x))
+union.names <- c("ensembl_genes", "Chromosome", "gene.symbol", "max.tissue", "dataset") ## assigning the unified columns
+colnames(Union.TRA) <- union.names 
+## now assign the rows, we poorly need to do this manually since there is no strict order of the columns of the 5 TRA data sets
+## Watch out!! Chromosomes on the mice are not comparable to humans!!!
+Union.TRA[1:nrow(Klk.TRA1),c(1:4)] <- Klk.TRA1[,c(2, 7, 3, 11)] # For Klk.TRA1
+Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),c(1:4)] <- Klk.TRA2[,c(1, 2, 6, 11)] # For Klk.TRA2
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),c(1:4)] <- Klk.TRA3[,c(2, 7, 3, 11)] # For Klk.TRA3
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),c(1:4)] <- Klk.TRA4[,c(2, 7, 3, 11)] # For Klk.TRA4
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),c(1:4)] <- Klk.TRA5[,c(2, 7, 3, 11)] # For Klk.TRA5
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),c(1:4)] <- Klk.TRA6[,c(2,6,3, 10)] # For Klk.TRA6
+
+## now annotate the the data set
+#->> VERY HELPFUL for later plots -> e.g. selecting rows that only apply for the human KLKs: 
+#(Union.TRA$dataset == "tra.human")!!!!
+Union.TRA[1:nrow(Klk.TRA1), 5] <- "tra.human"
+Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),5] <- "tra.human.5median"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),5] <- "tra.human.roth"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),5] <- "tra.mouse"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),5] <- "tra.mouse.4301"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),5] <- " tra.mouse.gtex"
+
+
+## Da Frau Dinkelacker eine Übersicht zu der Verteilung der KLKs auf den Chromosomen und die Filterung nach max.tissue haben möchte, hier kann jetzt bei Union.TRA beliebig nach allem gesucht werden übersichts-plots erstellt werden. Nur vorsicht das Mausdatensätze und Menschen in einem sind.
+# Kann für die folgenden Analysen dafür genutzt werden um nach Datensatz
+
+
+
+
+
+# unique KLK names
+all.KLK.gene.symbols <- unique(Union.TRA$gene.symbol)
+all.KLK.gene.symbols
+
+# Now show overview of KLK distribution
+# Max.tissue for tra.human
+length.pancreas <- length(which(Union.TRA[which(Union.TRA$dataset == "tra.human"), 4] == "Pancreas") == TRUE)
+length.prostate <- length(which(Union.TRA[which(Union.TRA$dataset == "tra.human"), 4] == "Prostate") == TRUE)
+barplot(c(length.pancreas,length.prostate) ,main ="Distribution of tissue types for human KLK TRAs", )
+```
 
 ### ensembl annotation file
 ```{r Read ensembl}
