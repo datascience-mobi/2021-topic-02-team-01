@@ -716,7 +716,7 @@ pheatmap(t(TRA.KLK.rawdata.clean),
          cellwidth = 30,
          cellheight = 10,
          treeheight_col = 20,
-         fontsize_row = 8)
+         ColSideColors)
 dev.off()
 ```
 
@@ -730,7 +730,7 @@ Now, there are no KLK TRA genes that have identical expression values. This coul
 # For GSE65216 breast cancer
 TRA.KLK.breast = data.frame(t(breastExprs[ind.KLK.tra.human,]))
 dim(TRA.KLK.breast) ## 39 KLK genes in breast cancer rawdata 
-
+TRA.KLK.breast
 #number of identical columns
 cor.TRA.KLK.breast <- cor.genes(TRA.KLK.breast)
 length(which(cor.TRA.KLK.breast == 1))
@@ -747,7 +747,7 @@ dim(TRA.KLK.breast.clean)
 
 #check clean dataframe for correlations
 length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
-TRA.KLK.breast
+TRA.KLK.breast.clean
 
 #heatmap with duplicates
 setwd(here("Plots/Plots_breast"))
@@ -761,6 +761,11 @@ pheatmap(t(TRA.KLK.breast),
          fontsize_col = 7)
 dev.off()
 
+#order dataframe columns alphabetically
+TRA.KLK.breast.clean = TRA.KLK.breast.clean[order(substr(rownames(TRA.KLK.breast.clean), 19, 22))
+  ,order(colnames(TRA.KLK.breast.clean))]
+TRA.KLK.breast.clean
+
 #heatmap withOUT duplicates
 setwd(here("Plots/Plots_breast"))
 pdf("KLK_TRAs_Heatmap_breast_noid.pdf")
@@ -772,6 +777,31 @@ pheatmap(t(TRA.KLK.breast.clean),
          fontsize_row = 8,
          fontsize_col = 7)
 dev.off()
+
+#heatmap without clusters 
+setwd(here("Plots/Plots_breast"))
+pdf("KLK_TRAs_Heatmap_breast_noclust.pdf")
+pheatmap(t(TRA.KLK.breast.clean),
+         main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
+         cellwidth = 15,
+         cellheight = 8,
+         treeheight_col = 20,
+         fontsize_row = 8,
+         fontsize_col = 7,
+         cluster_rows = TRUE,
+         cluster_cols = FALSE)
+dev.off()
+#no difference to previous heatmap
+
+```
+Boxplots 
+```{r}
+#boxplots 
+setwd(here("Plots/Plots_breast"))
+pdf("KLK_TRAs_boxplot_all.pdf")
+boxplot(TRA.KLK.breast.clean,col=rainbow(length(rownames(TRA.KLK.breast.clean))),main="Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",cex.axis=0.8)
+dev.off()
+
 ```
 
 
