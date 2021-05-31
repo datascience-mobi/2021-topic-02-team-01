@@ -761,6 +761,10 @@ pheatmap(t(TRA.KLK.rawdata.clean),
          treeheight_col = 20,
          ColSideColors)
 dev.off()
+
+#order KLKs alphabetically
+TRA.KLK.rawdata.clean = data.frame(t(TRA.KLK.rawdata.clean[order(colnames(TRA.KLK.rawdata.clean)), ]))
+TRA.KLK.rawdata.clean
 ```
 
 
@@ -804,7 +808,7 @@ pheatmap(t(TRA.KLK.breast),
          fontsize_col = 7)
 dev.off()
 
-#order dataframe columns alphabetically
+#order dataframe rows, columns alphabetically
 TRA.KLK.breast.clean = TRA.KLK.breast.clean[order(substr(rownames(TRA.KLK.breast.clean), 19, 22))
   ,order(colnames(TRA.KLK.breast.clean))]
 TRA.KLK.breast.clean
