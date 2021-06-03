@@ -677,7 +677,6 @@ Overview of gene expression:
 The gene expression values are depicted in a logarithmic scale with base 2. This means, that a increase in gene expression by the amount of one unit corresponds with an increase by the factor 2. 
 ```{r Overview and Histogram rawdata breast}
 gene.summary <- function(x){
-  round(apply(x, 2, summary))
  round(apply(x, 2, summary), digits = 2)
 }
 gene.summary(rawdataExprs)
@@ -993,6 +992,7 @@ annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.br
 annotation.hmap.breast$TRA_or_NON  <- TRAorNON
 colnames(annotation.hmap.breast)[2] <- "TRA or not"
 
+# 3. To increase visibility, we will cut off the GSM number for the patient names
 all.KLK.breast.clean.noGSM <- all.KLK.breast.clean
 #rownames(all.KLK.breast.clean.noGSM) <- sub("...........", "", rownames(all.KLK.breast.clean)) 
 #There seems to be the problem, that the sample names cant be shortened or else Tum016_Her2 would appear twice, which is not possible
