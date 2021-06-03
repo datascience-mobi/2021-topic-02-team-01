@@ -677,11 +677,13 @@ Overview of gene expression:
 The gene expression values are depicted in a logarithmic scale with base 2. This means, that a increase in gene expression by the amount of one unit corresponds with an increase by the factor 2. 
 ```{r}
 gene.summary <- function(x){
-  round(apply(x, 2, summary))
+ round(apply(x, 2, summary), digits = 2)
 }
 gene.summary(rawdataExprs)
+gene.summary(breastExprs)
+gene.summary(lungExprs)
 ```
-We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median is the same value for all samples.This is due to the fact, that we performed vsn normalization.
+We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
 
 
 Ioslating all KLK genes from each dataset 
@@ -800,6 +802,7 @@ TRUEorFALSe <- colnames(all.KLK.rawdata.clean) %in% colnames(TRA.KLK.rawdata.cle
 TRAorNON <- ifelse(TRUEorFALSe == TRUE, "TRA", "Non-TRA")
 annotation.hmap.rawdata$TRA_or_NON  <- TRAorNON
 
+
 # call the annotated Heatmap
 setwd(here("Plots/Plots_raw_breast"))
 pdf("all_KLK_Heatmap_rawdata.pdf")
@@ -810,7 +813,7 @@ pheatmap(t(all.KLK.rawdata.clean),
          cellheight = 5.5,
          treeheight_col = 10,
          fontsize_row = 8,
-         cutree_rows = 2,
+         cutree_rows = 2
 )
 dev.off()
 
@@ -887,23 +890,10 @@ dim(TRA.KLK.breast.clean)
 length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
 TRA.KLK.breast.clean
 
-#heatmap with duplicates
-setwd(here("Plots/Plots_breast"))
-pdf("KLK_TRAs_Heatmap_breast_wid.pdf")
-pheatmap(TRA.KLK.breast,
-         main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
-         cellwidth = 15,
-         cellheight = 8,
-         treeheight_col = 20,
-         fontsize_row = 8,
-         fontsize_col = 7)
-dev.off()
-
-
 #heatmap withOUT duplicates
 setwd(here("Plots/Plots_breast"))
 pdf("KLK_TRAs_Heatmap_breast_noid.pdf")
-pheatmap(TRA.KLK.breast.clean,
+pheatmap(t(TRA.KLK.breast.clean),
          main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
          cellwidth = 15,
          cellheight = 8,
@@ -944,17 +934,30 @@ annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.br
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 annotation.hmap.breast$TRA_or_NON  <- TRAorNON
 
+# 3. To increase visibility, we will cut off the GSM number for the patient names
+all.KLK.breast.clean.noGSM <- all.KLK.breast.clean
+#rownames(all.KLK.breast.clean.noGSM) <- sub("...........", "", rownames(all.KLK.breast.clean)) 
+#There seems to be the problem, that the sample names cant be shortened or else Tum016_Her2 would appear twice, which is not possible
+#However these are two different samples, which where taken out of the same tumor, hence the different GSM number
+#The different of these samples is their replication protein repA for GSM1588991 and repB for GSM1588992
+#Here we will just shorten the name by 2 characters less, so we can differentiate between those two 
+rownames(all.KLK.breast.clean.noGSM)[1:8] <- sub("...........", "", rownames(all.KLK.breast.clean)[1:8])
+rownames(all.KLK.breast.clean.noGSM)[9:10] <- sub(".........", "", rownames(all.KLK.breast.clean)[9:10])
+rownames(all.KLK.breast.clean.noGSM)[11:20] <- sub("...........", "", rownames(all.KLK.breast.clean)[11:20])
+
+ 
 # call the annotated Heatmap
 setwd(here("Plots/Plots_breast"))
 pdf("all_KLK_Heatmap_breast.pdf")
-pheatmap(t(all.KLK.breast.clean),
+pheatmap(t(all.KLK.breast.clean.noGSM),
          main = "Expression values of all KLKs GSE27830 (Nagel et al. 2012)",
          annotation_row = annotation.hmap.breast,
          cellwidth = 14,
-         cellheight = 4.5,
+         cellheight = 5.3,
          treeheight_col = 10,
          fontsize_row = 8,
          cutree_rows = 2,
+         fontsize_row = 2
 )
 dev.off()
 
