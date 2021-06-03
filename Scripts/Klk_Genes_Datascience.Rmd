@@ -864,7 +864,7 @@ hist(TRA.KLK.rawdata.mean, breaks = seq(6.1, 7.3, by= 0.05))
 
 
 
-# 3.2 Breast cancer GSE65216
+# 3.2 Breast cancer GSE65216 (Maire et al. 2013)
 
 ##Isolating TRAs from the breast cancer dataset
 ```{r, Isolating KLK TRAs breast + Heatmaps}
@@ -963,7 +963,7 @@ samples.annotation.breast[ph.ind.TNBC,1] <- "TNBC"
 setwd(here("Plots/Plots_breast"))
 pdf("all_KLK_Heatmap_breast.pdf")
 pheatmap(t(all.KLK.breast.clean.noGSM),
-         main = "Expression values of all KLKs GSE27830 (Nagel et al. 2012)",
+         main = "Expression values of all KLKs GSE65216 (Maire et al. 2013)",
          annotation_row = annotation.hmap.breast,
          annotation_col = samples.annotation.breast,
          cellwidth = 12.7,
@@ -987,7 +987,7 @@ dev.off()
 ```
 
 
-## 3.3 Lung cancer GSE149507
+## 3.3 Lung cancer GSE149507 (Cai et al. 2021)
 
 ###Isolating TRAs from lung cancer dataset
 ```{r, Isolating KLK TRAs lung + Heatmaps}
@@ -1070,7 +1070,7 @@ samples.annotation.lung[ph.ind.cancer,1] <- "cancer"
 setwd(here("Plots/Plots_lung"))
 pdf("all_KLK_Heatmap_lung.pdf")
 pheatmap(t(all.KLK.lung.clean.noGSM),
-         main = "Expression values of all KLKs GSE27830 (Nagel et al. 2012)",
+         main = "Expression values of all KLKs GSE149507 (Cai et al. 2021)",
          annotation_row = annotation.hmap.lung,
          annotation_col = samples.annotation.lung,
          cellwidth = 20.6,
