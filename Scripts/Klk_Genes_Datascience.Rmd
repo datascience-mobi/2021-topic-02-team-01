@@ -799,9 +799,9 @@ annotation.hmap.rawdata  <- data.frame(cluster = ifelse(test = annotation.hmap.r
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 TRUEorFALSe <- colnames(all.KLK.rawdata.clean) %in% colnames(TRA.KLK.rawdata.clean)
-TRAorNON <- ifelse(TRUEorFALSe == TRUE, "TRA", "Non-TRA")
+TRAorNON <- ifelse(TRUEorFALSe == TRUE, "TRA", "non-TRA")
 annotation.hmap.rawdata$TRA_or_NON  <- TRAorNON
-
+colnames(annotation.hmap.rawdata)[2] <- "TRA or not"
 
 # call the annotated Heatmap
 setwd(here("Plots/Plots_raw_breast"))
@@ -812,7 +812,7 @@ pheatmap(t(all.KLK.rawdata.clean),
          cellwidth = 27,
          cellheight = 5.5,
          treeheight_col = 10,
-         fontsize_row = 8,
+         fontsize_row = 6,
          cutree_rows = 2
 )
 dev.off()
@@ -933,6 +933,7 @@ annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.br
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 annotation.hmap.breast$TRA_or_NON  <- TRAorNON
+colnames(annotation.hmap.breast)[2] <- "TRA or not"
 
 # 3. To increase visibility, we will cut off the GSM number for the patient names
 all.KLK.breast.clean.noGSM <- all.KLK.breast.clean
@@ -945,22 +946,33 @@ rownames(all.KLK.breast.clean.noGSM)[1:8] <- sub("...........", "", rownames(all
 rownames(all.KLK.breast.clean.noGSM)[9:10] <- sub(".........", "", rownames(all.KLK.breast.clean)[9:10])
 rownames(all.KLK.breast.clean.noGSM)[11:20] <- sub("...........", "", rownames(all.KLK.breast.clean)[11:20])
 
- 
+# annotation for the samples
+samples.annotation.breast <- data.frame(matrix(ncol = 1, nrow = nrow(all.KLK.breast.clean.noGSM)))
+colnames(samples.annotation.breast) <- "tumor type"                                 
+rownames(samples.annotation.breast) <- rownames(all.KLK.breast.clean.noGSM)
+ph.ind.Her2 = grep(pattern = "Her2", rownames(all.KLK.breast.clean.noGSM))
+ph.ind.LumA = grep(pattern = "LumA", rownames(all.KLK.breast.clean.noGSM))
+ph.ind.LumB = grep(pattern = "LumB", rownames(all.KLK.breast.clean.noGSM))
+ph.ind.TNBC = grep(pattern = "TNBC", rownames(all.KLK.breast.clean.noGSM))
+samples.annotation.breast[ph.ind.Her2,1] <- "Her2"
+samples.annotation.breast[ph.ind.LumA,1] <- "LumA"
+samples.annotation.breast[ph.ind.LumB,1] <- "LumB"
+samples.annotation.breast[ph.ind.TNBC,1] <- "TNBC"
+
 # call the annotated Heatmap
 setwd(here("Plots/Plots_breast"))
 pdf("all_KLK_Heatmap_breast.pdf")
 pheatmap(t(all.KLK.breast.clean.noGSM),
          main = "Expression values of all KLKs GSE27830 (Nagel et al. 2012)",
          annotation_row = annotation.hmap.breast,
-         cellwidth = 14,
-         cellheight = 5.3,
+         annotation_col = samples.annotation.breast,
+         cellwidth = 12.7,
+         cellheight = 5,
          treeheight_col = 10,
-         fontsize_row = 8,
-         cutree_rows = 2,
-         fontsize_row = 2
+         fontsize_row = 6,
+         cutree_rows = 2
 )
 dev.off()
-
 ```
 
 ## Visualization of gene expression
@@ -991,18 +1003,6 @@ length(which(cor.TRA.KLK.lung == 1)) #14 identical columns <- why does it always
 TRA.KLK.lung <- data.frame(TRA.KLK.lung)
 TRA.KLK.lung.clean <- genes.cleanup(df.TRA.KLK.lung)
 length(which(cor.genes(TRA.KLK.lung.clean) == 1))
-
-#heatmap with duplicates
-setwd(here("Plots/Plots_lung"))
-pdf("KLK_TRAs_Heatmap_lung_wid.pdf")
-pheatmap(TRA.KLK.lung,
-         main = "Expression values of KLK TRAs GSE149507 (Cai et al. 2021)",
-         cellwidth = 20,
-         cellheight = 8,
-         treeheight_col = 20,
-         fontsize_row = 7,
-         fontsize_col = 7)
-dev.off()
 
 #order dataframe rows, columns alphabetically
 TRA.KLK.lung.clean = t(TRA.KLK.lung.clean[,order.hand.TRA])
@@ -1050,17 +1050,33 @@ annotation.hmap.lung  <- data.frame(cluster = ifelse(test = annotation.hmap.lung
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 annotation.hmap.lung$TRA_or_NON  <- TRAorNON
+colnames(annotation.hmap.lung)[2] <- "TRA or not"
+
+# 3. To increase visibility, we will cut off the GSM number for the patient names
+all.KLK.lung.clean.noGSM <- all.KLK.lung.clean
+
+rownames(all.KLK.lung.clean.noGSM)[1:12] <- sub("...........", "", rownames(all.KLK.lung.clean)[1:12])
+
+# annotation for the samples
+samples.annotation.lung <- data.frame(matrix(ncol = 1, nrow = nrow(all.KLK.lung.clean.noGSM)))
+colnames(samples.annotation.lung) <- "tumor type"                                 
+rownames(samples.annotation.lung) <- rownames(all.KLK.lung.clean.noGSM)
+ph.ind.normal = grep(pattern = "n", rownames(all.KLK.lung.clean.noGSM))
+ph.ind.cancer = grep(pattern = "ca", rownames(all.KLK.lung.clean.noGSM))
+samples.annotation.lung[ph.ind.normal,1] <- "normal"
+samples.annotation.lung[ph.ind.cancer,1] <- "cancer"
 
 # call the annotated Heatmap
 setwd(here("Plots/Plots_lung"))
 pdf("all_KLK_Heatmap_lung.pdf")
-pheatmap(t(all.KLK.lung.clean),
+pheatmap(t(all.KLK.lung.clean.noGSM),
          main = "Expression values of all KLKs GSE27830 (Nagel et al. 2012)",
          annotation_row = annotation.hmap.lung,
-         cellwidth = 26,
-         cellheight = 4.5,
+         annotation_col = samples.annotation.lung,
+         cellwidth = 20.6,
+         cellheight = 5.3,
          treeheight_col = 10,
-         fontsize_row = 8,
+         fontsize_row = 6,
          cutree_rows = 2,
 )
 dev.off()
