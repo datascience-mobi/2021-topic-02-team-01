@@ -1170,6 +1170,7 @@ pdf("Histogram_gene_expression_lines.pdf")
 hist(rawdataExprs, 
      main="Gene expression GSE149507 (Cai et al. 2021)",
      xlab="Expression value",
+     xlim = c(4,15),
      breaks=40
      )
 abline(v = 6.627027, col= "black", lwd = 2)#median all genes
