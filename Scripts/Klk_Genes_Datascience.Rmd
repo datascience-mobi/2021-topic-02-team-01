@@ -1097,9 +1097,9 @@ dev.off()
 
 ```
 
-
+## K means
 ``` {r}
-##determining the optimal number of k clusters, preparing wssplot
+#determining the optimal number of k clusters, preparing wssplot
 wssplot <- function(breastExprs, nc=15, seed=1234)
 {
   wss <- (nrow(breastExprs)-1)*sum(apply(breastExprs,2,var))
@@ -1114,4 +1114,12 @@ wssplot(breastExprs)
 
 #apparently optimal Number of clusters is 2
 # ist jetzt nicht squared aber muss ja wenn dann erst bei kmeans plot
+
+#visualization, !!! caution package "factoextra" required
+fviz_cluster(results.km, data=rawdataExprs, 
+             palette =c("#2E9FDF","#00AFBB"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
 
