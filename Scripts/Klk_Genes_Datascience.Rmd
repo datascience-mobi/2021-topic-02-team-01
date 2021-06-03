@@ -25,6 +25,8 @@ library(pheatmap)
 
 library(dendextend) #install.package(dendextend)
 
+library(factoextra)
+
 ###here package 
 library(here)
 #set the top level folder with here
