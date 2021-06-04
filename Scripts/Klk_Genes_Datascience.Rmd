@@ -693,6 +693,8 @@ mean(unlist(all.KLK.rawdata.clean))   #Mean all KLKs: 5.646926
 
 median(unlist(TRA.KLK.rawdata.clean)) #Median TRA KLKs: 5.408611
 mean(unlist(TRA.KLK.rawdata.clean))   #Mean TRA KLKs: 5.479232
+###### The dataframe TRA.KLK.rawdata.clean is called here before it is even defined, we need to move the histograms chronological after heatmaps, if you want to call the command
+###### median(unlist(TRA.KLK.rawdata.clean))
 
 
 
