@@ -1383,5 +1383,34 @@ fviz_cluster(results.km, data=tf.KLK.rawdata.clean,
              ggtheme = theme_bw()
 )
 
-
 #Cluster4: KLK8.8 , KLK1.3 , KLK1 , KLK4.4 
+
+#elbow not clearly visible, trying 3 & 5 centers
+#3 
+
+results.km <- kmeans(scale(tf.KLK.rawdata.clean),3, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.KLK.rawdata.clean, 
+             palette =c("#2E9FDF", "#FC4E07", "FF3399"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#here cluster 2 shows overlap with cluster 3, and also combines points that are really far away(in dim2)
+#now 5:
+
+results.km <- kmeans(scale(tf.KLK.rawdata.clean),5, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.KLK.rawdata.clean, 
+             palette =c("#2E9FDF", "#FC4E07", "#FF66FF", "#0099FF", "#99CCFF"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+#additional little cluster in direction of of dim2
+#4 centers seems good
+
+
