@@ -563,6 +563,9 @@ Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),6] <- "t
 Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),6] <- "tra.mouse.4301"
 Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),6] <- "tra.human.gtex"
 
+# Remove identical entries 
+new.union <- rownames(unique(Union.TRA[1:4]))
+Union.TRA <- Union.TRA[new.union,] 
 
 ### all human KLK genes across all TRA data sets
 
@@ -700,21 +703,32 @@ all.KLK.lung = lungExprs[ind.all.human,]
 
 #TRA: 
 ## For this we use the human TRA data set (Uhlén et al. 2015) <- right one?
-TRA.symbol=tra.human[,3] # lists all TRAs names for humans
-
-KLK.genes.TRA.human = TRA.symbol[ind.human] 
-
-ind.KLK.tra.human =which(as.character(symbol) %in% KLK.genes.TRA.human) #ind.KLK.tra.human gives respective column 
-
+#TRA.symbol=tra.human[,3] # lists all TRAs names for humans
+#KLK.genes.TRA.human = TRA.symbol[ind.human] 
+#ind.KLK.tra.human =which(as.character(symbol) %in% KLK.genes.TRA.human) 
+#ind.KLK.tra.human gives respective column 
 ## For first breast cancer data set
-TRA.KLK.rawdata = rawdataExprs[ind.KLK.tra.human,]
+##TRA.KLK.rawdata = rawdataExprs[ind.KLK.tra.human,]
 
 ## For breast GSE
-TRA.KLK.breast = breastExprs[ind.KLK.tra.human,]
+#TRA.KLK.breast = breastExprs[ind.KLK.tra.human,]
 
 ## For lung GSE 
-TRA.KLK.lung = lungExprs[ind.KLK.tra.human,]
+#TRA.KLK.lung = lungExprs[ind.KLK.tra.human,]
 
+
+
+ind.KLK.all.human.tra <- which(as.character(names(symbol)) %in% 
+as.character(unlist(tra.all.human[1])))
+
+## For first breast cancer data set
+TRA.KLK.rawdata = rawdataExprs[ind.KLK.all.human.tra,]
+
+## For breast GSE
+TRA.KLK.breast = breastExprs[ind.KLK.all.human.tra,]
+
+## For lung GSE 
+TRA.KLK.lung = lungExprs[ind.KLK.all.human.tra,]
 ```
 
 ## 3.1 breast cancer GSE27830 (Nagel et al. 2012)
@@ -755,7 +769,7 @@ pdf("KLK_TRAs_Heatmap_rawdata_noid.pdf")
 pheatmap(t(TRA.KLK.rawdata.clean),
          main = "Expression values of KLK TRAs GSE27830 (Nagel et al. 2012)",
          cellwidth = 30,
-         cellheight = 10,
+         cellheight = 5,
          treeheight_col = 20,
          fontsize_row = 8)
 dev.off()
@@ -967,7 +981,7 @@ pdf("KLK_TRAs_Heatmap_breast_noid.pdf")
 pheatmap(t(TRA.KLK.breast.clean),
          main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
          cellwidth = 15,
-         cellheight = 8,
+         cellheight = 6,
          treeheight_col = 20,
          fontsize_row = 8,
          fontsize_col = 7)
@@ -999,7 +1013,7 @@ hclust.genes.breast <- hclust(dist(t(all.KLK.breast.clean)), method = "complete"
 as.dendrogram(hclust.genes.breast) %>%
   plot(horiz = TRUE)
 # Lets try it with 2 clusters in the heatmap, just for visualization purposes
-annotation.hmap.breast <- cutree(tree = as.dendrogram(hclust.genes.breast), k = 2)
+annotation.hmap.breast <- cutree(tree = as.dendrogram(hclust.genes.breast), k = 3)
 annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.breast == 1, yes = "cluster 1", no = "cluster 2"))
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
@@ -1130,7 +1144,7 @@ rownames(all.KLK.lung.clean.noGSM)[1:12] <- sub("...........", "", rownames(all.
 
 # annotation for the samples
 samples.annotation.lung <- data.frame(matrix(ncol = 1, nrow = nrow(all.KLK.lung.clean.noGSM)))
-colnames(samples.annotation.lung) <- "tumor type"                                 
+colnames(samples.annotation.lung) <- "sample"                                 
 rownames(samples.annotation.lung) <- rownames(all.KLK.lung.clean.noGSM)
 ph.ind.normal = grep(pattern = "n", rownames(all.KLK.lung.clean.noGSM))
 ph.ind.cancer = grep(pattern = "ca", rownames(all.KLK.lung.clean.noGSM))
