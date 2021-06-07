@@ -677,42 +677,6 @@ head(lungExprs)
 
 Overview of gene expression:
 The gene expression values are depicted in a logarithmic scale with base 2. This means, that a increase in gene expression by the amount of one unit corresponds with an increase by the factor 2. 
-```{r Overview and Histogram rawdata breast}
-gene.summary <- function(x){
- round(apply(x, 2, summary), digits = 2)
-}
-gene.summary(rawdataExprs)
-
-#Histograms of genes expression
-#rawdataExprs i snot cleaned of identical values
-median(rawdataExprs)  #Median all genes: 6.627027
-mean(rawdataExprs)    #Mean all genes: 6.841523
-
-median(unlist(all.KLK.rawdata.clean)) #Median all KLKs: 5.456886
-mean(unlist(all.KLK.rawdata.clean))   #Mean all KLKs: 5.646926
-
-median(unlist(TRA.KLK.rawdata.clean)) #Median TRA KLKs: 5.408611
-mean(unlist(TRA.KLK.rawdata.clean))   #Mean TRA KLKs: 5.479232
-###### The dataframe TRA.KLK.rawdata.clean is called here before it is even defined, we need to move the histograms chronological after heatmaps, if you want to call the command
-###### median(unlist(TRA.KLK.rawdata.clean))
-
-
-
-setwd(here("Plots/Plots_raw_breast"))
-pdf("Histogram_gene_expression_lines.pdf")
-hist(rawdataExprs, 
-     main="Gene expression GSE27830 (Nagel et al. 2021)",
-     xlab="Expression value",
-     breaks=40
-     )
-abline(v = 6.627027, col= "black", lwd = 2)#median all genes
-text(2, 1, "Median all genes", pos=1)
-abline(v = 5.456886, col= "blue", lwd = 2) #median all KLKs
-abline(v = 5.408611, col= "red", lwd = 2) #median TRA KLKs
-#Want to annotate what the lines are representing, but i cant 
-dev.off()
-```
-We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
 
 
 Ioslating all KLK genes from each dataset 
@@ -851,6 +815,43 @@ dev.off()
 Further reason for removing the identicals
 Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
 
+```{r Overview and Histogram rawdata breast}
+gene.summary <- function(x){
+ round(apply(x, 2, summary), digits = 2)
+}
+gene.summary(rawdataExprs)
+
+#Histograms of genes expression
+#rawdataExprs i snot cleaned of identical values
+median(rawdataExprs)  #Median all genes: 6.627027
+mean(rawdataExprs) #Mean all genes: 6.841523
+
+median(unlist(all.KLK.rawdata.clean)) #Median all KLKs: 5.456886
+mean(unlist(all.KLK.rawdata.clean))   #Mean all KLKs: 5.646926
+
+median(unlist(TRA.KLK.rawdata.clean)) #Median TRA KLKs: 5.408611
+mean(unlist(TRA.KLK.rawdata.clean))   #Mean TRA KLKs: 5.479232
+###### The dataframe TRA.KLK.rawdata.clean is called here before it is even defined, we need to move the histograms chronological after heatmaps, if you want to call the command
+###### median(unlist(TRA.KLK.rawdata.clean))
+
+
+
+setwd(here("Plots/Plots_raw_breast"))
+pdf("Histogram_gene_expression_lines.pdf")
+hist(rawdataExprs, 
+     main="Gene expression GSE27830 (Nagel et al. 2021)",
+     xlab="Expression value",
+     breaks=40
+     )
+abline(v = 6.627027, col= "black", lwd = 2)#median all genes
+text(2, 1, "Median all genes", pos=1)
+abline(v = 5.456886, col= "blue", lwd = 2) #median all KLKs
+abline(v = 5.408611, col= "red", lwd = 2) #median TRA KLKs
+#Want to annotate what the lines are representing, but i cant 
+dev.off()
+```
+We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
+
 ## Visualization of gene expression
 Boxplot, Histograms
 ```{r Boxplot}
@@ -865,7 +866,6 @@ setwd(here("Plots/Plots_raw_breast"))
 pdf("KLK_TRAs_boxplot_all_rawdata.pdf")
 boxplot(t(TRA.KLK.rawdata.clean),col=rainbow(length(rownames(TRA.KLK.rawdata.clean))),main="Gene expression of KLK TRAs GSE27830 (Nagel et al. 2012)",cex.axis=0.8, sub = "Identical genes removed")
 dev.off()
-
 
 ```
 
@@ -882,6 +882,16 @@ Assumptions of t-tests:
 3. No extreme outliers 
 ```{r}
 #Hypothesis testing with t-tests
+#according to the histogram previosly created, KLks are not normally distributed
+
+#QQ Plot
+setwd(here("Plots/Plots_raw_breast"))
+pdf("QQPlot_rawdata.pdf")
+qqnorm(rawdataExprs, main = "QQ-Plot GSE27830");qqline(rawdataExprs)
+dev.off()
+#not a normal distribution!!! -> Wilcoxon test 
+
+
 
 #t-test KLK1
 #H0 there is no significant difference between KLK1 and all other TRAs
@@ -890,8 +900,8 @@ Assumptions of t-tests:
 
 ##the combinations are two sided t-tests
 combinations <- combn(ncol(TRA.KLK.rawdata.clean),2)
-t.data <- adply(combinations, 2, function(x) {
-  test <- t.test(TRA.KLK.rawdata.clean[ ,x[1]],
+w.data <- adply(combinations, 2, function(x) {
+  test <- wilcox.test(TRA.KLK.rawdata.clean[ ,x[1]],
                  TRA.KLK.rawdata.clean[ ,x[2]],
                  alternative = "greater")
   
