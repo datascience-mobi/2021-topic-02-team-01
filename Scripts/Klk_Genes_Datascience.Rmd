@@ -23,9 +23,11 @@ library(ggplot2)
 
 library(pheatmap)
 
-library(dendextend) #install.packages(dendextend)
+library(dendextend) #install.packages("dendextend")
 
-library(factoextra) #install.packages(factoextra)
+library(factoextra) #install.packages("factoextra")
+
+library(gtools) #install.packages("gtools")
 
 ###here package 
 library(here)
@@ -229,7 +231,7 @@ dev.off()
 breastExprs = exprs(breast.vsnrma) ####IMPORTANT
 
 pdf("breast_dflog_afnorm.pdf")
-plot(density(breastExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "GSE65216 (Maire et al. 2013) density function after normalization")
+plot(density(breastExprs[,1]), type="n", xlab="log Intensity", main = "GSE65216 (Maire et al. 2013) density function after normalization")
 for(i in 1:ncol(breastExprs)){
   lines(density(breastExprs[,i]), col=rainbow(150)[i])
 }
@@ -368,7 +370,7 @@ dev.off()
 lungExprs = exprs(lung.vsnrma) ####IMPORTANT
 
 pdf("lung_df_afnorm.pdf")
-plot(density(lungExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "GSE149507 (Cai et al. 2021) density function after normalization")
+plot(density(lungExprs[,1]), type="n", xlab="log Intensity",main = "GSE149507 (Cai et al. 2021) density function after normalization")
 for(i in 1:ncol(lungExprs)){
   lines(density(lungExprs[,i]), col=rainbow(150)[i])
 }
@@ -869,17 +871,56 @@ We can see here, that the lowest value is about 5 while the highest gene express
 ## Visualization of gene expression
 Boxplot, Histograms
 ```{r Boxplot}
-#order KLKs alphabetically
-order.hand.TRA <- c(1, 14,  2,  5, 7, 8, 9, 10, 15, 16, 17, 18, 19, 21, 22, 23, 25, 3, 4, 6, 11, 12, 13, 20, 24, 26, 27)
+# Use mixedsort function from the gtool package to sort the KLKs correctly
+order.rawdata <- mixedsort(colnames(all.KLK.rawdata.clean))
+all.KLK.rawdata.clean <- t(all.KLK.lung.clean[,order.rawdata]) #sorted all.KLK.breast.clean
 
-TRA.KLK.rawdata.clean = data.frame(TRA.KLK.rawdata.clean)
-#data.frame(TRA.KLK.rawdata.clean[,order.hand.TRA])
 
 #Boxplot:
 setwd(here("Plots/Plots_raw_breast"))
-pdf("KLK_TRAs_boxplot_all_rawdata.pdf")
-boxplot(t(TRA.KLK.rawdata.clean),col=rainbow(length(rownames(TRA.KLK.rawdata.clean))),main="Gene expression of KLK TRAs GSE27830 (Nagel et al. 2012)",cex.axis=0.8, sub = "Identical genes removed")
+pdf("all_KLK_boxplot_rawdata.pdf")
+boxplot(t(all.KLK.rawdata.clean),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
 dev.off()
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata1.pdf")
+boxplot(t(all.KLK.rawdata.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[1:24,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata2.pdf")
+boxplot(t(all.KLK.rawdata.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[25:48,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata3.pdf")
+boxplot(t(all.KLK.rawdata.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[49:73,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
 
 ```
 
@@ -1063,11 +1104,57 @@ dev.off()
 ## Visualization of gene expression
 Boxplots 
 ```{r}
+# Use mixedsort function from the gtool package to sort the KLKs correctly
+order.breast <- mixedsort(colnames(all.KLK.breast.clean))
+all.KLK.breast.clean <- t(all.KLK.breast.clean[,order.breast]) #sorted all.KLK.breast.clean
+
 #boxplots 
 setwd(here("Plots/Plots_breast"))
-pdf("KLK_TRAs_boxplot_all_breast.pdf")
-boxplot(t(TRA.KLK.breast.clean),col=rainbow(length(rownames(TRA.KLK.breast.clean))),main="Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",cex.axis=0.8)
+pdf("all_KLK_boxplot_breast.pdf")
+boxplot(t(all.KLK.breast.clean),
+        col=rainbow(length(rownames(all.KLK.breast.clean))),
+        main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
 dev.off()
+
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_boxplot_breast1.pdf")
+boxplot(t(all.KLK.breast.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.breast.clean[1:24,]))),main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_boxplot_breast2.pdf")
+boxplot(t(all.KLK.breast.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.breast.clean[25:48,]))),main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_boxplot_breast3.pdf")
+boxplot(t(all.KLK.breast.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.breast.clean[49:73,]))),main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+dev.off()
+
 
 ```
 
@@ -1172,25 +1259,11 @@ dev.off()
 Boxplots 
 ```{r}
 #order dataframe rows, columns alphabetically
-TRA.KLK.lung.clean = t(TRA.KLK.lung.clean[,order.hand.TRA])
+order.lung <- mixedsort(colnames(all.KLK.lung.clean))
+all.KLK.lung.clean <- t(all.KLK.lung.clean[,order.lung]) #sorted all.KLK.lung.clean
 
-#boxplots 
-setwd(here("Plots/Plots_lung"))
-pdf("KLK_TRAs_boxplot_all_lung.pdf")
-boxplot(t(TRA.KLK.lung.clean),col=rainbow(length(rownames(TRA.KLK.lung.clean))),main="Expression values of KLK TRAs GSE149507 (Cai et al. 2021)",cex.axis=0.8)
-dev.off()
 
 #Histograms of genes expression
-#rawdataExprs is not cleaned of identical values
-median(lungExprs)  #Median all genes: 
-mean(lungExprs)    #Mean all genes: 
-
-median(unlist(all.KLK.lung.clean)) #Median all KLKs: 
-mean(unlist(all.KLK.lung.clean))   #Mean all KLKs: 
-
-median(unlist(TRA.KLK.lung.clean)) #Median TRA KLKs: 
-mean(unlist(TRA.KLK.lung.clean))   #Mean TRA KLKs: 
-
 setwd(here("Plots/Plots_lung"))
 pdf("Histogram_gene_expression_lines.pdf")
 hist(rawdataExprs, 
@@ -1202,6 +1275,56 @@ hist(rawdataExprs,
 abline(v = median(lungExprs), col= "black", lwd = 2)#median all genes
 abline(v = median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2) #median all KLKs
 abline(v = median(unlist(TRA.KLK.lung.clean)), col= "red", lwd = 2) #median TRA KLKs
+dev.off()
+```
+
+
+```{r Boxplots}
+#boxplots 
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung.pdf")
+boxplot(t(all.KLK.lung.clean),
+        col=rainbow(length(rownames(all.KLK.lung.clean))),
+        main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung1.pdf")
+boxplot(t(all.KLK.lung.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[1:24,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung2.pdf")
+boxplot(t(all.KLK.lung.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[25:48,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung3.pdf")
+boxplot(t(all.KLK.lung.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[49:73,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
 dev.off()
 ```
 
