@@ -1155,7 +1155,7 @@ boxplot(t(TRA.KLK.lung.clean),col=rainbow(length(rownames(TRA.KLK.lung.clean))),
 dev.off()
 
 #Histograms of genes expression
-#rawdataExprs i snot cleaned of identical values
+#rawdataExprs is not cleaned of identical values
 median(lungExprs)  #Median all genes: 
 mean(lungExprs)    #Mean all genes: 
 
@@ -1172,10 +1172,10 @@ hist(rawdataExprs,
      xlab="Expression value",
      breaks=40
      )
-abline(v = 6.627027, col= "black", lwd = 2)#median all genes
-abline(v = 5.456886, col= "blue", lwd = 2) #median all KLKs
-abline(v = 5.408611, col= "red", lwd = 2) #median TRA KLKs
-
+abline(v = median(lungExprs), col= "black", lwd = 2)#median all genes
+abline(v = median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2) #median all KLKs
+abline(v = median(unlist(TRA.KLK.lung.clean)), col= "red", lwd = 2) #median TRA KLKs
+dev.off()
 ```
 
 ## K means
