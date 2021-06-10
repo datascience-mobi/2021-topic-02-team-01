@@ -1329,11 +1329,11 @@ dev.off()
 ```
 
 ## K means
-``` {r K-means}
+``` {r K-means - rawdata breast}
 #determining the optimal number of k clusters, preparing wssplot
-wssplot <- function(breastExprs, nc=15, seed=1234)
+wssplot <- function(rawdataExprs, nc=15, seed=1234)
 {
-  wss <- (nrow(breastExprs)-1)*sum(apply(breastExprs,2,var))
+  wss <- (nrow(rawdataExprs)-1)*sum(apply(rawdataExprs,2,var))
   for(i in 2:nc){
     set.seed(seed)
     wss[i] <- sum(kmeans(rawdataExprs, centers = i)$withinss)}
@@ -1341,7 +1341,7 @@ wssplot <- function(breastExprs, nc=15, seed=1234)
 }
 
 #wssplot
-wssplot(breastExprs)
+wssplot(rawdataExprs)
 
 #apparently optimal Number of clusters is 2
 # ist jetzt nicht squared aber muss ja wenn dann erst bei kmeans plot
@@ -1412,5 +1412,136 @@ fviz_cluster(results.km, data=tf.KLK.rawdata.clean,
 )
 #additional little cluster in direction of of dim2
 #4 centers seems good
+```
+
+``` {r k-means for lung cancer dataset}
+#determining the optimal number of k clusters, preparing wssplot
+
+wssplot <- function(lungExprs, nc=15, seed=1234)
+{
+  wss <- (nrow(lungExprs)-1)*sum(apply(lungExprs,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(lungExprs, centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+  
+#wssplot
+wssplot(lungExprs)
+
+## bekomme code nicht zum laufen, Anmerkung für später: Anzahl cluster determinieren!!!
+#code für cluster lungexprs
+results.km <- kmeans(scale(lungExprs),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=lungExprs, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#k-means analysis fpr klks from lungcancer
+#transformieren
+tf.all.KLK.lung.clean = data.frame(t(all.KLK.lung.clean.noGSM))
+
+wssplot <- function(tf.all.KLK.lung.clean, nc=15, seed=1234)
+{
+  wss <- (nrow(tf.all.KLK.lung.clean)-1)*sum(apply(tf.all.KLK.lung.clean ,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(tf.all.KLK.lung.clean , centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+wssplot(tf.all.KLK.lung.clean)
+
+#approx ?? clusters
+
+results.km <- kmeans(scale(tf.all.KLK.lung.clean),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.all.KLK.lung.clean, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#text
+#text
+```
+
+``` {r k-means for breast cancer dataset}
+
+#determining the optimal number of k clusters, preparing wssplot
+
+wssplot <- function(breastExprs, nc=15, seed=1234)
+{
+  wss <- (nrow(breastExprs)-1)*sum(apply(breastExprs,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(breastExprs, centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+  
+#wssplot
+wssplot(breastExprs)
+
+## bekomme code nicht zum laufen, Anmerkung für später: Anzahl cluster determinieren!!!
+#code für cluster breastExprs
+
+results.km <- kmeans(scale(breastExprs),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=breastExprs, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+
+#k-means analysis fpr klks from breastcancer
+#transformieren
+
+tf.all.KLK.breast.clean = data.frame(t(all.KLK.breast.clean.noGSM))
+
+wssplot <- function(tf.all.KLK.breast.clean, nc=15, seed=1234)
+{
+  wss <- (nrow(tf.all.KLK.breast.clean)-1)*sum(apply(tf.all.KLK.breast.clean ,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(tf.all.KLK.breast.clean , centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+wssplot(tf.all.KLK.breast.clean)
+
+#approx ?? clusters
+
+results.km <- kmeans(scale(tf.all.KLK.breast.clean),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.all.KLK.breast.clean, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#später auskommentieren
+
+```
+
+
+
+
+
+
+
+
+
+# Ideen später: 
+#- einzelne PLots benennen und als Grid anordnen -> direkter Vergleich
+#- bei Klk plots einzelne gene anzeigen lassen, auch als grid (?)
 
 
