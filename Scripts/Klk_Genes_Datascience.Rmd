@@ -929,6 +929,43 @@ dev.off()
 ##Clustering
 
 ##PCA
+```{r PCA - rawdata breast}
+# run PCA on the KLK data frame
+# center and scale = TRUE ? does vsnrma not already do this?
+pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = TRUE)
+#call summary
+summary(pr.all.KLK.rawdata.clean)
+# goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
+# in the summary we can see that this is achieved by the 3rd pc
+# the variance of the pcs rapidly declines, there is only abot 5% variance for the 3rd pc
+
+# get graphical overview (not really needed though)
+
+screeplot(pr.all.KLK.rawdata.clean, type = "l", npcs = 12, main = "Screeplot of the first 10 PCs")
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+
+cumpro <- cumsum(pr.all.KLK.rawdata.clean$sdev^2 / sum(pr.all.KLK.rawdata.clean$sdev^2))
+plot(cumpro[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+abline(v = 3, col="blue", lty=5)
+abline(h = 0.95094 , col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC3"),
+       col=c("blue"), lty=5, cex=0.6)
+
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 95%
+# This seems to be a very low number of pcs, the others do not represent a lot of information
+
+# Plot the PCs
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,2], xlab="PC1 (77.3%)", ylab = "PC2 (13%)", main = "PC1 / PC2 - plot")
+plot(pr.all.KLK.rawdata.clean$x[,2],pr.all.KLK.rawdata.clean$x[,3], xlab="PC1 (13%)", ylab = "PC2 (4,8%)", main = "PC1 / PC2 - plot")
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,3], xlab="PC1 (77.3%)", ylab = "PC2 (4,8%)", main = "PC1 / PC2 - plot")
+
+# we see some sort of clustering
+
+
+```
+
 
 ##Hyposis testing
 1. Test whether KLK1 and KLK1.3 have a higher expression than other KLKs
