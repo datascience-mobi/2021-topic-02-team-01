@@ -29,6 +29,7 @@ library(factoextra) #install.packages("factoextra")
 
 library(gtools) #install.packages("gtools")
 
+library(tidyverse) #install.packages("tidyverse")
 ###here package 
 library(here)
 #set the top level folder with here
@@ -1330,28 +1331,35 @@ dev.off()
 
 ## K means
 ``` {r K-means - rawdata breast}
+
+rawdataExprs.nodupl = unique(rawdataExprs)
+
+
 #determining the optimal number of k clusters, preparing wssplot
-wssplot <- function(rawdataExprs, nc=15, seed=1234)
+wssplot.rawdata <- function(rawdataExprs.nodupl, nc=15, seed=1234)
 {
-  wss <- (nrow(rawdataExprs)-1)*sum(apply(rawdataExprs,2,var))
+  wss <- (nrow(rawdataExprs.nodupl)-1)*sum(apply(rawdataExprs.nodupl,2,var))
   for(i in 2:nc){
     set.seed(seed)
-    wss[i] <- sum(kmeans(rawdataExprs, centers = i)$withinss)}
+    wss[i] <- sum(kmeans(rawdataExprs.nodupl, centers = i)$withinss)}
   plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 }
 
 #wssplot
-wssplot(rawdataExprs)
+wssplot.rawdata(rawdataExprs.nodupl)
 
 #apparently optimal Number of clusters is 2
 # ist jetzt nicht squared aber muss ja wenn dann erst bei kmeans plot
 
 #visualization, !!! caution package "factoextra" required
-fviz_cluster(results.km, data=rawdataExprs, 
+results.km <- kmeans(scale(rawdataExprs.nodupl),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=rawdataExprs.nodupl, 
              palette =c("#2E9FDF","#00AFBB"), 
              geom = "point", 
              ellipse.type = "convex",
-             ggtheme = theme_bw()
+             ggtheme = theme_bw(),
 )
 
 #für klk aus breastrawdata 
@@ -1370,6 +1378,7 @@ wssplot <- function(tf.KLK.rawdata.clean, nc=15, seed=1234)
   plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 }
 wssplot(tf.KLK.rawdata.clean)
+
 
 #approx 4 clusters
 
