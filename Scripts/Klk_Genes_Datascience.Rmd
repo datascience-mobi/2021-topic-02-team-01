@@ -23,10 +23,13 @@ library(ggplot2)
 
 library(pheatmap)
 
-library(dendextend) #install.packages(dendextend)
+library(dendextend) #install.packages("dendextend")
 
-library(factoextra) #install.packages(factoextra)
+library(factoextra) #install.packages("factoextra")
 
+library(gtools) #install.packages("gtools")
+
+library(tidyverse) #install.packages("tidyverse")
 ###here package 
 library(here)
 #set the top level folder with here
@@ -229,7 +232,7 @@ dev.off()
 breastExprs = exprs(breast.vsnrma) ####IMPORTANT
 
 pdf("breast_dflog_afnorm.pdf")
-plot(density(breastExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "GSE65216 (Maire et al. 2013) density function after normalization")
+plot(density(breastExprs[,1]), type="n", xlab="log Intensity", main = "GSE65216 (Maire et al. 2013) density function after normalization")
 for(i in 1:ncol(breastExprs)){
   lines(density(breastExprs[,i]), col=rainbow(150)[i])
 }
@@ -368,7 +371,7 @@ dev.off()
 lungExprs = exprs(lung.vsnrma) ####IMPORTANT
 
 pdf("lung_df_afnorm.pdf")
-plot(density(lungExprs[,1]), type="n", xlab="log Intensity", ylim=c(0,1), main = "GSE149507 (Cai et al. 2021) density function after normalization")
+plot(density(lungExprs[,1]), type="n", xlab="log Intensity",main = "GSE149507 (Cai et al. 2021) density function after normalization")
 for(i in 1:ncol(lungExprs)){
   lines(density(lungExprs[,i]), col=rainbow(150)[i])
 }
@@ -869,17 +872,56 @@ We can see here, that the lowest value is about 5 while the highest gene express
 ## Visualization of gene expression
 Boxplot, Histograms
 ```{r Boxplot}
-#order KLKs alphabetically
-order.hand.TRA <- c(1, 14,  2,  5, 7, 8, 9, 10, 15, 16, 17, 18, 19, 21, 22, 23, 25, 3, 4, 6, 11, 12, 13, 20, 24, 26, 27)
+# Use mixedsort function from the gtool package to sort the KLKs correctly
+order.rawdata <- mixedsort(colnames(all.KLK.rawdata.clean))
+all.KLK.rawdata.clean <- t(all.KLK.lung.clean[,order.rawdata]) #sorted all.KLK.breast.clean
 
-TRA.KLK.rawdata.clean = data.frame(TRA.KLK.rawdata.clean)
-#data.frame(TRA.KLK.rawdata.clean[,order.hand.TRA])
 
 #Boxplot:
 setwd(here("Plots/Plots_raw_breast"))
-pdf("KLK_TRAs_boxplot_all_rawdata.pdf")
-boxplot(t(TRA.KLK.rawdata.clean),col=rainbow(length(rownames(TRA.KLK.rawdata.clean))),main="Gene expression of KLK TRAs GSE27830 (Nagel et al. 2012)",cex.axis=0.8, sub = "Identical genes removed")
+pdf("all_KLK_boxplot_rawdata.pdf")
+boxplot(t(all.KLK.rawdata.clean),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
 dev.off()
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata1.pdf")
+boxplot(t(all.KLK.rawdata.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[1:24,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata2.pdf")
+boxplot(t(all.KLK.rawdata.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[25:48,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata3.pdf")
+boxplot(t(all.KLK.rawdata.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[49:73,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
 
 ```
 
@@ -887,6 +929,43 @@ dev.off()
 ##Clustering
 
 ##PCA
+```{r PCA - rawdata breast}
+# run PCA on the KLK data frame
+# center and scale = TRUE ? does vsnrma not already do this?
+pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = TRUE)
+#call summary
+summary(pr.all.KLK.rawdata.clean)
+# goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
+# in the summary we can see that this is achieved by the 3rd pc
+# the variance of the pcs rapidly declines, there is only abot 5% variance for the 3rd pc
+
+# get graphical overview (not really needed though)
+
+screeplot(pr.all.KLK.rawdata.clean, type = "l", npcs = 12, main = "Screeplot of the first 10 PCs")
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+
+cumpro <- cumsum(pr.all.KLK.rawdata.clean$sdev^2 / sum(pr.all.KLK.rawdata.clean$sdev^2))
+plot(cumpro[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+abline(v = 3, col="blue", lty=5)
+abline(h = 0.95094 , col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC3"),
+       col=c("blue"), lty=5, cex=0.6)
+
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 95%
+# This seems to be a very low number of pcs, the others do not represent a lot of information
+
+# Plot the PCs
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,2], xlab="PC1 (77.3%)", ylab = "PC2 (13%)", main = "PC1 / PC2 - plot")
+plot(pr.all.KLK.rawdata.clean$x[,2],pr.all.KLK.rawdata.clean$x[,3], xlab="PC1 (13%)", ylab = "PC2 (4,8%)", main = "PC1 / PC2 - plot")
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,3], xlab="PC1 (77.3%)", ylab = "PC2 (4,8%)", main = "PC1 / PC2 - plot")
+
+# we see some sort of clustering
+
+
+```
+
 
 ##Hyposis testing
 
@@ -1061,11 +1140,57 @@ dev.off()
 ## Visualization of gene expression
 Boxplots 
 ```{r}
+# Use mixedsort function from the gtool package to sort the KLKs correctly
+order.breast <- mixedsort(colnames(all.KLK.breast.clean))
+all.KLK.breast.clean <- t(all.KLK.breast.clean[,order.breast]) #sorted all.KLK.breast.clean
+
 #boxplots 
 setwd(here("Plots/Plots_breast"))
-pdf("KLK_TRAs_boxplot_all_breast.pdf")
-boxplot(t(TRA.KLK.breast.clean),col=rainbow(length(rownames(TRA.KLK.breast.clean))),main="Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",cex.axis=0.8)
+pdf("all_KLK_boxplot_breast.pdf")
+boxplot(t(all.KLK.breast.clean),
+        col=rainbow(length(rownames(all.KLK.breast.clean))),
+        main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
 dev.off()
+
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_boxplot_breast1.pdf")
+boxplot(t(all.KLK.breast.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.breast.clean[1:24,]))),main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_boxplot_breast2.pdf")
+boxplot(t(all.KLK.breast.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.breast.clean[25:48,]))),main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_boxplot_breast3.pdf")
+boxplot(t(all.KLK.breast.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.breast.clean[49:73,]))),main="Gene expression of KLKs (Maire et al. 2013)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+dev.off()
+
 
 ```
 
@@ -1170,25 +1295,11 @@ dev.off()
 Boxplots 
 ```{r}
 #order dataframe rows, columns alphabetically
-TRA.KLK.lung.clean = t(TRA.KLK.lung.clean[,order.hand.TRA])
+order.lung <- mixedsort(colnames(all.KLK.lung.clean))
+all.KLK.lung.clean <- t(all.KLK.lung.clean[,order.lung]) #sorted all.KLK.lung.clean
 
-#boxplots 
-setwd(here("Plots/Plots_lung"))
-pdf("KLK_TRAs_boxplot_all_lung.pdf")
-boxplot(t(TRA.KLK.lung.clean),col=rainbow(length(rownames(TRA.KLK.lung.clean))),main="Expression values of KLK TRAs GSE149507 (Cai et al. 2021)",cex.axis=0.8)
-dev.off()
 
 #Histograms of genes expression
-#rawdataExprs is not cleaned of identical values
-median(lungExprs)  #Median all genes: 
-mean(lungExprs)    #Mean all genes: 
-
-median(unlist(all.KLK.lung.clean)) #Median all KLKs: 
-mean(unlist(all.KLK.lung.clean))   #Mean all KLKs: 
-
-median(unlist(TRA.KLK.lung.clean)) #Median TRA KLKs: 
-mean(unlist(TRA.KLK.lung.clean))   #Mean TRA KLKs: 
-
 setwd(here("Plots/Plots_lung"))
 pdf("Histogram_gene_expression_lines.pdf")
 hist(rawdataExprs, 
@@ -1203,30 +1314,87 @@ abline(v = median(unlist(TRA.KLK.lung.clean)), col= "red", lwd = 2) #median TRA 
 dev.off()
 ```
 
+
+```{r Boxplots}
+#boxplots 
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung.pdf")
+boxplot(t(all.KLK.lung.clean),
+        col=rainbow(length(rownames(all.KLK.lung.clean))),
+        main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+dev.off()
+
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung1.pdf")
+boxplot(t(all.KLK.lung.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[1:24,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung2.pdf")
+boxplot(t(all.KLK.lung.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[25:48,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung3.pdf")
+boxplot(t(all.KLK.lung.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[49:73,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
+dev.off()
+```
+
 ## K means
-``` {r K-means}
+``` {r K-means - rawdata breast}
+
+rawdataExprs.nodupl = unique(rawdataExprs)
+
+
 #determining the optimal number of k clusters, preparing wssplot
-wssplot <- function(breastExprs, nc=15, seed=1234)
+wssplot.rawdata <- function(rawdataExprs.nodupl, nc=15, seed=1234)
 {
-  wss <- (nrow(breastExprs)-1)*sum(apply(breastExprs,2,var))
+  wss <- (nrow(rawdataExprs.nodupl)-1)*sum(apply(rawdataExprs.nodupl,2,var))
   for(i in 2:nc){
     set.seed(seed)
-    wss[i] <- sum(kmeans(rawdataExprs, centers = i)$withinss)}
+    wss[i] <- sum(kmeans(rawdataExprs.nodupl, centers = i)$withinss)}
   plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 }
 
 #wssplot
-wssplot(breastExprs)
+wssplot.rawdata(rawdataExprs.nodupl)
 
 #apparently optimal Number of clusters is 2
 # ist jetzt nicht squared aber muss ja wenn dann erst bei kmeans plot
 
 #visualization, !!! caution package "factoextra" required
-fviz_cluster(results.km, data=rawdataExprs, 
+results.km <- kmeans(scale(rawdataExprs.nodupl),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=rawdataExprs.nodupl, 
              palette =c("#2E9FDF","#00AFBB"), 
              geom = "point", 
              ellipse.type = "convex",
-             ggtheme = theme_bw()
+             ggtheme = theme_bw(),
 )
 
 #für klk aus breastrawdata 
@@ -1246,6 +1414,7 @@ wssplot <- function(tf.KLK.rawdata.clean, nc=15, seed=1234)
 }
 wssplot(tf.KLK.rawdata.clean)
 
+
 #approx 4 clusters
 
 results.km <- kmeans(scale(tf.KLK.rawdata.clean),4, nstart=25)
@@ -1258,5 +1427,165 @@ fviz_cluster(results.km, data=tf.KLK.rawdata.clean,
              ggtheme = theme_bw()
 )
 
-
 #Cluster4: KLK8.8 , KLK1.3 , KLK1 , KLK4.4 
+
+#elbow not clearly visible, trying 3 & 5 centers
+#3 
+
+results.km <- kmeans(scale(tf.KLK.rawdata.clean),3, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.KLK.rawdata.clean, 
+             palette =c("#2E9FDF", "#FC4E07", "FF3399"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#here cluster 2 shows overlap with cluster 3, and also combines points that are really far away(in dim2)
+#now 5:
+
+results.km <- kmeans(scale(tf.KLK.rawdata.clean),5, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.KLK.rawdata.clean, 
+             palette =c("#2E9FDF", "#FC4E07", "#FF66FF", "#0099FF", "#99CCFF"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+#additional little cluster in direction of of dim2
+#4 centers seems good
+```
+
+``` {r k-means for lung cancer dataset}
+#determining the optimal number of k clusters, preparing wssplot
+
+wssplot <- function(lungExprs, nc=15, seed=1234)
+{
+  wss <- (nrow(lungExprs)-1)*sum(apply(lungExprs,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(lungExprs, centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+  
+#wssplot
+wssplot(lungExprs)
+
+## bekomme code nicht zum laufen, Anmerkung für später: Anzahl cluster determinieren!!!
+#code für cluster lungexprs
+results.km <- kmeans(scale(lungExprs),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=lungExprs, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#k-means analysis fpr klks from lungcancer
+#transformieren
+tf.all.KLK.lung.clean = data.frame(t(all.KLK.lung.clean.noGSM))
+
+wssplot <- function(tf.all.KLK.lung.clean, nc=15, seed=1234)
+{
+  wss <- (nrow(tf.all.KLK.lung.clean)-1)*sum(apply(tf.all.KLK.lung.clean ,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(tf.all.KLK.lung.clean , centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+wssplot(tf.all.KLK.lung.clean)
+
+#approx ?? clusters
+
+results.km <- kmeans(scale(tf.all.KLK.lung.clean),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.all.KLK.lung.clean, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#text
+#text
+```
+
+``` {r k-means for breast cancer dataset}
+
+#determining the optimal number of k clusters, preparing wssplot
+
+wssplot <- function(breastExprs, nc=15, seed=1234)
+{
+  wss <- (nrow(breastExprs)-1)*sum(apply(breastExprs,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(breastExprs, centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+  
+#wssplot
+wssplot(breastExprs)
+
+## bekomme code nicht zum laufen, Anmerkung für später: Anzahl cluster determinieren!!!
+#code für cluster breastExprs
+
+results.km <- kmeans(scale(breastExprs),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=breastExprs, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+
+#k-means analysis fpr klks from breastcancer
+#transformieren
+
+tf.all.KLK.breast.clean = data.frame(t(all.KLK.breast.clean.noGSM))
+
+wssplot <- function(tf.all.KLK.breast.clean, nc=15, seed=1234)
+{
+  wss <- (nrow(tf.all.KLK.breast.clean)-1)*sum(apply(tf.all.KLK.breast.clean ,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(tf.all.KLK.breast.clean , centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+wssplot(tf.all.KLK.breast.clean)
+
+#approx ?? clusters
+
+results.km <- kmeans(scale(tf.all.KLK.breast.clean),4, nstart=25)
+results.km$cluster
+
+fviz_cluster(results.km, data=tf.all.KLK.breast.clean, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+#später auskommentieren
+
+```
+
+
+
+
+
+
+
+
+
+# Ideen später: 
+#- einzelne PLots benennen und als Grid anordnen -> direkter Vergleich
+#- bei Klk plots einzelne gene anzeigen lassen, auch als grid (?)
+
+
