@@ -889,62 +889,60 @@ dev.off()
 ##PCA
 
 ##Hyposis testing
-1. Test whether KLK1 and KLK1.3 have a higher expression than other KLKs
-Assumptions of t-tests: 
-1. Data obtained by a random sampling method
-2. Roughly normally distributed 
-3. No extreme outliers 
+
 ```{r}
-#Hypothesis testing with t-tests
-#according to the histogram previosly created, KLks are not normally distributed
+#Hypothesis testing 
+#according to the histogram previously created, KLKs are not normally distributed
 
 #QQ Plot
 setwd(here("Plots/Plots_raw_breast"))
 pdf("QQPlot_rawdata.pdf")
 qqnorm(rawdataExprs, main = "QQ-Plot GSE27830");qqline(rawdataExprs)
 dev.off()
-#not a normal distribution!!! -> Wilcoxon test 
+#not a normal distribution!!! -> Wilcoxon rank test 
 
 
+#code was working with t-tests
+combinations <- combn(ncol(all.KLK.rawdata.clean),2)
+t.data <- adply(combinations, 2, function(x) {
+  test <- t.test(all.KLK.rawdata.clean[ ,x[1]],
+                 all.KLK.rawdata.clean[ ,x[2]],
+                 alternative = "two.sided") 
 
-#t-test KLK1
-#H0 there is no significant difference between KLK1 and all other TRAs
-#H1: KLK1 is higher expressed
-#Welch two sample t-test for every possible combination
-
-##the combinations are two sided t-tests
-combinations <- combn(ncol(TRA.KLK.rawdata.clean),2)
-w.data <- adply(combinations, 2, function(x) {
-  test <- wilcox.test(TRA.KLK.rawdata.clean[ ,x[1]],
-                 TRA.KLK.rawdata.clean[ ,x[2]],
-                 alternative = "greater")
   
-  out <- data.frame("Var1" = colnames(TRA.KLK.rawdata.clean[x[1]]),
-                    "Var2" = colnames(TRA.KLK.rawdata.clean[x[2]]),
-                    "t.value"= test$statistic,
+
+
+
+  out <- rbind.fill(data.frame(
+    "Var1" = colnames(all.KLK.rawdata.clean[x[1]]),
+    "Var2" = colnames(all.KLK.rawdata.clean[x[2]]),
+                    "W.value"= test$statistic,
                     "df"= test$parameter,
                     "p.value" = test$p.value
-                    )
-  
+                    ))
+   
   return(out)
   })
 
-
-
 t.data
 
-t.KLK1 = t.data[1:26, ]
-t.KLK1
-length(which(t.KLK1$p.value <= 0.05))
-which(t.KLK1$p.value >= 0.05)
-t.KLK1[13, ]
-#The mean of KLK1 is significantly greater than all other means except from KLK1.3
 
-t.KLK1.3 <- 
 
-t.test(TRA.KLK.rawdata.clean$KLK1, TRA.KLK.rawdata.clean$KLK2, alternative = "greater")
+test lapply(all.KLK.rawdata.clean, function(x)
+  {wilcox.test(all.KLK.rawdata.clean[ ,x[1]],
+                 all.KLK.rawdata.clean[ ,x[2]], alternative = "greater")})
 
-length(which(cor.genes(TRA.KLK.breast.clean)==1))
+
+#Wilcoxon test 
+#Welch two sample t-test for every possible combination
+combinations <- combn(ncol(all.KLK.rawdata.clean),2)
+apply(all.KLK.rawdata.clean, 2, function(x)
+  lapply(combinations, function (y)
+    wilcox.test(x[all.KLK.rawdata.clean %in% y],
+             all.KLK.rawdata.clean[all.KLK.rawdata.clean %in% y])
+    ))
+
+ 
 ```
 
 
