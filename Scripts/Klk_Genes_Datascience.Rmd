@@ -459,7 +459,7 @@ break}
 }
 dev.off()
 
-###GSM4504109_SCLC_05_ca is broken!!! -> bana-like shaped scatter plots
+###GSM4504109_SCLC_05_ca is broken!!! -> banana-like shaped scatter plots
 ### Thereby, change the whole patient 05, so chip GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_n
 ### Get 2 new chips for patient 5 in Gene Expression omnbius for GSE149507 lung cancer and do quality control over again
 ```
@@ -736,8 +736,8 @@ TRA.KLK.lung = lungExprs[ind.KLK.all.human.tra,]
 
 ## 3.1 breast cancer GSE27830 (Nagel et al. 2012)
 
-###Visualization via Heatmaps
-```{r Heatmaps}
+### cleanup of identical isoforms
+```{r cleanup of identical isoforms}
 #transform dataset - genes on columns
 df.TRA.KLK.rawdata <- data.frame(t(TRA.KLK.rawdata))
 
@@ -766,22 +766,6 @@ cor.TRA.KLK.rawdata.clean <- cor.genes(TRA.KLK.rawdata.clean)
 length(which(cor.TRA.KLK.rawdata.clean == 1))
 #no more identical columns!
 
-#Heatmap of KLK TRAs expression withOUT identicals
-setwd(here("Plots/Plots_raw_breast"))
-pdf("KLK_TRAs_Heatmap_rawdata_noid.pdf")
-pheatmap(t(TRA.KLK.rawdata.clean),
-         main = "Expression values of KLK TRAs GSE27830 (Nagel et al. 2012)",
-         cellwidth = 30,
-         cellheight = 5,
-         treeheight_col = 20,
-         fontsize_row = 8)
-dev.off()
-```
-
-
-```{r Heatmaps annotation}
-# Creating a heatmap, that displays all KLKs and indicates the ones who are TRAs
-
 # First we need to clean up the isoforms again
 df.all.KLK.rawdata <- data.frame(t(all.KLK.rawdata))
 
@@ -795,11 +779,102 @@ length(which(cor.all.KLK.rawdata == 1))
 all.KLK.rawdata.clean <- df.all.KLK.rawdata[!duplicated(unclass(df.all.KLK.rawdata))]
 dim(all.KLK.rawdata.clean) #removed 39 identical isoforms
 
+# Use mixedsort function from the gtool package to sort the KLKs correctly
+order.rawdata <- mixedsort(colnames(all.KLK.rawdata.clean))
+all.KLK.rawdata.clean <- t(all.KLK.rawdata.clean[order.rawdata]) #sorted all.KLK.breast.clean
 
+order.rawdata1 <- mixedsort(colnames(TRA.KLK.rawdata.clean))
+TRA.KLK.rawdata.clean <- t(TRA.KLK.rawdata.clean[order.rawdata1])
+
+```
+Further reason for removing the identicals
+Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
+
+```{r Overview and Histogram rawdata breast}
+gene.summary <- function(x){
+ round(apply(x, 2, summary), digits = 2)
+}
+gene.summary(rawdataExprs)
+
+#Histograms of genes expression
+#rawdataExprs i snot cleaned of identical values
+
+
+setwd(here("Plots/Plots_raw_breast"))
+pdf("Histogram_gene_expression_lines.pdf")
+hist(rawdataExprs, 
+     main="Gene expression GSE27830 (Nagel et al. 2021)",
+     xlab="Expression value",
+     breaks=40
+     )
+abline(v = median(rawdataExprs), col= "red", lwd = 3)#median all genes
+abline(v = median(unlist(all.KLK.rawdata.clean)), col= "blue", lwd = 3) #median all KLKs
+legend("topright", c("median all genes","median all KLKs"), col=c("red","blue"), lwd=10)
+dev.off()
+```
+We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
+
+### Visualization of gene expression - Boxplot
+```{r Boxplot}
+#Boxplot:
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata.pdf")
+boxplot(t(all.KLK.rawdata.clean),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.4,
+        las = 2,
+        ylim = c(6,9)
+        )
+abline(h=median(unlist(all.KLK.rawdata.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata1.pdf")
+boxplot(t(all.KLK.rawdata.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[1:24,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2
+)
+abline(h=median(unlist(all.KLK.rawdata.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata2.pdf")
+boxplot(t(all.KLK.rawdata.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[25:48,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=median(unlist(all.KLK.rawdata.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_boxplot_rawdata3.pdf")
+boxplot(t(all.KLK.rawdata.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.rawdata.clean[49:73,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
+        cex.axis=0.8,
+        las = 2
+        )
+abline(h=median(unlist(all.KLK.rawdata.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+
+```
+
+
+```{r Heatmaps annotation}
 # adding annotations  to the KLK genes, for whether they are TRAs or not
 # 1. show simple cluster annotated to heatmap
 
-hclust.genes.rawdata <- hclust(dist(t(all.KLK.rawdata.clean)), method = "complete")
+hclust.genes.rawdata <- hclust(dist(all.KLK.rawdata.clean), method = "complete")
 
 as.dendrogram(hclust.genes.rawdata) %>%
   plot(horiz = TRUE)
@@ -808,15 +883,15 @@ annotation.hmap.rawdata <- cutree(tree = as.dendrogram(hclust.genes.rawdata), k 
 annotation.hmap.rawdata  <- data.frame(cluster = ifelse(test = annotation.hmap.rawdata == 1, yes = "cluster 1", no = "cluster 2"))
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
-TRUEorFALSe <- colnames(all.KLK.rawdata.clean) %in% colnames(TRA.KLK.rawdata.clean)
-TRAorNON <- ifelse(TRUEorFALSe == TRUE, "TRA", "non-TRA")
-annotation.hmap.rawdata$TRA_or_NON  <- TRAorNON
+TRUEorFALSE.raw <- rownames(all.KLK.rawdata.clean) %in% rownames(TRA.KLK.rawdata.clean)
+TRAorNON.raw <- ifelse(TRUEorFALSE.raw == TRUE, "TRA", "non-TRA")
+annotation.hmap.rawdata$TRA_or_NON  <- TRAorNON.raw
 colnames(annotation.hmap.rawdata)[2] <- "TRA or not"
 
 # call the annotated Heatmap
 setwd(here("Plots/Plots_raw_breast"))
 pdf("all_KLK_Heatmap_rawdata.pdf")
-pheatmap(t(all.KLK.rawdata.clean),
+pheatmap(all.KLK.rawdata.clean,
          main = "Expression values of all KLKs GSE27830 (Nagel et al. 2012)",
          annotation_row = annotation.hmap.rawdata,
          cellwidth = 27,
@@ -829,106 +904,9 @@ dev.off()
 
 ```
 
-Further reason for removing the identicals
-Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
-
-```{r Overview and Histogram rawdata breast}
-gene.summary <- function(x){
- round(apply(x, 2, summary), digits = 2)
-}
-gene.summary(rawdataExprs)
-
-#Histograms of genes expression
-#rawdataExprs i snot cleaned of identical values
-median(rawdataExprs)  #Median all genes: 6.627027
-mean(rawdataExprs) #Mean all genes: 6.841523
-
-median(unlist(all.KLK.rawdata.clean)) #Median all KLKs: 5.456886
-mean(unlist(all.KLK.rawdata.clean))   #Mean all KLKs: 5.646926
-
-median(unlist(TRA.KLK.rawdata.clean)) #Median TRA KLKs: 5.408611
-mean(unlist(TRA.KLK.rawdata.clean))   #Mean TRA KLKs: 5.479232
-###### The dataframe TRA.KLK.rawdata.clean is called here before it is even defined, we need to move the histograms chronological after heatmaps, if you want to call the command
-###### median(unlist(TRA.KLK.rawdata.clean))
 
 
-
-setwd(here("Plots/Plots_raw_breast"))
-pdf("Histogram_gene_expression_lines.pdf")
-hist(rawdataExprs, 
-     main="Gene expression GSE27830 (Nagel et al. 2021)",
-     xlab="Expression value",
-     breaks=40
-     )
-abline(v = 6.627027, col= "black", lwd = 2)#median all genes
-text(2, 1, "Median all genes", pos=1)
-abline(v = 5.456886, col= "blue", lwd = 2) #median all KLKs
-abline(v = 5.408611, col= "red", lwd = 2) #median TRA KLKs
-#Want to annotate what the lines are representing, but i cant 
-dev.off()
-```
-We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
-
-## Visualization of gene expression
-Boxplot, Histograms
-```{r Boxplot}
-# Use mixedsort function from the gtool package to sort the KLKs correctly
-order.rawdata <- mixedsort(colnames(all.KLK.rawdata.clean))
-all.KLK.rawdata.clean <- t(all.KLK.lung.clean[,order.rawdata]) #sorted all.KLK.breast.clean
-
-
-#Boxplot:
-setwd(here("Plots/Plots_raw_breast"))
-pdf("all_KLK_boxplot_rawdata.pdf")
-boxplot(t(all.KLK.rawdata.clean),
-        col=rainbow(length(rownames(all.KLK.rawdata.clean))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
-        cex.axis=0.4,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
-dev.off()
-
-#split the boxplots, because it is hard to read the gene names
-#Boxplot1 
-setwd(here("Plots/Plots_raw_breast"))
-pdf("all_KLK_boxplot_rawdata1.pdf")
-boxplot(t(all.KLK.rawdata.clean[1:24,]),
-        col=rainbow(length(rownames(all.KLK.rawdata.clean[1:24,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
-        cex.axis=0.8,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
-dev.off()
-
-#Boxplot2
-setwd(here("Plots/Plots_raw_breast"))
-pdf("all_KLK_boxplot_rawdata2.pdf")
-boxplot(t(all.KLK.rawdata.clean[25:48,]),
-        col=rainbow(length(rownames(all.KLK.rawdata.clean[25:48,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
-        cex.axis=0.8,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
-dev.off()
-
-#Boxplot3
-setwd(here("Plots/Plots_raw_breast"))
-pdf("all_KLK_boxplot_rawdata3.pdf")
-boxplot(t(all.KLK.rawdata.clean[49:73,]),
-        col=rainbow(length(rownames(all.KLK.rawdata.clean[49:73,]))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
-        cex.axis=0.8,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
-dev.off()
-
-
-```
-
-
-##Clustering
-
-##PCA
+### PCA
 ```{r PCA - rawdata breast}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
@@ -936,38 +914,66 @@ pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale =
 #call summary
 summary(pr.all.KLK.rawdata.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
-# in the summary we can see that this is achieved by the 3rd pc
-# the variance of the pcs rapidly declines, there is only abot 5% variance for the 3rd pc
+# in the summary we can see that this is almost achieved by the 4th pc
+# the variance of the pcs rapidly declines, there is only about 5% variance for the 4th pc
 
 # get graphical overview (not really needed though)
 
-screeplot(pr.all.KLK.rawdata.clean, type = "l", npcs = 12, main = "Screeplot of the first 10 PCs")
+screeplot(pr.all.KLK.rawdata.clean, type = "l", npcs = 10, main = "Screeplot of the 10 PCs")
 abline(h = 1, col="red", lty=5)
 legend("topright", legend=c("Eigenvalue = 1"),
        col=c("red"), lty=5, cex=0.6)
 
-cumpro <- cumsum(pr.all.KLK.rawdata.clean$sdev^2 / sum(pr.all.KLK.rawdata.clean$sdev^2))
-plot(cumpro[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
-abline(v = 3, col="blue", lty=5)
-abline(h = 0.95094 , col="blue", lty=5)
-legend("topleft", legend=c("Cut-off @ PC3"),
+variance.raw <- cumsum(pr.all.KLK.rawdata.clean$sdev^2 / sum(pr.all.KLK.rawdata.clean$sdev^2))
+plot(variance.raw[0:10], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+abline(v = 4, col="blue", lty=5)
+abline(h = 0.92802 , col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC4"),
        col=c("blue"), lty=5, cex=0.6)
 
-# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 95%
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of %
 # This seems to be a very low number of pcs, the others do not represent a lot of information
 
 # Plot the PCs
-plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,2], xlab="PC1 (77.3%)", ylab = "PC2 (13%)", main = "PC1 / PC2 - plot")
-plot(pr.all.KLK.rawdata.clean$x[,2],pr.all.KLK.rawdata.clean$x[,3], xlab="PC1 (13%)", ylab = "PC2 (4,8%)", main = "PC1 / PC2 - plot")
-plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,3], xlab="PC1 (77.3%)", ylab = "PC2 (4,8%)", main = "PC1 / PC2 - plot")
+color.raw = c(ifelse(annotation.hmap.rawdata[,2] == "TRA", "blue", "red"))
 
-# we see some sort of clustering
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,2],
+     xlab="PC1 (63,44%)",
+     ylab = "PC2 (13,88%)",
+     main = "PC1 / PC2 - plot",
+     col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
 
+plot(pr.all.KLK.rawdata.clean$x[,2],pr.all.KLK.rawdata.clean$x[,3],
+     xlab="PC2 (13,88%)",
+     ylab = "PC3 (10,26%)",
+     main = "PC2 / PC3 - plot",
+    col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,3],
+     xlab="PC1 (63,44%)",
+     ylab = "PC3 (10,26%)",
+     main = "PC1 / PC3 - plot",
+     col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+# Since almost all KLKs are TRAs, annotating the color does not really show anything
+# Rather annotate the color for the type of cancer
+
+## should we rename the chips by hand, so we can cluster for mutation?
 
 ```
 
+### Clustering - kmeans
 
-##Hyposis testing
+```{r}
+
+```
+
+###Hypothesis testing
 
 ```{r Hyposis testing}
 #Hypothesis testing 
@@ -1088,10 +1094,10 @@ as.data.frame(test2, "Var1" = "KLK1",
 
 
 
-# 3.2 Breast cancer GSE65216 (Maire et al. 2013)
+## 3.2 Breast cancer GSE65216 (Maire et al. 2013)
 
-##Isolating TRAs from the breast cancer dataset
-```{r, Isolating KLK TRAs breast + Heatmaps}
+### clean up of identical transcripts
+```{r, cleanup identical transcripts}
 
 #transform dataset - genes on columns
 df.TRA.KLK.breast <- data.frame(t(TRA.KLK.breast))
@@ -1114,20 +1120,6 @@ dim(TRA.KLK.breast.clean)
 length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
 TRA.KLK.breast.clean
 
-#heatmap withOUT duplicates
-setwd(here("Plots/Plots_breast"))
-pdf("KLK_TRAs_Heatmap_breast_noid.pdf")
-pheatmap(t(TRA.KLK.breast.clean),
-         main = "Expression values of KLK TRAs GSE65216 (Maire et al. 2013)",
-         cellwidth = 15,
-         cellheight = 6,
-         treeheight_col = 20,
-         fontsize_row = 8,
-         fontsize_col = 7)
-dev.off()
-```
-
-```{r Heatmaps annotation}
 # Creating a heatmap, that displays all KLKs and indicates the ones who are TRAs
 
 # First we need to clean up the isoforms again
@@ -1144,68 +1136,33 @@ all.KLK.breast.clean <- df.all.KLK.breast[!duplicated(unclass(df.all.KLK.breast)
 dim(all.KLK.breast.clean) #removed 39 identical isoforms
 
 
-# adding annotations to the KLK genes, for whether they are TRAs or not
-# 1. show simple cluster annotated to heatmap
-
-hclust.genes.breast <- hclust(dist(t(all.KLK.breast.clean)), method = "complete")
-
-as.dendrogram(hclust.genes.breast) %>%
-  plot(horiz = TRUE)
-# Lets try it with 2 clusters in the heatmap, just for visualization purposes
-annotation.hmap.breast <- cutree(tree = as.dendrogram(hclust.genes.breast), k = 3)
-annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.breast == 1, yes = "cluster 1", no = "cluster 2"))
-
-# 2. differentiate between TRA-/ or Non-TRA-KLKs
-annotation.hmap.breast$TRA_or_NON  <- TRAorNON
-colnames(annotation.hmap.breast)[2] <- "TRA or not"
-
-# 3. To increase visibility, we will cut off the GSM number for the patient names
-all.KLK.breast.clean.noGSM <- all.KLK.breast.clean
-#rownames(all.KLK.breast.clean.noGSM) <- sub("...........", "", rownames(all.KLK.breast.clean)) 
-#There seems to be the problem, that the sample names cant be shortened or else Tum016_Her2 would appear twice, which is not possible
-#However these are two different samples, which where taken out of the same tumor, hence the different GSM number
-#The different of these samples is their replication protein repA for GSM1588991 and repB for GSM1588992
-#Here we will just shorten the name by 2 characters less, so we can differentiate between those two 
-rownames(all.KLK.breast.clean.noGSM)[1:8] <- sub("...........", "", rownames(all.KLK.breast.clean)[1:8])
-rownames(all.KLK.breast.clean.noGSM)[9:10] <- sub(".........", "", rownames(all.KLK.breast.clean)[9:10])
-rownames(all.KLK.breast.clean.noGSM)[11:20] <- sub("...........", "", rownames(all.KLK.breast.clean)[11:20])
-
-# annotation for the samples
-samples.annotation.breast <- data.frame(matrix(ncol = 1, nrow = nrow(all.KLK.breast.clean.noGSM)))
-colnames(samples.annotation.breast) <- "tumor type"                                 
-rownames(samples.annotation.breast) <- rownames(all.KLK.breast.clean.noGSM)
-ph.ind.Her2 = grep(pattern = "Her2", rownames(all.KLK.breast.clean.noGSM))
-ph.ind.LumA = grep(pattern = "LumA", rownames(all.KLK.breast.clean.noGSM))
-ph.ind.LumB = grep(pattern = "LumB", rownames(all.KLK.breast.clean.noGSM))
-ph.ind.TNBC = grep(pattern = "TNBC", rownames(all.KLK.breast.clean.noGSM))
-samples.annotation.breast[ph.ind.Her2,1] <- "Her2"
-samples.annotation.breast[ph.ind.LumA,1] <- "LumA"
-samples.annotation.breast[ph.ind.LumB,1] <- "LumB"
-samples.annotation.breast[ph.ind.TNBC,1] <- "TNBC"
-
-# call the annotated Heatmap
-setwd(here("Plots/Plots_breast"))
-pdf("all_KLK_Heatmap_breast.pdf")
-pheatmap(t(all.KLK.breast.clean.noGSM),
-         main = "Expression values of all KLKs GSE65216 (Maire et al. 2013)",
-         annotation_row = annotation.hmap.breast,
-         annotation_col = samples.annotation.breast,
-         cellwidth = 12.7,
-         cellheight = 5,
-         treeheight_col = 10,
-         fontsize_row = 6,
-         cutree_rows = 2
-)
-dev.off()
-```
-
-## Visualization of gene expression
-Boxplots 
-```{r}
 # Use mixedsort function from the gtool package to sort the KLKs correctly
 order.breast <- mixedsort(colnames(all.KLK.breast.clean))
 all.KLK.breast.clean <- t(all.KLK.breast.clean[,order.breast]) #sorted all.KLK.breast.clean
 
+order.breast1 <- mixedsort(colnames(TRA.KLK.breast.clean))
+TRA.KLK.breast.clean <- t(TRA.KLK.breast.clean[,order.breast1])
+
+```
+### Visualization via Histogram
+```{r Overview and Histogram breast}
+gene.summary(breastExprs)
+
+setwd(here("Plots/Plots_breast"))
+pdf("Histogram_gene_expression_lines.pdf")
+hist(breastExprs, 
+     main="Gene expression GSE27830 (Nagel et al. 2021)",
+     xlab="Expression value",
+     breaks=40
+     )
+abline(v = median(breastExprs), col= "red", lwd = 3)#median all genes
+abline(v = median(unlist(all.KLK.breast.clean)), col= "blue", lwd = 3) #median all KLKs
+legend("topright", c("median all genes","median all KLKs"), col=c("red","blue"), lwd=10)
+dev.off()
+```
+
+### Visualization of gene expression - Boxplots 
+```{r}
 #boxplots 
 setwd(here("Plots/Plots_breast"))
 pdf("all_KLK_boxplot_breast.pdf")
@@ -1215,7 +1172,8 @@ boxplot(t(all.KLK.breast.clean),
         cex.axis=0.4,
         las = 2,
         )
-abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
 dev.off()
 
 
@@ -1228,7 +1186,8 @@ boxplot(t(all.KLK.breast.clean[1:24,]),
         cex.axis=0.8,
         las = 2,
         )
-abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
 dev.off()
 
 #Boxplot2
@@ -1239,7 +1198,8 @@ boxplot(t(all.KLK.breast.clean[25:48,]),
         cex.axis=0.8,
         las = 2,
         )
-abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
 dev.off()
 
 #Boxplot3
@@ -1250,17 +1210,148 @@ boxplot(t(all.KLK.breast.clean[49:73,]),
         cex.axis=0.8,
         las = 2,
         )
-abline(h=mean(unlist(all.KLK.breast.clean)), col= "gray", lwd = 1)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
 dev.off()
 
 
 ```
 
 
+### Heatmap
+```{r Heatmaps annotation}
+# adding annotations to the KLK genes, for whether they are TRAs or not
+# 1. show simple cluster annotated to heatmap
+
+hclust.genes.breast <- hclust(dist(all.KLK.breast.clean), method = "complete")
+
+as.dendrogram(hclust.genes.breast) %>%
+  plot(horiz = TRUE)
+# Lets try it with 2 clusters in the heatmap, just for visualization purposes
+annotation.hmap.breast <- cutree(tree = as.dendrogram(hclust.genes.breast), k = 3)
+annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.breast == 1, yes = "cluster 1", no = "cluster 2"))
+
+# 2. differentiate between TRA-/ or Non-TRA-KLKs
+# 2. differentiate between TRA-/ or Non-TRA-KLKs
+TRUEorFALSE.breast <- rownames(all.KLK.breast.clean) %in% rownames(TRA.KLK.breast.clean)
+TRAorNON.breast <- ifelse(TRUEorFALSE.breast == TRUE, "TRA", "non-TRA")
+annotation.hmap.breast$TRA_or_NON  <- TRAorNON.breast
+colnames(annotation.hmap.breast)[2] <- "TRA or not"
+
+# 3. To increase visibility, we will cut off the GSM number for the patient names
+all.KLK.breast.clean.noGSM <- all.KLK.breast.clean
+#rownames(all.KLK.breast.clean.noGSM) <- sub("...........", "", rownames(all.KLK.breast.clean)) 
+#There seems to be the problem, that the sample names cant be shortened or else Tum016_Her2 would appear twice, which is not possible
+#However these are two different samples, which where taken out of the same tumor, hence the different GSM number
+#The different of these samples is their replication protein repA for GSM1588991 and repB for GSM1588992
+#Here we will just shorten the name by 2 characters less, so we can differentiate between those two 
+colnames(all.KLK.breast.clean.noGSM)[1:8] <- sub("...........", "", colnames(all.KLK.breast.clean)[1:8])
+colnames(all.KLK.breast.clean.noGSM)[9:10] <- sub(".........", "", colnames(all.KLK.breast.clean)[9:10])
+colnames(all.KLK.breast.clean.noGSM)[11:20] <- sub("...........", "", colnames(all.KLK.breast.clean)[11:20])
+
+# annotation for the samples
+samples.annotation.breast <- data.frame(matrix(ncol = 1, nrow = ncol(all.KLK.breast.clean.noGSM)))
+colnames(samples.annotation.breast) <- "tumor type"                                 
+rownames(samples.annotation.breast) <- colnames(all.KLK.breast.clean.noGSM)
+ph.ind.Her2 = grep(pattern = "Her2", colnames(all.KLK.breast.clean.noGSM))
+ph.ind.LumA = grep(pattern = "LumA", colnames(all.KLK.breast.clean.noGSM))
+ph.ind.LumB = grep(pattern = "LumB", colnames(all.KLK.breast.clean.noGSM))
+ph.ind.TNBC = grep(pattern = "TNBC", colnames(all.KLK.breast.clean.noGSM))
+samples.annotation.breast[ph.ind.Her2,1] <- "Her2"
+samples.annotation.breast[ph.ind.LumA,1] <- "LumA"
+samples.annotation.breast[ph.ind.LumB,1] <- "LumB"
+samples.annotation.breast[ph.ind.TNBC,1] <- "TNBC"
+
+# call the annotated Heatmap
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_Heatmap_breast.pdf")
+pheatmap(all.KLK.breast.clean.noGSM,
+         main = "Expression values of all KLKs GSE65216 (Maire et al. 2013)",
+         annotation_row = annotation.hmap.breast,
+         annotation_col = samples.annotation.breast,
+         cellwidth = 12.7,
+         cellheight = 5,
+         treeheight_col = 10,
+         fontsize_row = 6,
+         cutree_rows = 2
+)
+dev.off()
+```
+
+### PCA
+```{r PCA - breast cancer}
+# run PCA on the KLK data frame
+# center and scale = TRUE ? does vsnrma not already do this?
+pr.all.KLK.breast.clean <- prcomp(all.KLK.breast.clean, center = TRUE, scale = TRUE)
+#call summary
+summary(pr.all.KLK.breast.clean)
+# goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
+# in the summary we can see that this is almost achieved by the 4th pc
+# the variance of the pcs rapidly declines, there is only about 5% variance for the 4th pc
+
+# get graphical overview (not really needed though)
+
+screeplot(pr.all.KLK.breast.clean, type = "l", npcs = 10, main = "Screeplot of the first 10 PCs")
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+
+variance.raw <- cumsum(pr.all.KLK.breast.clean$sdev^2 / sum(pr.all.KLK.breast.clean$sdev^2))
+plot(variance.raw[0:20], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+abline(v = 4, col="blue", lty=5)
+abline(h = 0.91110, col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC4"),
+       col=c("blue"), lty=5, cex=0.6)
+
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of %
+# This seems to be a very low number of pcs, the others do not represent a lot of information
+
+# Plot the PCs
+
+### GROUP AFTER MUTATION
+
+color.raw = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
+
+plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
+     xlab="PC1 (63,92%)",
+     ylab = "PC2 (13,92%)",
+     main = "PC1 / PC2 - plot",
+     col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+plot(pr.all.KLK.breast.clean$x[,2],pr.all.KLK.breast.clean$x[,3],
+     xlab="PC2 (13,92%)",
+     ylab = "PC3 (8,90%)",
+     main = "PC2 / PC3 - plot",
+    col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
+     xlab="PC1 (63,92%)",
+     ylab = "PC3 (8,90%)",
+     main = "PC1 / PC3 - plot",
+     col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+# Since almost all KLKs are TRAs, annotating the color does not really show anything
+# Rather annotate the color for the type of cancer
+
+## should we rename the chips by hand, so we can cluster for mutation?
+
+```
+
+### Clustering - kmeans
+```{r}
+
+```
+
+
 ## 3.3 Lung cancer GSE149507 (Cai et al. 2021)
 
-###Isolating TRAs from lung cancer dataset
-```{r, Isolating KLK TRAs lung + Heatmaps}
+### cleanup of identical transcripts
+```{r, clean up idencticals - lung cancer}
 
 #transform dataset - genes on columns
 df.TRA.KLK.lung <- data.frame(t(TRA.KLK.lung))
@@ -1273,25 +1364,6 @@ length(which(cor.TRA.KLK.lung == 1)) #14 identical columns <- why does it always
 TRA.KLK.lung <- data.frame(TRA.KLK.lung)
 TRA.KLK.lung.clean <- genes.cleanup(df.TRA.KLK.lung)
 length(which(cor.genes(TRA.KLK.lung.clean) == 1))
-
-#order dataframe rows, columns alphabetically
-TRA.KLK.lung.clean = t(TRA.KLK.lung.clean[,order.hand.TRA])
-
-#heatmap withOUT duplicates
-setwd(here("Plots/Plots_lung"))
-pdf("KLK_TRAs_Heatmap_lung_noid.pdf")
-pheatmap(TRA.KLK.lung.clean,
-         main = "Expression values of KLK TRAs GSE149507 (Cai et al. 2021)",
-         cellwidth = 20,
-         cellheight = 8,
-         treeheight_col = 20,
-         fontsize_row = 8,
-         fontsize_col = 7)
-dev.off()
-```
-
-```{r Heatmaps annotation}
-# Creating a heatmap, that displays all KLKs and indicates the ones who are TRAs
 
 # First we need to clean up the isoforms again
 df.all.KLK.lung <- data.frame(t(all.KLK.lung))
@@ -1306,11 +1378,95 @@ length(which(cor.all.KLK.lung == 1))
 all.KLK.lung.clean <- df.all.KLK.lung[!duplicated(unclass(df.all.KLK.lung))]
 dim(all.KLK.lung.clean) #removed 39 identical isoforms
 
+#order dataframe rows, columns alphabetically
+order.lung <- mixedsort(colnames(all.KLK.lung.clean))
+all.KLK.lung.clean <- t(all.KLK.lung.clean[,order.lung]) #sorted all.KLK.lung.clean
 
+order.lung1 <- mixedsort(colnames(TRA.KLK.lung.clean))
+TRA.KLK.lung.clean <- t(TRA.KLK.lung.clean[,order.lung1])
+
+```
+
+### Visualization of gene expression - Histograms 
+
+```{r Histogram}
+gene.summary(lungExprs)
+
+#Histograms of genes expression
+setwd(here("Plots/Plots_lung"))
+pdf("Histogram_gene_expression_lines.pdf")
+hist(rawdataExprs, 
+     main="Gene expression GSE149507 (Cai et al. 2021)",
+     xlab="Expression value",
+     xlim = c(4,15),
+     breaks=40
+     )
+abline(v = median(lungExprs), col= "red", lwd = 3)#median all genes
+abline(v = median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 3) #median all KLKs
+legend("topright", c("median all genes","median all KLKs"), col=c("red","blue"), lwd=10)
+dev.off()
+```
+
+### Visualization of gene expression - Boxplots 
+
+```{r Boxplots}
+#boxplots 
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung.pdf")
+boxplot(t(all.KLK.lung.clean),
+        col=rainbow(length(rownames(all.KLK.lung.clean))),
+        main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.4,
+        las = 2,
+        )
+abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+
+#split the boxplots, because it is hard to read the gene names
+#Boxplot1 
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung1.pdf")
+boxplot(t(all.KLK.lung.clean[1:24,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[1:24,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+#Boxplot2
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung2.pdf")
+boxplot(t(all.KLK.lung.clean[25:48,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[25:48,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+
+#Boxplot3
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_boxplot_lung3.pdf")
+boxplot(t(all.KLK.lung.clean[49:73,]),
+        col=rainbow(length(rownames(all.KLK.lung.clean[49:73,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
+        cex.axis=0.8,
+        las = 2,
+        )
+abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+dev.off()
+```
+### Heatmap
+```{r Heatmaps annotation}
 # adding annotations to the KLK genes, for whether they are TRAs or not
 # 1. show simple cluster annotated to heatmap
 
-hclust.genes.lung <- hclust(dist(t(all.KLK.lung.clean)), method = "complete")
+hclust.genes.lung <- hclust(dist(all.KLK.lung.clean), method = "complete")
 
 as.dendrogram(hclust.genes.lung) %>%
   plot(horiz = TRUE)
@@ -1319,27 +1475,29 @@ annotation.hmap.lung <- cutree(tree = as.dendrogram(hclust.genes.lung), k = 2)
 annotation.hmap.lung  <- data.frame(cluster = ifelse(test = annotation.hmap.lung == 1, yes = "cluster 1", no = "cluster 2"))
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
-annotation.hmap.lung$TRA_or_NON  <- TRAorNON
+TRUEorFALSE.lung <- rownames(all.KLK.lung.clean) %in% rownames(TRA.KLK.lung.clean)
+TRAorNON.lung <- ifelse(TRUEorFALSE.lung == TRUE, "TRA", "non-TRA")
+annotation.hmap.lung$TRA_or_NON  <- TRAorNON.lung
 colnames(annotation.hmap.lung)[2] <- "TRA or not"
 
 # 3. To increase visibility, we will cut off the GSM number for the patient names
 all.KLK.lung.clean.noGSM <- all.KLK.lung.clean
 
-rownames(all.KLK.lung.clean.noGSM)[1:12] <- sub("...........", "", rownames(all.KLK.lung.clean)[1:12])
+colnames(all.KLK.lung.clean.noGSM)[1:12] <- sub("...........", "", colnames(all.KLK.lung.clean)[1:12])
 
 # annotation for the samples
-samples.annotation.lung <- data.frame(matrix(ncol = 1, nrow = nrow(all.KLK.lung.clean.noGSM)))
+samples.annotation.lung <- data.frame(matrix(ncol = 1, nrow = ncol(all.KLK.lung.clean.noGSM)))
 colnames(samples.annotation.lung) <- "sample"                                 
-rownames(samples.annotation.lung) <- rownames(all.KLK.lung.clean.noGSM)
-ph.ind.normal = grep(pattern = "n", rownames(all.KLK.lung.clean.noGSM))
-ph.ind.cancer = grep(pattern = "ca", rownames(all.KLK.lung.clean.noGSM))
+rownames(samples.annotation.lung) <- colnames(all.KLK.lung.clean.noGSM)
+ph.ind.normal = grep(pattern = "n", colnames(all.KLK.lung.clean.noGSM))
+ph.ind.cancer = grep(pattern = "ca", colnames(all.KLK.lung.clean.noGSM))
 samples.annotation.lung[ph.ind.normal,1] <- "normal"
 samples.annotation.lung[ph.ind.cancer,1] <- "cancer"
 
 # call the annotated Heatmap
 setwd(here("Plots/Plots_lung"))
 pdf("all_KLK_Heatmap_lung.pdf")
-pheatmap(t(all.KLK.lung.clean.noGSM),
+pheatmap(all.KLK.lung.clean.noGSM,
          main = "Expression values of all KLKs GSE149507 (Cai et al. 2021)",
          annotation_row = annotation.hmap.lung,
          annotation_col = samples.annotation.lung,
@@ -1353,80 +1511,71 @@ dev.off()
 
 ```
 
-## Visualization of gene expression
-Boxplots 
-```{r}
-#order dataframe rows, columns alphabetically
-order.lung <- mixedsort(colnames(all.KLK.lung.clean))
-all.KLK.lung.clean <- t(all.KLK.lung.clean[,order.lung]) #sorted all.KLK.lung.clean
 
 
-#Histograms of genes expression
-setwd(here("Plots/Plots_lung"))
-pdf("Histogram_gene_expression_lines.pdf")
-hist(rawdataExprs, 
-     main="Gene expression GSE149507 (Cai et al. 2021)",
-     xlab="Expression value",
-     xlim = c(4,15),
-     breaks=40
-     )
-abline(v = median(lungExprs), col= "black", lwd = 2)#median all genes
-abline(v = median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2) #median all KLKs
-abline(v = median(unlist(TRA.KLK.lung.clean)), col= "red", lwd = 2) #median TRA KLKs
-dev.off()
+### PCA
+```{r PCA - lung cancer}
+# run PCA on the KLK data frame
+# center and scale = TRUE ? does vsnrma not already do this?
+pr.all.KLK.lung.clean <- prcomp(all.KLK.lung.clean, center = TRUE, scale = TRUE)
+#call summary
+summary(pr.all.KLK.lung.clean)
+# goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
+# in the summary we can see that this is almost achieved by the 4th pc
+# the variance of the pcs rapidly declines, there is only about 5% variance for the 4th pc
+
+# get graphical overview (not really needed though)
+
+screeplot(pr.all.KLK.lung.clean, type = "l", npcs = 10, main = "Screeplot of the first 10 PCs")
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+
+variance.raw <- cumsum(pr.all.KLK.lung.clean$sdev^2 / sum(pr.all.KLK.lung.clean$sdev^2))
+plot(variance.raw[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+abline(v = 3, col="blue", lty=5)
+abline(h = 0.95094 , col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC3"),
+       col=c("blue"), lty=5, cex=0.6)
+
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 95%
+# This seems to be a very low number of pcs, the others do not represent a lot of information
+
+# Plot the PCs
+
+### GROUP AFTER MUTATION
+
+color.raw = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
+
+plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
+     xlab="PC1 (77,25%)",
+     ylab = "PC2 (13,00%)",
+     main = "PC1 / PC2 - plot",
+     col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+plot(pr.all.KLK.lung.clean$x[,2],pr.all.KLK.lung.clean$x[,3],
+     xlab="PC2 (13,00%)",
+     ylab = "PC3 (4,83%)",
+     main = "PC2 / PC3 - plot",
+    col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
+     xlab="PC1 (77,25%)",
+     ylab = "PC3 (4,83%)",
+     main = "PC1 / PC3 - plot",
+     col = color.raw)
+legend("topleft", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+# Since almost all KLKs are TRAs, annotating the color does not really show anything
+# Rather annotate the color for the type of cancer
 ```
 
 
-```{r Boxplots}
-#boxplots 
-setwd(here("Plots/Plots_lung"))
-pdf("all_KLK_boxplot_lung.pdf")
-boxplot(t(all.KLK.lung.clean),
-        col=rainbow(length(rownames(all.KLK.lung.clean))),
-        main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
-        cex.axis=0.4,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.rawdata.clean)), col= "gray", lwd = 1)
-dev.off()
-
-
-#split the boxplots, because it is hard to read the gene names
-#Boxplot1 
-setwd(here("Plots/Plots_lung"))
-pdf("all_KLK_boxplot_lung1.pdf")
-boxplot(t(all.KLK.lung.clean[1:24,]),
-        col=rainbow(length(rownames(all.KLK.lung.clean[1:24,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
-        cex.axis=0.8,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
-dev.off()
-
-#Boxplot2
-setwd(here("Plots/Plots_lung"))
-pdf("all_KLK_boxplot_lung2.pdf")
-boxplot(t(all.KLK.lung.clean[25:48,]),
-        col=rainbow(length(rownames(all.KLK.lung.clean[25:48,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
-        cex.axis=0.8,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
-dev.off()
-
-#Boxplot3
-setwd(here("Plots/Plots_lung"))
-pdf("all_KLK_boxplot_lung3.pdf")
-boxplot(t(all.KLK.lung.clean[49:73,]),
-        col=rainbow(length(rownames(all.KLK.lung.clean[49:73,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
-        cex.axis=0.8,
-        las = 2,
-        )
-abline(h=mean(unlist(all.KLK.lung.clean)), col= "gray", lwd = 1)
-dev.off()
-```
-
-## K means
+### K means
 ``` {r K-means - rawdata breast}
 
 rawdataExprs.nodupl = unique(rawdataExprs)
