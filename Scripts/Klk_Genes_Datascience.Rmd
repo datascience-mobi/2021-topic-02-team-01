@@ -28,7 +28,7 @@ library(dendextend) #install.packages("dendextend")
 library(factoextra) #install.packages("factoextra")
 
 library(gtools) #install.packages("gtools")
-
+library(plyr)
 library(tidyverse) #install.packages("tidyverse")
 ###here package 
 library(here)
@@ -779,13 +779,18 @@ length(which(cor.all.KLK.rawdata == 1))
 all.KLK.rawdata.clean <- df.all.KLK.rawdata[!duplicated(unclass(df.all.KLK.rawdata))]
 dim(all.KLK.rawdata.clean) #removed 39 identical isoforms
 
+
 # Use mixedsort function from the gtool package to sort the KLKs correctly
 order.rawdata <- mixedsort(colnames(all.KLK.rawdata.clean))
-all.KLK.rawdata.clean <- t(all.KLK.rawdata.clean[order.rawdata]) #sorted all.KLK.breast.clean
+order.rawdata <- order.rawdata[c(1:3,11:17,4:10,18,19,24:27,20:23,28:73)]
+all.KLK.rawdata.clean <- t(all.KLK.rawdata.clean[,order.rawdata]) #sorted all.KLK.breast.clean
+all.KLK.rawdata.clean <- data.frame(all.KLK.rawdata.clean)
+
 
 order.rawdata1 <- mixedsort(colnames(TRA.KLK.rawdata.clean))
-TRA.KLK.rawdata.clean <- t(TRA.KLK.rawdata.clean[order.rawdata1])
-
+order.rawdata1 <- order.rawdata1[c(1:3,11:17,4:10,18,19,23:26,20:22,27:63)]
+TRA.KLK.rawdata.clean <- t(TRA.KLK.rawdata.clean[,order.rawdata1])
+TRA.KLK.rawdata.clean <- data.frame(TRA.KLK.rawdata.clean)
 ```
 Further reason for removing the identicals
 Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
@@ -1138,10 +1143,16 @@ dim(all.KLK.breast.clean) #removed 39 identical isoforms
 
 # Use mixedsort function from the gtool package to sort the KLKs correctly
 order.breast <- mixedsort(colnames(all.KLK.breast.clean))
+order.breast <- order.breast[c(1:3,11:17,4:10,18,19,24:27,20:23,28:73)]
 all.KLK.breast.clean <- t(all.KLK.breast.clean[,order.breast]) #sorted all.KLK.breast.clean
+all.KLK.breast.clean <- data.frame(all.KLK.breast.clean)
+
 
 order.breast1 <- mixedsort(colnames(TRA.KLK.breast.clean))
+order.breast1 <- order.breast1[c(1:3,11:17,4:10,18,19,23:26,20:22,27:63)]
 TRA.KLK.breast.clean <- t(TRA.KLK.breast.clean[,order.breast1])
+TRA.KLK.breast.clean <- data.frame(TRA.KLK.breast.clean)
+
 
 ```
 ### Visualization via Histogram
@@ -1378,12 +1389,18 @@ length(which(cor.all.KLK.lung == 1))
 all.KLK.lung.clean <- df.all.KLK.lung[!duplicated(unclass(df.all.KLK.lung))]
 dim(all.KLK.lung.clean) #removed 39 identical isoforms
 
-#order dataframe rows, columns alphabetically
+# Use mixedsort function from the gtool package to sort the KLKs correctly
 order.lung <- mixedsort(colnames(all.KLK.lung.clean))
+order.lung <- order.lung[c(1:3,11:17,4:10,18,19,24:27,20:23,28:73)]
 all.KLK.lung.clean <- t(all.KLK.lung.clean[,order.lung]) #sorted all.KLK.lung.clean
+all.KLK.lung.clean <- data.frame(all.KLK.lung.clean)
+
 
 order.lung1 <- mixedsort(colnames(TRA.KLK.lung.clean))
+order.lung1 <- order.lung1[c(1:3,11:17,4:10,18,19,23:26,20:22,27:63)]
 TRA.KLK.lung.clean <- t(TRA.KLK.lung.clean[,order.lung1])
+TRA.KLK.lung.clean <- data.frame(TRA.KLK.lung.clean)
+
 
 ```
 
