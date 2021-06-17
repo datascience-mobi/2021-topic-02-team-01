@@ -1581,7 +1581,7 @@ results.km <- kmeans(scale(rawdataExprs.nodupl),4, nstart=25)
 results.km$cluster
 
 fviz_cluster(results.km, data=rawdataExprs.nodupl, 
-             palette =c("#2E9FDF","#00AFBB"), 
+             palette =c("#2E9FDF","#00AFBB","#FC4E07", "#E7B800"), 
              geom = "point", 
              ellipse.type = "convex",
              ggtheme = theme_bw(),
@@ -1766,6 +1766,61 @@ fviz_cluster(results.km, data=tf.all.KLK.breast.clean,
 
 ```
 
+#Piechart: Distribution KLK TRA
+```{r Piechart TRA}
+
+#convert dataframe into vector first
+#we will work with Union.TRA dataframe, since KLK type and tissue type is already given
+
+KLK.TRA.tissue = Union.TRA[,5]       
+
+KLK.TRA.table = table(KLK.TRA.tissue)      
+
+KLK.TRA.frame = as.data.frame(KLK.TRA.table)  
+
+#in this frame we still include the mouse TRA data - shall we only look at human?
+#skin adjust
+KLK.TRA.frame$Freq[14] = 6
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(15,16))
+
+#prostate adjust
+KLK.TRA.frame$Freq[12] = 46
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(13))
+
+#liver adjust
+KLK.TRA.frame$Freq[6] = 7
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(5))
+
+#esophagus adjust
+KLK.TRA.frame$Freq[3] = 16
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(4))
+
+#oral mucosa adjust
+KLK.TRA.frame$Freq[7] = 15
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(9))
+
+#salivary gland adjust(oral mucosa is salivary gland)
+KLK.TRA.frame$Freq[5] = 16
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(7))
+
+#dataframe needs to be table so pie can work, converting:
+piechart.vec = KLK.TRA.frame[,2]
+names.piechart = c("Cervix","Colon","Esophagus","Liver","Minor Salivary Gland", "nodose_nucleus","Pancreas",
+                   "Prostate", "Skin", "Snoutepidermis", "Spinal Cord", "Testis", "Thyroid", "Tongueepidermis","Vulva")
+
+
+#expanding color palette
+coul <- brewer.pal(10, "Paired")
+coul <- colorRampPalette(coul)(25)
+
+#pieeee
+pie(piechart.vec, labels = names.piechart,
+    edges = 200, radius = 0.9, col=coul ,
+    main = "Distribution of KLK-TRA genes over tissue",
+    cex =0.55)
+
+
+```
 
 
 
@@ -1774,8 +1829,5 @@ fviz_cluster(results.km, data=tf.all.KLK.breast.clean,
 
 
 
-# Ideen später: 
-#- einzelne PLots benennen und als Grid anordnen -> direkter Vergleich
-#- bei Klk plots einzelne gene anzeigen lassen, auch als grid (?)
 
 
