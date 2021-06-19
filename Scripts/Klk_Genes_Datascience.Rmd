@@ -20,16 +20,15 @@ library(hgu133plus2hsenstcdf)
 library(hgu133plus2hsenstprobe)
 library(hexbin)
 library(ggplot2)
-
 library(pheatmap)
-
 library(dendextend) #install.packages("dendextend")
-
 library(factoextra) #install.packages("factoextra")
-
 library(gtools) #install.packages("gtools")
 library(plyr)
 library(tidyverse) #install.packages("tidyverse")
+
+library(RColorBrewer) #install.packages("RColorBrewer")
+
 ###here package 
 library(here)
 #set the top level folder with here
