@@ -1,0 +1,100 @@
+---
+title: "Report_KLK_Data_Analysis"
+author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
+date: "19 6 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###load library
+```{r Load Libaries, hide=TRUE}
+library(affy)
+library(vsn)
+library(AnnotationDbi)
+library(hgu133plus2hsenstcdf)
+library(hgu133plus2hsenstprobe)
+library(hexbin)
+library(ggplot2)
+library(pheatmap)
+library(dendextend) #install.packages("dendextend")
+library(factoextra) #install.packages("factoextra")
+library(gtools) #install.packages("gtools")
+library(plyr)
+library(tidyverse) #install.packages("tidyverse")
+library(here)
+#set the top level folder with here
+here::here()
+```
+
+
+# 1. Introduction
+
+# 2. Quality control
+
+## 2.1 Quality control - GSE65216 breast cancer
+### Single chip control
+### Normalization
+### Visualization via boxplots
+### Density function
+### RNA degeneration plot
+### Scatter plots
+
+## 2.2 Quality control - GSE149507 lung cancer
+### Single chip control
+### Normalization
+### Visualization via boxplots
+### Density function
+### RNA degeneration plot
+### Scatter plots
+
+# 3. Further data acquistion
+## Importing TRA data
+## Union of TRA data
+## Setting up rawdata breast data set GSE27830
+## Setting up breast cancer data set GSE65216
+## Setting up lung cancer data set GSE149507 
+
+
+# 4. Expression Analysis
+## Extraction of KLK and KLK TRA genes
+
+## 4.1 breast cancer GSE27830 (Nagel et al. 2012)
+### Clean up identical isoforms
+### Visualization of gene expression 
+#### Overview gene expression (histogram)
+#### Boxplots
+#### Heatmap
+### PCA
+### Clustering - kmeans
+### Hypothesis testing
+### Venn Diagram (plots currently missing)
+### Discussion
+
+## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
+### Clean up identical isoforms
+### Visualization of gene expression 
+#### Overview gene expression (histogram)
+#### Boxplots
+#### Heatmap
+### PCA
+### Clustering - kmeans
+### Hypothesis testing
+### Venn Diagram (plots currently missing)
+### Discussion
+
+## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
+### Clean up identical isoforms
+### Visualization of gene expression 
+#### Overview gene expression (histogram)
+#### Boxplots
+#### Heatmap
+### PCA
+### Clustering - kmeans
+### Hypothesis testing
+### Venn Diagram (plots currently missing)
+### Discussion
+
+
