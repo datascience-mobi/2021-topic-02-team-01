@@ -1029,7 +1029,9 @@ w.data <- adply(combinations, 2, function(x) {
 
 
   out <- rbind.fill(data.frame(
-    "Var1" = colnames(all.KLK.rawdata.clean[x[1]]),
+    if colnames(all.KLK.rawdata.clean[x[1]]) ==0 
+    else "Var1" = colnames(all.KLK.rawdata.clean[x[1]]),
+    if  colnames(all.KLK.rawdata.clean[x[2]]) ==0 
     "Var2" = colnames(all.KLK.rawdata.clean[x[2]]),
                     "W.value"= test$statistic,
                     "df"= test$parameter,
@@ -1038,6 +1040,12 @@ w.data <- adply(combinations, 2, function(x) {
    
   return(out)
   })
+
+#iteration über eine Variable, Variable hat keinen warnErrList(
+#if n row ungleich 1 dann kann nicht mehr matchen... in welcher Situation kommt das vor?
+#Python debugger - Punkt setzen in Code - Welcher Zustand haben welche Variablen 
+# -> Wo ist der Fehler 
+
 
 ```
 
