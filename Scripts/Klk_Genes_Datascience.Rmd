@@ -20,24 +20,23 @@ library(hgu133plus2hsenstcdf)
 library(hgu133plus2hsenstprobe)
 library(hexbin)
 library(ggplot2)
-
 library(pheatmap)
-
 library(dendextend) #install.packages("dendextend")
-
 library(factoextra) #install.packages("factoextra")
-
 library(gtools) #install.packages("gtools")
 library(plyr)
 library(tidyverse) #install.packages("tidyverse")
+
+library(RColorBrewer) #install.packages("RColorBrewer")
+
 ###here package 
 library(here)
 #set the top level folder with here
 here::here()
 ```
-# 0. Introduction
-#Relevance of TRAs in cancer therapy: Tumor restricted antigens only occur in cancer tissue, which makes them a great immunological target. Identifying TRAs overexpressed in specific cancer tissue is imporant for the development of immunotherapeutic drugs....
-# Biological question considering KLKs:..
+# 1. Introduction
+Relevance of TRAs in cancer therapy: Tumor restricted antigens only occur in cancer tissue, which makes them a great immunological target. Identifying TRAs overexpressed in specific cancer tissue is imporant for the development of immunotherapeutic drugs....
+Biological question considering KLKs:..
 
 ```{r Annotation Data Sets, eval=FALSE, include=FALSE}
 
@@ -157,10 +156,10 @@ save.image(file = "rawdataNorm.rda")
 
 ```
 
-# 1. Quality Control
+# 2. Quality Control
 
-##Quality control - GSE65216 breast cancer TNBC Her2 LumA LumB
-###Single chip
+## 2.1 Quality control - GSE65216 breast cancer
+### Single chip control
 ```{r Breast - Single Chip control}
 # read images for GSE65216 breast cancer TNBC Her2 LumA LumB
 setwd(here("Plots/Plots_breast_qc"))
@@ -171,7 +170,7 @@ dev.off()
 # the individual chips look fine
 ```
 
-### Normalization
+### Normalization and meanSd plot
 ```{r Breast - Normalization}
 ## Normalization
 breast.vsnrma <- vsnrma(breast)
@@ -261,7 +260,7 @@ dev.off()
 
 
 ### Scatter plots
-#### Examining scatter plots and looking for individual chips with non-linear relationship that indicate  broken chips.
+Examining scatter plots and looking for individual chips with non-linear relationship that indicate  broken chips.
 ```{r Breast - Scatter plots}
 # Scatter plots
 x11(w=9, h=5)
@@ -303,8 +302,8 @@ nchar(colnames(breast.vsnrma)[i+1]))),".eps",sep="")
 
 
 
-## Quality control - GSE149507 lung cancer
-### Chip control
+## 2.2 Quality control - GSE149507 lung cancer
+### Single chip control
 ```{r Lung - chip control}
 # read images for GSE149507 lung cancer
 setwd(here("Plots/Plots_lung_qc"))
@@ -314,7 +313,7 @@ dev.off()
 # the individual chips look fine
 ```
 
-### Normalization and meansd Plot
+### Normalization and meanSd plot
 ```{r Lung - Normalization and meansd Plot}
 ## Normalization
 lung.vsnrma <- vsnrma(lung)
@@ -398,7 +397,7 @@ dev.off()
 
 
 ### Scatter plots
-#### Examining scatter plots and looking for individual chips with non-linear relationship that indicate  broken chips.
+Examining scatter plots and looking for individual chips with non-linear relationship that indicate  broken chips.
 ```{r Lung - Scatter plots}
 # Scatter plots
 setwd(here("Plots/Plots_lung_qc"))
@@ -478,8 +477,8 @@ rawdataExprs = exprs(rawdata.vsnrma)
 ```
 
 
-## 2. Further Data acquistion
-### Importing TRA data
+# 3. Further data acquistion
+## Importing TRA data
 
 ```{r}
 setwd(here("TRA Daten"))
@@ -505,10 +504,10 @@ tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
 
 ```
 
-
+## Union of TRA data
+Union of all six TRA data tables to visualize TRA distribuiton 
+```{r Union of TRA data}
 ### Filter all Klk from the TRA data sets
-###Union of all six table to visualize 
-```{r Filter all Klk from the TRA data sets}
 
 # For tra.human  
 ind.human=grepl("^KLK",tra.human$gene.symbol)
@@ -581,7 +580,7 @@ all.human.KLK.gene.symbols <- unique(Union.TRA$gene.symbol[grep("tra.human", Uni
 all.human.KLK.gene.symbols # These are all the available KLK TRAs we can possibly work with
 ```
 
-### ensembl annotation file
+## ensembl annotation file
 ```{r Read ensembl}
 
 setwd(here("Tables"))
@@ -589,7 +588,7 @@ setwd(here("Tables"))
 ensembl_df = read.csv("ensembl.103.txt",sep="\t")
 ```
 
-#Creating datasets 
+## Setting up rawdata breast cancer data set GSE27830
 Creating rawdata breast cancer data set of expression values
 ```{r Dataset rawdata breast}
 rawdataExprs <- rawdataExprs[grepl("ENST", rownames(rawdataExprs)), ]
@@ -622,7 +621,7 @@ head(rawdataExprs)
 
 ```
 
-
+## Setting up breast cancer data set GSE65216
 Creating GSE65216 breast cancer (TNBC Her2 LumA LumB) data of expression values
 ```{r Dataset breast cancer}
 breastExprs <- breastExprs[grepl("ENST", rownames(breastExprs)), ]
@@ -651,6 +650,7 @@ rownames(breastExprs) <- as.character(symbol.breast)  # Matrix to work with
 head(breastExprs)
 
 ```
+## Setting up lung cancer data set GSE149507 
 Creating lung cancer data set to work with
 ```{r Dataset lung cancer }
 lungExprs <- lungExprs[grepl("ENST", rownames(lungExprs)), ]
@@ -679,12 +679,12 @@ rownames(lungExprs) <- as.character(symbol.lung)  # Matrix to work with
 head(lungExprs)
 
 ```
-# 3. Expression Analysis
+# 4. Expression Analysis
 
 Overview of gene expression:
 The gene expression values are depicted in a logarithmic scale with base 2. This means, that a increase in gene expression by the amount of one unit corresponds with an increase by the factor 2. 
 
-
+## Extraction of KLK and KLK TRA genes
 Ioslating all KLK genes from each dataset 
 ```{r Isolating KLK genes, results=FALSE}
 # All KLK genes
@@ -734,9 +734,9 @@ TRA.KLK.breast = breastExprs[ind.KLK.all.human.tra,]
 TRA.KLK.lung = lungExprs[ind.KLK.all.human.tra,]
 ```
 
-## 3.1 breast cancer GSE27830 (Nagel et al. 2012)
+## 4.1 breast cancer GSE27830 (Nagel et al. 2012)
 
-### cleanup of identical isoforms
+### Clean up identical isoforms
 ```{r cleanup of identical isoforms}
 #transform dataset - genes on columns
 df.TRA.KLK.rawdata <- data.frame(t(TRA.KLK.rawdata))
@@ -795,6 +795,8 @@ TRA.KLK.rawdata.clean <- data.frame(TRA.KLK.rawdata.clean)
 Further reason for removing the identicals
 Now, there are no KLK TRA genes that have identical expression values. This could have caused problems for statistical testing or for performing correlation analysis later on. Before starting off with the analysis, we should get an overview of KLK TRAs for the three data sets via Heatmaps. 
 
+### Visualization of gene expression
+#### Overview gene expression
 ```{r Overview and Histogram rawdata breast}
 gene.summary <- function(x){
  round(apply(x, 2, summary), digits = 2)
@@ -819,8 +821,8 @@ dev.off()
 ```
 We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
 
-### Visualization of gene expression - Boxplot
-```{r Boxplot}
+#### Boxplots
+```{r Boxplots}
 #Boxplot:
 setwd(here("Plots/Plots_raw_breast"))
 pdf("all_KLK_boxplot_rawdata.pdf")
@@ -874,7 +876,7 @@ dev.off()
 
 ```
 
-
+#### Heatmap
 ```{r Heatmaps annotation}
 # adding annotations  to the KLK genes, for whether they are TRAs or not
 # 1. show simple cluster annotated to heatmap
@@ -978,9 +980,9 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 
 ```
 
-###Hypothesis testing
+### Hypothesis testing
 
-```{r Hyposis testing}
+```{r Hypothesis testing}
 #Hypothesis testing 
 #according to the histogram previously created, KLKs are not normally distributed
 
@@ -1069,9 +1071,9 @@ class(test)
 
 
 
-## 3.2 Breast cancer GSE65216 (Maire et al. 2013)
+## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
 
-### clean up of identical transcripts
+### Clean up identical transcripts
 ```{r, cleanup identical transcripts}
 
 #transform dataset - genes on columns
@@ -1125,7 +1127,8 @@ TRA.KLK.breast.clean <- data.frame(TRA.KLK.breast.clean)
 
 
 ```
-### Visualization via Histogram
+### Visualization of gene expression 
+#### Overview gene expression
 ```{r Overview and Histogram breast}
 gene.summary(breastExprs)
 
@@ -1142,7 +1145,7 @@ legend("topright", c("median all genes","median all KLKs"), col=c("red","blue"),
 dev.off()
 ```
 
-### Visualization of gene expression - Boxplots 
+#### Boxplots 
 ```{r}
 #boxplots 
 setwd(here("Plots/Plots_breast"))
@@ -1199,7 +1202,7 @@ dev.off()
 ```
 
 
-### Heatmap
+#### Heatmap
 ```{r Heatmaps annotation}
 # adding annotations to the KLK genes, for whether they are TRAs or not
 # 1. show simple cluster annotated to heatmap
@@ -1331,7 +1334,7 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 
 ## 3.3 Lung cancer GSE149507 (Cai et al. 2021)
 
-### cleanup of identical transcripts
+### Clean up identical isoforms
 ```{r, clean up idencticals - lung cancer}
 
 #transform dataset - genes on columns
@@ -1374,8 +1377,8 @@ TRA.KLK.lung.clean <- data.frame(TRA.KLK.lung.clean)
 
 ```
 
-### Visualization of gene expression - Histograms 
-
+### Visualization of gene expression 
+#### Overview gene expression
 ```{r Histogram}
 gene.summary(lungExprs)
 
@@ -1394,8 +1397,7 @@ legend("topright", c("median all genes","median all KLKs"), col=c("red","blue"),
 dev.off()
 ```
 
-### Visualization of gene expression - Boxplots 
-
+#### Boxplots 
 ```{r Boxplots}
 #boxplots 
 setwd(here("Plots/Plots_lung"))
@@ -1448,7 +1450,8 @@ abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
 legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
 dev.off()
 ```
-### Heatmap
+
+#### Heatmap
 ```{r Heatmaps annotation}
 # adding annotations to the KLK genes, for whether they are TRAs or not
 # 1. show simple cluster annotated to heatmap
@@ -1562,7 +1565,7 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 ```
 
 
-### K means
+### K-means
 ``` {r K-means - rawdata breast}
 
 rawdataExprs.nodupl = unique(rawdataExprs)
@@ -1589,7 +1592,7 @@ results.km <- kmeans(scale(rawdataExprs.nodupl),4, nstart=25)
 results.km$cluster
 
 fviz_cluster(results.km, data=rawdataExprs.nodupl, 
-             palette =c("#2E9FDF","#00AFBB"), 
+             palette =c("#2E9FDF","#00AFBB","#FC4E07", "#E7B800"), 
              geom = "point", 
              ellipse.type = "convex",
              ggtheme = theme_bw(),
@@ -1774,6 +1777,61 @@ fviz_cluster(results.km, data=tf.all.KLK.breast.clean,
 
 ```
 
+#Piechart: Distribution KLK TRA
+```{r Piechart TRA}
+
+#convert dataframe into vector first
+#we will work with Union.TRA dataframe, since KLK type and tissue type is already given
+
+KLK.TRA.tissue = Union.TRA[,5]       
+
+KLK.TRA.table = table(KLK.TRA.tissue)      
+
+KLK.TRA.frame = as.data.frame(KLK.TRA.table)  
+
+#in this frame we still include the mouse TRA data - shall we only look at human?
+#skin adjust
+KLK.TRA.frame$Freq[14] = 6
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(15,16))
+
+#prostate adjust
+KLK.TRA.frame$Freq[12] = 46
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(13))
+
+#liver adjust
+KLK.TRA.frame$Freq[6] = 7
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(5))
+
+#esophagus adjust
+KLK.TRA.frame$Freq[3] = 16
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(4))
+
+#oral mucosa adjust
+KLK.TRA.frame$Freq[7] = 15
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(9))
+
+#salivary gland adjust(oral mucosa is salivary gland)
+KLK.TRA.frame$Freq[5] = 16
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(7))
+
+#dataframe needs to be table so pie can work, converting:
+piechart.vec = KLK.TRA.frame[,2]
+names.piechart = c("Cervix","Colon","Esophagus","Liver","Minor Salivary Gland", "nodose_nucleus","Pancreas",
+                   "Prostate", "Skin", "Snoutepidermis", "Spinal Cord", "Testis", "Thyroid", "Tongueepidermis","Vulva")
+
+
+#expanding color palette
+coul <- brewer.pal(10, "Paired")
+coul <- colorRampPalette(coul)(25)
+
+#pieeee
+pie(piechart.vec, labels = names.piechart,
+    edges = 200, radius = 0.9, col=coul ,
+    main = "Distribution of KLK-TRA genes over tissue",
+    cex =0.55)
+
+
+```
 
 
 
@@ -1782,8 +1840,5 @@ fviz_cluster(results.km, data=tf.all.KLK.breast.clean,
 
 
 
-# Ideen später: 
-#- einzelne PLots benennen und als Grid anordnen -> direkter Vergleich
-#- bei Klk plots einzelne gene anzeigen lassen, auch als grid (?)
 
 
