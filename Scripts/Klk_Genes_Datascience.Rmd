@@ -1018,13 +1018,15 @@ t.data <- adply(combinations, 2, function(x) {
 
 t.data
 #Wilcoxon test 
-#Welch two sampletest for every possible combination
+#Welch two sample test for every possible combination
 
 combinations <- combn(ncol(all.KLK.rawdata.clean),2)
+as.numeric(combinations)
+combinations
 w.data <- adply(combinations, 2, function(x) {
-  test <- wilcox.test(all.KLK.rawdata.clean[ ,x[1]],
-                 all.KLK.rawdata.clean[ ,x[2]],
-                 alternative = "two.sided") 
+  test <- wilcox.test(all.KLK.rawdata.clean[x[1], ],
+                 all.KLK.rawdata.clean[x[2], ],
+                 alternative = "two.sided")} )
 
   
 
@@ -1055,18 +1057,45 @@ w.data <- adply(combinations, 2, function(x) {
 
 ```{r Test fails}
 
+#The defined function below will return a dataframe with all the p-values between the specific gene and all other genes in the dataframe. 
 
 w.test.gene.df <- function(gene, df){
   apply(df, 1, function(x){
-    wilcox.test(unlist(x), unlist(gene), alternative = "two.sided", exact = FALSE, paired = FALSE)})
+  test <- wilcox.test(unlist(x), unlist(gene), 
+                      alternative = "two.sided", 
+                      exact = FALSE, 
+                      paired = FALSE)$p.value})
+ 
+  out <- as.data.frame(test) 
   
+  return(out)
+}
+
+#test use of the function with KLK1
+KLK1.vs.all <- w.test.gene.df(all.KLK.rawdata.clean["KLK1", ], all.KLK.rawdata.clean)
+KLK1.vs.all
+ 
+#the function significant.pvalues will return a matrix with two columns (significant, non-significant) - according to the count of entries which are above 0.05 and lower/equal to 0.05. 
+
+significant.pvalues <- function(genevsall) {
+  data <- matrix(nrow=1, ncol=2)
+  colnames(data) <- c("significant", "non-significant")
+  data[ ,1] <- length(which(genevsall >= 0.05))
+  data[ ,2] <- length(which(genevsall < 0.05))
+  out <- data
+
+  return(out)
   
 }
 
+#test run 
+KLK1.vs.all.sig <- significant.pvalues(KLK1.vs.all) 
+KLK1.vs.all.sig
 
-test <- w.test.gene.df(all.KLK.rawdata.clean["KLK1", ], all.KLK.rawdata.clean)
-test
-class(test)
+#simple barplot 
+barplot(KLK1.vs.all.sig)
+
+#the test with KLK1 show that the gene is not significantly different expressed compared to all other genes of the dataset.
 ```
 
 
