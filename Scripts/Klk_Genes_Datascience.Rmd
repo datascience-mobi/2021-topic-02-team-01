@@ -954,6 +954,8 @@ dev.off()
 pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.rawdata.clean)
+# normally the first principle component are sufficient
+
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
 # in the summary we can see that this is almost achieved by the 4th pc
 # the variance of the pcs rapidly declines, there is only about 5% variance for the 4th pc
@@ -961,51 +963,40 @@ summary(pr.all.KLK.rawdata.clean)
 # get graphical overview (not really needed though)
 
 screeplot(pr.all.KLK.rawdata.clean, type = "l", npcs = 10, main = "Screeplot of the 10 PCs")
-abline(h = 1, col="red", lty=5)
-legend("topright", legend=c("Eigenvalue = 1"),
-       col=c("red"), lty=5, cex=0.6)
+#abline(h = 1, col="red", lty=5)
+#legend("topright", legend=c("Eigenvalue = 1"),
+##       col=c("red"), lty=5, cex=0.6)
 
 variance.raw <- cumsum(pr.all.KLK.rawdata.clean$sdev^2 / sum(pr.all.KLK.rawdata.clean$sdev^2))
 plot(variance.raw[0:10], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
-abline(v = 4, col="blue", lty=5)
-abline(h = 0.92802 , col="blue", lty=5)
-legend("topleft", legend=c("Cut-off @ PC4"),
+abline(v = 3, col="blue", lty=5)
+abline(h = 0.9320 , col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC3"),
        col=c("blue"), lty=5, cex=0.6)
 
-# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of %
-# This seems to be a very low number of pcs, the others do not represent a lot of information
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 93,20 %
+# the others do not represent a lot of information
 
-# Plot the PCs
+# Plot the PCs after TRAorNOT
 color.raw = c(ifelse(annotation.hmap.rawdata[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,2],
-     xlab="PC1 (63,44%)",
-     ylab = "PC2 (13,88%)",
+     xlab="PC1 (53,38%)",
+     ylab = "PC2 (27,88%)",
      main = "PC1 / PC2 - plot",
      col = color.raw)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
-plot(pr.all.KLK.rawdata.clean$x[,2],pr.all.KLK.rawdata.clean$x[,3],
-     xlab="PC2 (13,88%)",
-     ylab = "PC3 (10,26%)",
+plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,3],
+     xlab="PC2 (53,38%)",
+     ylab = "PC3 (11,94%)",
      main = "PC2 / PC3 - plot",
     col = color.raw)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
-
-plot(pr.all.KLK.rawdata.clean$x[,1],pr.all.KLK.rawdata.clean$x[,3],
-     xlab="PC1 (63,44%)",
-     ylab = "PC3 (10,26%)",
-     main = "PC1 / PC3 - plot",
-     col = color.raw)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
 # Rather annotate the color for the type of cancer
-
-## should we rename the chips by hand, so we can cluster for mutation?
-
 ```
 
 ### Clustering - kmeans
@@ -1356,11 +1347,11 @@ pheatmap(all.KLK.breast.clean.noGSM,
 dev.off()
 ```
 
-### PCA
+ ### PCA
 ```{r PCA - breast cancer}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.breast.clean <- prcomp(all.KLK.breast.clean, center = TRUE, scale = TRUE)
+pr.all.KLK.breast.clean <- prcomp(all.KLK.breast.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.breast.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1370,45 +1361,37 @@ summary(pr.all.KLK.breast.clean)
 # get graphical overview (not really needed though)
 
 screeplot(pr.all.KLK.breast.clean, type = "l", npcs = 10, main = "Screeplot of the first 10 PCs")
-abline(h = 1, col="red", lty=5)
-legend("topright", legend=c("Eigenvalue = 1"),
-       col=c("red"), lty=5, cex=0.6)
+#abline(h = 1, col="red", lty=5)
+#legend("topright", legend=c("Eigenvalue = 1"),
+#       col=c("red"), lty=5, cex=0.6)
 
 variance.breast <- cumsum(pr.all.KLK.breast.clean$sdev^2 / sum(pr.all.KLK.breast.clean$sdev^2))
 plot(variance.breast[0:20], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
-abline(v = 4, col="blue", lty=5)
-abline(h = 0.91110, col="blue", lty=5)
-legend("topleft", legend=c("Cut-off @ PC4"),
+abline(v = 3, col="blue", lty=5)
+abline(h = 0.86583, col="blue", lty=5)
+legend("topleft", legend=c("PC3"),
        col=c("blue"), lty=5, cex=0.6)
 
-# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of %
+# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 86,6 %
 # This seems to be a very low number of pcs, the others do not represent a lot of information
 
 # Plot the PCs
-
-### GROUP AFTER MUTATION
-
+# for TRAorNON
 color.breast = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (63,92%)",
-     ylab = "PC2 (13,92%)",
+     xlab="PC1 (51,8%)",
+     ylab = "PC2 (21,47%)",
+     pch = 18,
      main = "PC1 / PC2 - plot",
      col = color.breast)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
-plot(pr.all.KLK.breast.clean$x[,2],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC2 (13,92%)",
-     ylab = "PC3 (8,90%)",
-     main = "PC2 / PC3 - plot",
-    col = color.breast)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
-
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (63,92%)",
-     ylab = "PC3 (8,90%)",
+     xlab="PC1 (51,8%)",
+     ylab = "PC3 (13,41%)",
+     pch = 18,
      main = "PC1 / PC3 - plot",
      col = color.breast)
 legend("topleft", legend=c("TRA", "non-TRA"),
@@ -1416,7 +1399,29 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
 # Rather annotate the color for the type of cancer
 
-## should we rename the chips by hand, so we can cluster for mutation?
+## Group after treatment
+color.breast.mutation = c(ifelse(samples.annotation.breast == "TNBC", yes = "blue", no = ifelse(samples.annotation.breast == "Her2", yes = "red", no = ifelse(samples.annotation.breast == "LumA", yes = "green", no = "yellow"))))
+
+plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
+     xlab="PC1 (51,8%)",
+     ylab = "PC2 (21,47%)",
+     pch = 18,
+     main = "PC1 / PC2 - plot, mutation",
+     col = color.breast.mutation)
+legend("topleft", legend=c("TNBC", "Her2","LumA", "LumB"),
+       col=c("blue", "red", "green", "yellow"), lwd= 7, cex=0.6)
+
+plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
+     xlab="PC1 (51,8%)",
+     ylab = "PC3 (13,41%)",
+     main = "PC1 / PC3 - plot",
+     pch = 18,
+     col = color.breast.mutation)
+legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
+       col=c("blue", "red", "green", "yellow"), lwd= 7, cex=0.6)
+
+### DO IT WITH CLUSTERING FROM k-means
+### Mutation and tra-or-not differentation does not represent any information
 
 ```
 
@@ -1631,7 +1636,7 @@ dev.off()
 ```{r PCA - lung cancer}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.lung.clean <- prcomp(all.KLK.lung.clean, center = TRUE, scale = TRUE)
+pr.all.KLK.lung.clean <- prcomp(all.KLK.lung.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.lung.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1648,8 +1653,8 @@ legend("topright", legend=c("Eigenvalue = 1"),
 variance.lung <- cumsum(pr.all.KLK.lung.clean$sdev^2 / sum(pr.all.KLK.lung.clean$sdev^2))
 plot(variance.lung[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
 abline(v = 3, col="blue", lty=5)
-abline(h = 0.95094 , col="blue", lty=5)
-legend("topleft", legend=c("Cut-off @ PC3"),
+abline(h = 0.9525, col="blue", lty=5)
+legend("topleft", legend=c("PC3"),
        col=c("blue"), lty=5, cex=0.6)
 
 # we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 95%
@@ -1662,30 +1667,47 @@ legend("topleft", legend=c("Cut-off @ PC3"),
 color.lung = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (77,25%)",
-     ylab = "PC2 (13,00%)",
+     xlab="PC1 (80,23%)",
+     ylab = "PC2 (12,13%)",
      main = "PC1 / PC2 - plot",
      col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
-plot(pr.all.KLK.lung.clean$x[,2],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC2 (13,00%)",
-     ylab = "PC3 (4,83%)",
-     main = "PC2 / PC3 - plot",
-    col = color.lung)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
-
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (77,25%)",
-     ylab = "PC3 (4,83%)",
+     xlab="PC1 (80,23%)",
+     ylab = "PC3 (2,89%)",
      main = "PC1 / PC3 - plot",
      col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
+
+
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
-# Rather annotate the color for the type of cancer
+
+color.lung.cancer = c(ifelse(samples.annotation.lung == "cancer", yes = "blue", no = "red"))
+
+plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
+     xlab="PC1 (80,23%)",
+     ylab = "PC2 (12,13%)",
+     pch = 18,
+     main = "PC1 / PC2 - plot",
+     col = color.lung.cancer)
+legend("left", legend=c("TRA", "non-TRA"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
+     xlab="PC1 (80,23%)",
+     ylab = "PC3 (2,89%)",
+     pch = 18,
+     main = "PC1 / PC3 - plot",
+     col = color.lung.cancer)
+legend("bottomleft", legend=c("cancer", "normal"),
+       col=c("blue", "red"), lwd= 10, cex=0.6)
+
+
+# NOW annotate the clustering after k-means 
+
 ```
 
 
