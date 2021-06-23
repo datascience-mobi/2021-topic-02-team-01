@@ -615,7 +615,7 @@ dim(rawdataExprs) ## 95547    10
 
 # 
 symbol <- geneSymbol[newChipIDs]
-rownames(rawdataExprs) <- as.character(symbol)  # Matrix to work with
+rownames(rawdataExprs) <- make.names(as.character(symbol), unique = TRUE)  # Matrix to work with
 
 head(rawdataExprs)
 
@@ -645,7 +645,7 @@ dim(breastExprs) ## 95547    10
 
 # 
 symbol.breast <- geneSymbol[newChipIDs.breast]
-rownames(breastExprs) <- as.character(symbol.breast)  # Matrix to work with
+rownames(breastExprs) <- make.names(as.character(symbol.breast), unique = TRUE)  # Matrix to work with
 
 head(breastExprs)
 
@@ -674,7 +674,7 @@ dim(lungExprs) ## 95547    10
 
 # 
 symbol.lung <- geneSymbol[newChipIDs.lung]
-rownames(lungExprs) <- as.character(symbol.lung)  # Matrix to work with
+rownames(lungExprs) <- make.names(as.character(symbol.lung), unique = TRUE)  # Matrix to work with
 
 head(lungExprs)
 
@@ -783,7 +783,8 @@ dim(all.KLK.rawdata.clean) #removed 39 identical isoforms
 # Use mixedsort function from the gtool package to sort the KLKs correctly
 order.rawdata <- mixedsort(colnames(all.KLK.rawdata.clean))
 order.rawdata <- order.rawdata[c(1:3,11:17,4:10,18,19,24:27,20:23,28:73)]
-all.KLK.rawdata.clean <- t(all.KLK.rawdata.clean[,order.rawdata]) #sorted all.KLK.breast.clean
+all.KLK.rawdata.clean <- t(all.KLK.rawdata.clean[,order.rawdata])
+#sorted all.KLK.breast.clean
 all.KLK.rawdata.clean <- data.frame(all.KLK.rawdata.clean)
 
 
