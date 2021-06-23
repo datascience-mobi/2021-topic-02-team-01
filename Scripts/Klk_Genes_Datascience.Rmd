@@ -28,6 +28,8 @@ library(plyr)
 library(tidyverse) #install.packages("tidyverse")
 
 library(RColorBrewer) #install.packages("RColorBrewer")
+#library(dendextend) #install.packages("dendextend")
+library(ggdendro) #install.packages("ggdendro")
 
 ###here package 
 library(here)
@@ -831,7 +833,7 @@ boxplot(t(all.KLK.rawdata.clean),
         col=rainbow(length(rownames(all.KLK.rawdata.clean))),main="Gene expression of KLKs GSE27830 (Nagel et al. 2012)",
         cex.axis=0.4,
         las = 2,
-        ylim = c(6,9)
+        ylim = c(4,10.5)
         )
 abline(h=median(unlist(all.KLK.rawdata.clean)), col= "red", lwd = 2, lty = 2)
 legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
@@ -873,22 +875,54 @@ boxplot(t(all.KLK.rawdata.clean[49:73,]),
 abline(h=median(unlist(all.KLK.rawdata.clean)), col= "red", lwd = 2, lty = 2)
 legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
 dev.off()
-
-
 ```
 
 #### Heatmap
 ```{r Heatmaps annotation}
-# adding annotations  to the KLK genes, for whether they are TRAs or not
-# 1. show simple cluster annotated to heatmap
 
+# We first want to see the dendrogram of the heatmap
+# By that we can decide to put certain number of clusters into the heatmap
+# This clustering is not meant for analytical purpose -> see k-means later on for this
+# This clustering is just intended to increase the visual clarity
+
+
+# 1. show simple cluster annotated to heatmap
 hclust.genes.rawdata <- hclust(dist(all.KLK.rawdata.clean), method = "complete")
 
-as.dendrogram(hclust.genes.rawdata) %>%
-  plot(horiz = TRUE)
-# Lets try it with 2 clusters in the heatmap, just for visualization purposes
-annotation.hmap.rawdata <- cutree(tree = as.dendrogram(hclust.genes.rawdata), k = 2)
-annotation.hmap.rawdata  <- data.frame(cluster = ifelse(test = annotation.hmap.rawdata == 1, yes = "cluster 1", no = "cluster 2"))
+dendr.raw <- dendro_data(hclust.genes.rawdata, type = "rectangle")
+clust.raw    <- cutree(hclust.genes.rawdata, k=3)
+# we tested a few clustering´, however 3 cluster seem to visualize the expression in the more up-regulated genes better
+clust.raw.df <- data.frame(label=names(clust.raw), cluster=factor(clust.raw))
+dendr.raw[["labels"]] <- merge(dendr.raw[["labels"]],clust.raw.df, by="label")
+
+
+setwd(here("Plots/Plots_raw_breast"))
+pdf("all_KLK_dendrogram_raw.pdf")
+ggplot() +
+  ggtitle("Dendrogram of all KLKs GSE27830 (Nagel et al. 2012)") +
+  ylab("Distance (complete-linkage)") +
+  geom_segment(data=segment(dendr.raw), aes(x=x, y=y, xend=xend, yend=yend)) + 
+  geom_text(data=label(dendr.raw), aes(x, y, label=label, hjust=0, color=cluster), 
+           size=2) +
+  coord_flip() + scale_y_reverse(expand=c(0.1, 0)) + 
+  theme(axis.line.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.y=element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = c(0.05, 0.05),
+        legend.justification = c("left", "bottom")
+        )
+dev.off()
+
+
+
+# adding annotations  to the KLK genes, for whether they are TRAs or not
+
+# Lets try it with 3 clusters in the heatmap, just for visualization purposes
+annotation.hmap.rawdata <- cutree(tree = as.dendrogram(hclust.genes.rawdata), k = 3)
+annotation.hmap.rawdata  <- data.frame(cluster = ifelse(test = annotation.hmap.rawdata == 1, yes = "cluster 1", no = ifelse(test = annotation.hmap.rawdata == 2, yes = "cluster 2", no = "cluster 3" )))
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 TRUEorFALSE.raw <- rownames(all.KLK.rawdata.clean) %in% rownames(TRA.KLK.rawdata.clean)
@@ -906,19 +940,18 @@ pheatmap(all.KLK.rawdata.clean,
          cellheight = 5.5,
          treeheight_col = 10,
          fontsize_row = 6,
-         cutree_rows = 2
+         cutree_rows = 3
 )
 dev.off()
-
 ```
 
 
 
 ### PCA
 ```{r PCA - rawdata breast}
-# run PCA on the KLK data frame
-# center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = TRUE)
+# center = TRUE
+# scale = FALSE, since we already did this in the vsn normalization
+pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.rawdata.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1233,17 +1266,48 @@ dev.off()
 
 
 #### Heatmap
-```{r Heatmaps annotation}
-# adding annotations to the KLK genes, for whether they are TRAs or not
-# 1. show simple cluster annotated to heatmap
+```{r Heatmap annotation}
+# We first want to see the dendrogram of the heatmap
+# By that we can decide to put certain number of clusters into the heatmap
+# This clustering is not meant for analytical purpose -> see k-means later on for this
+# This clustering is just intended to increase the visual clarity
 
+
+# 1. show simple cluster annotated to heatmap
 hclust.genes.breast <- hclust(dist(all.KLK.breast.clean), method = "complete")
 
-as.dendrogram(hclust.genes.breast) %>%
-  plot(horiz = TRUE)
-# Lets try it with 2 clusters in the heatmap, just for visualization purposes
+dendr.breast <- dendro_data(hclust.genes.breast, type = "rectangle")
+clust.breast    <- cutree(hclust.genes.breast, k=3)
+# we tested a few clustering´, however 3 cluster seem to visualize the expression in the more up-regulated genes better
+clust.breast.df <- data.frame(label=names(clust.breast), cluster=factor(clust.breast))
+dendr.breast[["labels"]] <- merge(dendr.breast[["labels"]],clust.breast.df, by="label")
+
+
+setwd(here("Plots/Plots_breast"))
+pdf("all_KLK_dendrogram_breast.pdf")
+ggplot() +
+  ggtitle("Dendrogram of all KLKs GSE65216 (Maire et al. 2013)") +
+  ylab("Distance (complete-linkage)") +
+  geom_segment(data=segment(dendr.breast), aes(x=x, y=y, xend=xend, yend=yend)) + 
+  geom_text(data=label(dendr.breast), aes(x, y, label=label, hjust=0, color=cluster), 
+           size=2) +
+  coord_flip() + scale_y_reverse(expand=c(0.1, 0)) + 
+  theme(axis.line.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.y=element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = c(0.05, 0.95),
+        legend.justification = c("left", "top")
+        )
+dev.off()
+
+
+# adding annotations to the KLK genes, for whether they are TRAs or not
+# Lets try it with 3 clusters in the heatmap, just for visualization purposes
 annotation.hmap.breast <- cutree(tree = as.dendrogram(hclust.genes.breast), k = 3)
-annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.breast == 1, yes = "cluster 1", no = "cluster 2"))
+annotation.hmap.breast  <- data.frame(cluster = ifelse(test = annotation.hmap.breast == 1, yes = "cluster 1", no = ifelse(test = annotation.hmap.breast == 2, yes = "cluster 2", no = "cluster 3" )))
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
@@ -1287,7 +1351,7 @@ pheatmap(all.KLK.breast.clean.noGSM,
          cellheight = 5,
          treeheight_col = 10,
          fontsize_row = 6,
-         cutree_rows = 2
+         cutree_rows = 3
 )
 dev.off()
 ```
@@ -1310,8 +1374,8 @@ abline(h = 1, col="red", lty=5)
 legend("topright", legend=c("Eigenvalue = 1"),
        col=c("red"), lty=5, cex=0.6)
 
-variance.raw <- cumsum(pr.all.KLK.breast.clean$sdev^2 / sum(pr.all.KLK.breast.clean$sdev^2))
-plot(variance.raw[0:20], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+variance.breast <- cumsum(pr.all.KLK.breast.clean$sdev^2 / sum(pr.all.KLK.breast.clean$sdev^2))
+plot(variance.breast[0:20], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
 abline(v = 4, col="blue", lty=5)
 abline(h = 0.91110, col="blue", lty=5)
 legend("topleft", legend=c("Cut-off @ PC4"),
@@ -1324,13 +1388,13 @@ legend("topleft", legend=c("Cut-off @ PC4"),
 
 ### GROUP AFTER MUTATION
 
-color.raw = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
+color.breast = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
      xlab="PC1 (63,92%)",
      ylab = "PC2 (13,92%)",
      main = "PC1 / PC2 - plot",
-     col = color.raw)
+     col = color.breast)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
@@ -1338,7 +1402,7 @@ plot(pr.all.KLK.breast.clean$x[,2],pr.all.KLK.breast.clean$x[,3],
      xlab="PC2 (13,92%)",
      ylab = "PC3 (8,90%)",
      main = "PC2 / PC3 - plot",
-    col = color.raw)
+    col = color.breast)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
@@ -1346,7 +1410,7 @@ plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
      xlab="PC1 (63,92%)",
      ylab = "PC3 (8,90%)",
      main = "PC1 / PC3 - plot",
-     col = color.raw)
+     col = color.breast)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
@@ -1362,7 +1426,7 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 ```
 
 
-## 3.3 Lung cancer GSE149507 (Cai et al. 2021)
+## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
 
 ### Clean up identical isoforms
 ```{r, clean up idencticals - lung cancer}
@@ -1415,7 +1479,7 @@ gene.summary(lungExprs)
 #Histograms of genes expression
 setwd(here("Plots/Plots_lung"))
 pdf("Histogram_gene_expression_lines.pdf")
-hist(rawdataExprs, 
+hist(lungExprs, 
      main="Gene expression GSE149507 (Cai et al. 2021)",
      xlab="Expression value",
      xlim = c(4,15),
@@ -1483,16 +1547,46 @@ dev.off()
 
 #### Heatmap
 ```{r Heatmaps annotation}
-# adding annotations to the KLK genes, for whether they are TRAs or not
-# 1. show simple cluster annotated to heatmap
+# We first want to see the dendrogram of the heatmap
+# By that we can decide to put certain number of clusters into the heatmap
+# This clustering is not meant for analytical purpose -> see k-means later on for this
+# This clustering is just intended to increase the visual clarity
 
+
+# 1. show simple cluster annotated to heatmap
 hclust.genes.lung <- hclust(dist(all.KLK.lung.clean), method = "complete")
 
-as.dendrogram(hclust.genes.lung) %>%
-  plot(horiz = TRUE)
-# Lets try it with 2 clusters in the heatmap, just for visualization purposes
-annotation.hmap.lung <- cutree(tree = as.dendrogram(hclust.genes.lung), k = 2)
-annotation.hmap.lung  <- data.frame(cluster = ifelse(test = annotation.hmap.lung == 1, yes = "cluster 1", no = "cluster 2"))
+dendr.lung <- dendro_data(hclust.genes.lung, type = "rectangle")
+clust.lung    <- cutree(hclust.genes.lung, k=3)
+# we tested a few clustering´, however 3 cluster seem to visualize the expression in the more up-regulated genes better
+clust.lung.df <- data.frame(label=names(clust.lung), cluster=factor(clust.lung))
+dendr.lung[["labels"]] <- merge(dendr.lung[["labels"]],clust.lung.df, by="label")
+
+
+setwd(here("Plots/Plots_lung"))
+pdf("all_KLK_dendrogram_lung.pdf")
+ggplot() +
+  ggtitle("Dendrogram of all KLKs GSE149507 (Cai et al. 2021)") +
+  ylab("Distance (complete-linkage)") +
+  geom_segment(data=segment(dendr.lung), aes(x=x, y=y, xend=xend, yend=yend)) + 
+  geom_text(data=label(dendr.lung), aes(x, y, label=label, hjust=0, color=cluster), 
+           size=2) +
+  coord_flip() + scale_y_reverse(expand=c(0.1, 0)) + 
+  theme(axis.line.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.y=element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = c(0.05, 0.95),
+        legend.justification = c("left", "top")
+        )
+dev.off()
+
+
+# 3 clusters in the heatmap, just for visualization purposes
+annotation.hmap.lung <- cutree(tree = as.dendrogram(hclust.genes.lung), k = 3)
+annotation.hmap.lung  <- data.frame(cluster = ifelse(test = annotation.hmap.lung == 1, yes = "cluster 1", no = ifelse(test = annotation.hmap.lung == 2, yes = "cluster 2", no = "cluster 3" )))
 
 # 2. differentiate between TRA-/ or Non-TRA-KLKs
 TRUEorFALSE.lung <- rownames(all.KLK.lung.clean) %in% rownames(TRA.KLK.lung.clean)
@@ -1525,7 +1619,7 @@ pheatmap(all.KLK.lung.clean.noGSM,
          cellheight = 5.3,
          treeheight_col = 10,
          fontsize_row = 6,
-         cutree_rows = 2,
+         cutree_rows = 3,
 )
 dev.off()
 
@@ -1551,8 +1645,8 @@ abline(h = 1, col="red", lty=5)
 legend("topright", legend=c("Eigenvalue = 1"),
        col=c("red"), lty=5, cex=0.6)
 
-variance.raw <- cumsum(pr.all.KLK.lung.clean$sdev^2 / sum(pr.all.KLK.lung.clean$sdev^2))
-plot(variance.raw[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+variance.lung <- cumsum(pr.all.KLK.lung.clean$sdev^2 / sum(pr.all.KLK.lung.clean$sdev^2))
+plot(variance.lung[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
 abline(v = 3, col="blue", lty=5)
 abline(h = 0.95094 , col="blue", lty=5)
 legend("topleft", legend=c("Cut-off @ PC3"),
@@ -1565,13 +1659,13 @@ legend("topleft", legend=c("Cut-off @ PC3"),
 
 ### GROUP AFTER MUTATION
 
-color.raw = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
+color.lung = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
      xlab="PC1 (77,25%)",
      ylab = "PC2 (13,00%)",
      main = "PC1 / PC2 - plot",
-     col = color.raw)
+     col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
@@ -1579,7 +1673,7 @@ plot(pr.all.KLK.lung.clean$x[,2],pr.all.KLK.lung.clean$x[,3],
      xlab="PC2 (13,00%)",
      ylab = "PC3 (4,83%)",
      main = "PC2 / PC3 - plot",
-    col = color.raw)
+    col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
@@ -1587,7 +1681,7 @@ plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
      xlab="PC1 (77,25%)",
      ylab = "PC3 (4,83%)",
      main = "PC1 / PC3 - plot",
-     col = color.raw)
+     col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
