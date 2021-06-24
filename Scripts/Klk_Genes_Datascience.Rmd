@@ -2,8 +2,10 @@
 title: "Klk_Genes_Data_Analysis"
 author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
 date: "4 5 2021"
-output: html_document
-editor_options: 
+output:
+  html_document: default
+  pdf_document: default
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -106,7 +108,7 @@ cels.lung <- c("GSM4504101_SCLC_01_ca.CEL", "GSM4504102_SCLC_01_n.CEL", "GSM4504
 
 
 
-```{r Addybatch, hide= TRUE}
+```{r Affybatch, hide= TRUE}
 #read the CEL files into an Affybatch
 
 #Rawdata
@@ -825,7 +827,7 @@ dev.off()
 We can see here, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale, an expression value of 15 is 1024 times higher than the value 5. It is also notable, that the median does not fluctuate too much for all samples.This is due to the fact, that we performed vsn normalization.
 
 #### Boxplots
-```{r Boxplots}
+```{r Boxplots - rawdata breast}
 #Boxplot:
 setwd(here("Plots/Plots_raw_breast"))
 pdf("all_KLK_boxplot_rawdata.pdf")
@@ -878,7 +880,7 @@ dev.off()
 ```
 
 #### Heatmap
-```{r Heatmaps annotation}
+```{r Heatmaps annotation - rawdata breast}
 
 # We first want to see the dendrogram of the heatmap
 # By that we can decide to put certain number of clusters into the heatmap
@@ -1001,13 +1003,13 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 
 ### Clustering - kmeans
 
-```{r}
+```{r kmeans - rawdata breast}
 
 ```
 
 ### Hypothesis testing
 
-```{r Hypothesis testing}
+```{r Hypothesis testing - rawdata breast}
 #Hypothesis testing 
 #according to the histogram previously created, KLKs are not normally distributed
 
@@ -1128,7 +1130,7 @@ barplot(KLK1.vs.all.sig)
 ## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
 
 ### Clean up identical transcripts
-```{r, cleanup identical transcripts}
+```{r cleanup identical transcripts - breast cancer}
 
 #transform dataset - genes on columns
 df.TRA.KLK.breast <- data.frame(t(TRA.KLK.breast))
@@ -1183,7 +1185,7 @@ TRA.KLK.breast.clean <- data.frame(TRA.KLK.breast.clean)
 ```
 ### Visualization of gene expression 
 #### Overview gene expression
-```{r Overview and Histogram breast}
+```{r Overview and Histogram - breast cancer}
 gene.summary(breastExprs)
 
 setwd(here("Plots/Plots_breast"))
@@ -1200,7 +1202,7 @@ dev.off()
 ```
 
 #### Boxplots 
-```{r}
+```{r Boxplots - breast cancer}
 #boxplots 
 setwd(here("Plots/Plots_breast"))
 pdf("all_KLK_boxplot_breast.pdf")
@@ -1257,7 +1259,7 @@ dev.off()
 
 
 #### Heatmap
-```{r Heatmap annotation}
+```{r Heatmap annotation - breast cancer}
 # We first want to see the dendrogram of the heatmap
 # By that we can decide to put certain number of clusters into the heatmap
 # This clustering is not meant for analytical purpose -> see k-means later on for this
@@ -1426,7 +1428,7 @@ legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
 ```
 
 ### Clustering - kmeans
-```{r}
+```{r k-means - breast cancer}
 
 ```
 
@@ -1434,7 +1436,7 @@ legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
 
 ### Clean up identical isoforms
-```{r, clean up idencticals - lung cancer}
+```{r clean up idencticals - lung cancer}
 
 #transform dataset - genes on columns
 df.TRA.KLK.lung <- data.frame(t(TRA.KLK.lung))
@@ -1478,7 +1480,7 @@ TRA.KLK.lung.clean <- data.frame(TRA.KLK.lung.clean)
 
 ### Visualization of gene expression 
 #### Overview gene expression
-```{r Histogram}
+```{r Histogram - lung cancer}
 gene.summary(lungExprs)
 
 #Histograms of genes expression
@@ -1497,7 +1499,7 @@ dev.off()
 ```
 
 #### Boxplots 
-```{r Boxplots}
+```{r Boxplots - lung cancer}
 #boxplots 
 setwd(here("Plots/Plots_lung"))
 pdf("all_KLK_boxplot_lung.pdf")
@@ -1551,7 +1553,7 @@ dev.off()
 ```
 
 #### Heatmap
-```{r Heatmaps annotation}
+```{r Heatmaps annotation - lung cancer}
 # We first want to see the dendrogram of the heatmap
 # By that we can decide to put certain number of clusters into the heatmap
 # This clustering is not meant for analytical purpose -> see k-means later on for this
