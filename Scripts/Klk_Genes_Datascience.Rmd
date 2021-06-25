@@ -1858,10 +1858,12 @@ km.klk.rawdata <- kmeans(scale(all.KLK.rawdata.clean),5, nstart=25)
 km.klk.rawdata$cluster
 
 fviz_cluster(km.klk.rawdata, data=all.KLK.rawdata.clean, 
-             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800", "#8DD3C7" ), 
-             geom = "point", 
+             palette =c("#FF66CC","#00AFBB", "#FC4E07", "#E7B800", "#8DD3C7"), 
+             geom = c("point","text") ,
              ellipse.type = "convex",
              ggtheme = theme_bw(),
+             labelsize = 6,
+             repel=TRUE,
              
 )
 
@@ -1915,12 +1917,13 @@ km.klk.lung.5 <- kmeans(scale(all.KLK.lung.clean.noGSM),5, nstart=25)
 km.klk.lung.5$cluster
 
 fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM, 
-             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800", "#009900"), 
+             palette =c("#003333","#00AFBB", "#FC4E07", "#FF66CC", "#009900"), 
              geom = c("point","text") ,
              ellipse.type = "convex",
              ggtheme = theme_bw(),
-             labelsize = 6,
-             repel=TRUE
+             labelsize = 5,
+             repel=TRUE,
+             
 ) ##labelsize und text bei restlichen noch, repel anpassen
 
 km.klk.lung.7 <- kmeans(scale(all.KLK.lung.clean.noGSM),7, nstart=25)
@@ -1970,27 +1973,30 @@ fviz_cluster(km.breast, data=breastExprs,
 #k-means analysis fpr klks from breastcancer
 #(all.KLK.breast.clean.noGSM)
 
-wssplot.klk.breast <- function(all.KLK.breast.clean.noGSM, nc=15, seed=1234)
+tf.klk.breast.clean = t(all.KLK.breast.clean.noGSM)
+
+wssplot.klk.breast <- function(tf.klk.breast.clean, nc=15, seed=1234)
 {
-  wss <- (nrow(all.KLK.breast.clean.noGSM)-1)*sum(apply(all.KLK.breast.clean.noGSM ,2,var))
+  wss <- (nrow(tf.klk.breast.clean)-1)*sum(apply(tf.klk.breast.clean ,2,var))
   for(i in 2:nc){
     set.seed(seed)
-    wss[i] <- sum(kmeans(all.KLK.breast.clean.noGSM , centers = i)$withinss)}
+    wss[i] <- sum(kmeans(tf.klk.breast.clean , centers = i)$withinss)}
   plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 }
 
-wssplot.klk.breast(all.KLK.breast.clean.noGSM)
+wssplot.klk.breast(tf.klk.breast.clean)
 
-#approx 5 clusters
 
-km.klk.breast <- kmeans(scale(all.KLK.breast.clean.noGSM),5, nstart=25)
+km.klk.breast <- kmeans(scale(tf.klk.breast.clean),6, nstart=25)
 km.klk.breast$cluster
 
-fviz_cluster(km.klk.breast, data=all.KLK.breast.clean.noGSM, 
-             palette =c("#009900","#00AFBB", "#FC4E07", "#E7B800", "#003333"), 
-             geom = "point", 
+fviz_cluster(km.klk.breast, data=tf.klk.breast.clean, 
+             palette =c("#009900","#00AFBB", "#FC4E07", "#E7B800", "#003333","#FF66CC"), 
+             geom = c("point","text"), 
              ellipse.type = "convex",
-             ggtheme = theme_bw()
+             ggtheme = theme_bw(),
+             labelsize = 5,
+             repel=TRUE
 )
 
 
@@ -2109,6 +2115,7 @@ KLK.TRA.frame = as.data.frame(KLK.TRA.table)
 
 #in this frame we still include the mouse TRA data - shall we only look at human?
 #skin adjust
+
 KLK.TRA.frame$Freq[14] = 6
 KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(15,16))
 
@@ -2132,10 +2139,16 @@ KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(9))
 KLK.TRA.frame$Freq[5] = 16
 KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(7))
 
+#remove nodose_nucleus
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(6))
+
+#remove snout epidermis
+KLK.TRA.frame <- KLK.TRA.frame %>% slice(-c(9))
+
 #dataframe needs to be table so pie can work, converting:
 piechart.vec = KLK.TRA.frame[,2]
-names.piechart = c("Cervix","Colon","Esophagus","Liver","Minor Salivary Gland", "nodose_nucleus","Pancreas",
-                   "Prostate", "Skin", "Snoutepidermis", "Spinal Cord", "Testis", "Thyroid", "Tongueepidermis","Vulva")
+names.piechart = c("Cervix","Colon","Esophagus","Liver","Minor Salivary Gland","Pancreas",
+                   "Prostate", "Skin", "Spinal Cord", "Testis", "Thyroid", "Tongueepidermis","Vulva")
 
 
 #expanding color palette
@@ -2144,9 +2157,10 @@ coul <- colorRampPalette(coul)(25)
 
 #pieeee
 pie(piechart.vec, labels = names.piechart,
-    edges = 200, radius = 0.9, col=coul ,
+    edges = 200, radius = 1, col= brewer.pal(13, "Paired") ,
     main = "Distribution of KLK-TRA genes over tissue",
-    cex =0.55)
+    cex =0.55,
+    )
 
 
 ```
