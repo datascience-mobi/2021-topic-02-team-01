@@ -6,11 +6,11 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(include = FALSE)
 ```
 
-###load library
-```{r Load Libaries, hide=TRUE}
+
+```{r Load Libaries, hide=TRUE, include=FALSE}
 library(affy)
 library(vsn)
 library(AnnotationDbi)
@@ -33,35 +33,45 @@ here::here()
 # 1. Introduction
 
 # 2. Quality control
+After we read in our data, the first step is to verify its quality. For this, we follow the measures presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. This significantly different expression would then be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristic will thereby be identified and replaced in the following quality control. We review the quality control measures of the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
 
 ## 2.1 Quality control - GSE65216 breast cancer
 ### Single chip control
-### Normalization
-### Visualization via boxplots
+Here, an image of the scanned arrays is displayed. Upon examination of each array, there are no scratches or lighter areas detectable, which means the arrays themselve are fine.
+```{r echo=FALSE, fig.align="center", fig.cap="Working chip of breast cancer microarray GSE65216", out.width="50%"}
+knitr::include_graphics(here("Plots/Plots_breast_qc/breast_chip_control_example1.png"))
+```
+### meanSd plot
+The figure below shows the standard deviation of the vsn normalized data, across all samples, plotted against the mean. Here, the logarithmic transformation consists with the base of 2.
+### Boxplots before and after normalisation
+It is clearly visible, that the differences in intensities between arrays is strongly reduced after normalisation. Also the boxplots only show little fluctuation in gene expression for the 20 arrays after normalisation. This means all chips adjudted through vsnrma normalisation
+ -> picture of boxplots prior to normalisation (left) and after normalisation
 ### Density function
 ### RNA degeneration plot
 ### Scatter plots
+We plotted each sample against the following sample. If the scattered points deviate strongly from the red line, like for example forming a banana-like shape, then one of the respective chips for the sample must be broken. However this seems not to be the case here.
 
 ## 2.2 Quality control - GSE149507 lung cancer
 ### Single chip control
-### Normalization
-### Visualization via boxplots
+### meanSd plot
+### Boxplots before and after normalisation
 ### Density function
 ### RNA degeneration plot
 ### Scatter plots
+Here, we detected that the carcinoma tissue sample of patient number 5 did not show linear relationship to all of the other samples. Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each, we consequently replaced the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_ with new 2 new chips out of the gene expression omnibus. When performing the scatter plot control over again, we do not come across any discrepancies.
 
 # 3. Further data acquistion
-## Importing TRA data
-## Union of TRA data
-## Setting up rawdata breast data set GSE27830
-## Setting up breast cancer data set GSE65216
-## Setting up lung cancer data set GSE149507 
-
+## Importing and unification of TRA data
+To distinguish between TRA KLK genes and non-TRA KLK genes, we imported a total of 6 TRA data sets ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). Also below you can see an overview of the tissues that display TRAs in the context of the whole data set.
+## Setting up rawdata breast data set GSE27830    ----> nicht mit reinnehmen
+## Setting up breast cancer data set GSE65216     ----> nicht mit reinnehmen
+## Setting up lung cancer data set GSE149507    ----> nicht mit reinnehmen
 
 # 4. Expression Analysis
 ## Extraction of KLK and KLK TRA genes
+With the unified TRA data set Union.TRA, it is possible to extract all KLKs that are tissue-restricted by their transcript number. 
 
-## 4.1 breast cancer GSE27830 (Nagel et al. 2012)
+((((((## 4.1 breast cancer GSE27830 (Nagel et al. 2012)
 ### Clean up identical isoforms
 ### Visualization of gene expression 
 #### Overview gene expression (histogram)
@@ -71,22 +81,32 @@ here::here()
 ### Clustering - kmeans
 ### Hypothesis testing
 ### Venn Diagram (plots currently missing)
-### Discussion
+### Discussion ))))))
 
 ## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
 ### Clean up identical isoforms
-### Visualization of gene expression 
+We came across the fact, that some of these isoforms of KLKs in our microarray appear more than once. So the first step is to clean up these identical isoforms. This is easily done by performing correlation between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are identical and one of both will be removed. Furthermore, we sorted the KLKs in ascending order for the visualization via the boxplots. In the end, we get cleared up 39 identical isoforms and ended up with a total of 73 KLK genes. 63 of these are TRAs, while only 10 are not tissue restricted.
+
+### Visualization of gene expression
 #### Overview gene expression (histogram)
+Since we performed vsnrma normalisation, the median does not fluctuate too much for all samples. We can also s, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale with a base of 2, a log-fold change of +1 represents a two times as high gene expression.  
+The histogram represent the frequency of the present gene expression in breast cancer samples. It also shows, that the median gene expression of KLKs is much lower than the overall median gene expression. This means KLK gene expression is normally down-regulated in the perspective of the whole genome. (VLLT NACHWEIS, DASS DAS AN HORMONREGUALTION LIEGT oder so)
+
 #### Boxplots
+Here, the pattern for the fairly low gene expression of KLKs is also recognizable. Most of the boxpots of the single KLK genes seem to be lower than the median expression of the whole breast cancer genome. Some KLK isoforms like KLK2.3 are even below a gene expression value of 6, so KLK isoforms like these are clearly down-regulated. There are only two isoforms that even  exceed the median of the whole genome expression of the breast cancer set. These are the isoforms KLK4.4 and KLK8.8. (schauen ob KLK4 und KLK8 gen expression up-regulated). Since we now want to know whether the gene expression is different across the breast cancer and their respective mutations, we will have a look onto the KLK heatmap.
+
 #### Heatmap
+The dendrogram is the core for the emerging clustering in heatmaps.(DENDROGRAM EINBLENDEN) Here clustering is performed after the complete-linkage method. If we have a look onto the dendrogram, we can see that KLK4.4 forms its own branch independent of all the others. In contrast to that, the other KLK isoforms are closelier clustered. This is due to the fact as we already have seen in the boxplots, that expression of KLK4.4 was much higher than for all the others. Looking on the bigger picture of the dendrogram, it is notable that besides KLK4.4 there are two closelier related clusters. Thereby altogether, the dendrogram distinguishes between the relatively high gene expression o f KLK4.4, a medium high expression in cluster 2 and very low gene expression for the 3rd cluster. 
+We will use this result to increase clarity for the heatmap, by cutting the dendrogram-tree, so that there are 3 distinguished clusters. This classification into 3 clusters is just for visuality purposes, since k-means will be performed later on.
+
 ### PCA
 ### Clustering - kmeans
 ### Hypothesis testing
-### Venn Diagram (plots currently missing)
 ### Discussion
 
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
 ### Clean up identical isoforms
+The clean up follows the same method shown for the breast cancer data set. This results in 73 KLK genes, 63 of which are TRAs.
 ### Visualization of gene expression 
 #### Overview gene expression (histogram)
 #### Boxplots
@@ -94,7 +114,6 @@ here::here()
 ### PCA
 ### Clustering - kmeans
 ### Hypothesis testing
-### Venn Diagram (plots currently missing)
 ### Discussion
 
 OVERVIEW(cut out later)
@@ -111,4 +130,10 @@ insert pictures: "image: ![](path/to/smallorb.png)"
 The Kallikrein - gene familiy comprises a subgroup of 15 genes, all encoding trypsin or chymotrypsin-like serine proteases.
 
 ```{r}
+
+# References
+
+- Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15  
+- Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
+
 

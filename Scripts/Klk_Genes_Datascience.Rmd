@@ -171,6 +171,11 @@ pdf("breast_chip_control.pdf")
 image(breast, col=rainbow(100,start=0,end = 0.75)[100:1])
 dev.off()
 
+setwd(here("Plots/Plots_breast_qc"))
+pdf("breast_chip_control_example1.pdf")
+image(breast[,7], col=rainbow(100,start=0,end = 0.75)[100:1])
+dev.off()
+
 # the individual chips look fine
 ```
 
@@ -203,15 +208,13 @@ dev.off()
 setwd(here("Plots/Plots_breast_qc"))
 
 pdf("breast_box_bfnorm.pdf")
-par(mai=c(0.8,1.5,0.8,0.8))
-boxplot(breast, horizontal = TRUE , col=rainbow(150),cex.axis=0.38,main="GSE65216 (Maire et al. 2013) gene expression before normalization", las = 2)
+boxplot(breast, horizontal = TRUE , col=rainbow(150),cex.axis=0.5,main="Gene expression of GSE65216 before normalization", las = 2)
 dev.off()
 
-
+setwd(here("Plots/Plots_breast_qc"))
 ##Boxplot after normalization
 pdf("breast_box_afnorm.pdf")
-par(mai=c(0.8,1.5,0.8,0.8))
-boxplot(exprs(breast.vsnrma),horizontal = TRUE,col=rainbow(150),cex.axis=0.5,main="GSE65216 (Maire et al. 2013) gene expression after normalization" , las=2)
+boxplot(exprs(breast.vsnrma),horizontal = TRUE,col=rainbow(150),cex.axis=0.5,main="Gene expression of GSE65216 after normalization" , las=2)
 dev.off()
 
 ```
@@ -230,7 +233,7 @@ dev.off()
 ## Density function after normalization
 ##vsnrma
 breastExprs = exprs(breast.vsnrma) ####IMPORTANT
-
+setwd(here("Plots/Plots_breast_qc"))
 pdf("breast_dflog_afnorm.pdf")
 plot(density(breastExprs[,1]), type="n", xlab="log Intensity", main = "GSE65216 (Maire et al. 2013) density function after normalization")
 for(i in 1:ncol(breastExprs)){
@@ -286,14 +289,6 @@ break}
 }
 dev.off()
 
-file.name=paste("scatterplot_", as.character(substr(colnames(breast.vsnrma)[i], 1,
-nchar(colnames(breast.vsnrma)[i]))),"_",as.character(substr(colnames(breast.vsnrma)[i+1],1,
-nchar(colnames(breast.vsnrma)[i+1]))),".eps",sep="")
-
-
-
-
-
 ## None of the scatterplots seem to deviate significantly from the red line
 
 ```
@@ -308,6 +303,12 @@ setwd(here("Plots/Plots_lung_qc"))
 pdf("lung_chip_control.pdf") 
 image(lung, col=rainbow(100,start=0,end = 0.75)[100:1])
 dev.off()
+
+setwd(here("Plots/Plots_lung_qc"))
+pdf("lung_chip_control_example1.pdf")
+image(lung[,7], col=rainbow(100,start=0,end = 0.75)[100:1])
+dev.off()
+
 # the individual chips look fine
 ```
 
@@ -339,13 +340,11 @@ setwd(here("Plots/Plots_lung_qc"))
 
 ##Boxplot before normalization
 pdf("lung_box_bfnorm.pdf")
-par(mai=c(0.8,1.5,0.8,0.8))
 boxplot(lung, horizontal = TRUE ,col=rainbow(150),cex.axis=0.5,main="GSE149507 (Cai et al. 2021) gene expression before normalization", las = 2)
 dev.off()
 
 ##Boxplot after normalization
 pdf("lung_box_afnorm.pdf")
-par(mai=c(0.8,1.5,0.8,0.8))
 boxplot(exprs(lung.vsnrma), horizontal = TRUE, col=rainbow(150),cex.axis=0.5,main="GSE149507 (Cai et al. 2021) gene expression after normalization" , las=2)
 dev.off()
 ```
@@ -353,7 +352,7 @@ dev.off()
 ### Density function
 ```{r Lung- Density function}
 ## Density function before normalization
-setwd(here("Plots/Plots_lung_qc"))
+
 
 pdf("lung_df_bfnorm.pdf")
 hist(lung, col=rainbow(150), main = "GSE149507 (Cai et al. 2021) density function before normalization")
@@ -363,7 +362,7 @@ dev.off()
 ## Density function after normalization
 ##vsnrma
 lungExprs = exprs(lung.vsnrma) ####IMPORTANT
-
+setwd(here("Plots/Plots_lung_qc"))
 pdf("lung_df_afnorm.pdf")
 plot(density(lungExprs[,1]), type="n", xlab="log Intensity",main = "GSE149507 (Cai et al. 2021) density function after normalization")
 for(i in 1:ncol(lungExprs)){
@@ -1127,7 +1126,7 @@ df.TRA.KLK.breast <- data.frame(t(TRA.KLK.breast))
 #number of identical columns
 cor.TRA.KLK.breast <- cor.genes(df.TRA.KLK.breast)
 length(which(cor.TRA.KLK.breast == 1))
-# 5 identical isoforms 
+# 46 entries 
 
 #cleanup function 
 genes.cleanup <- function(df){
@@ -1142,15 +1141,13 @@ dim(TRA.KLK.breast.clean)
 length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
 TRA.KLK.breast.clean
 
-# Creating a heatmap, that displays all KLKs and indicates the ones who are TRAs
-
 # First we need to clean up the isoforms again
 df.all.KLK.breast <- data.frame(t(all.KLK.breast))
 
 #test function 
 cor.all.KLK.breast <- cor.genes(df.all.KLK.breast)
 length(which(cor.all.KLK.breast == 1))
-#49 isoforms are not unique
+# 56 entries 
 #Identical transcripts can cause issues later on for statistical testing etc. 
 
 #remove identical isoforms
@@ -1180,7 +1177,7 @@ gene.summary(breastExprs)
 setwd(here("Plots/Plots_breast"))
 pdf("Histogram_gene_expression_lines.pdf")
 hist(breastExprs, 
-     main="Gene expression GSE27830 (Nagel et al. 2021)",
+     main="Gene expression of breast cancer GSE65216 (Maire et al. 2013)",
      xlab="Expression value",
      breaks=40
      )
@@ -1201,9 +1198,11 @@ boxplot(t(all.KLK.breast.clean),
         cex.axis=0.4,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h = median(breastExprs), col= "red", lwd = 2, lty = 2)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs","median all genes"), col=c("red", "blue"), lwd=10)
 dev.off()
+
 
 
 #split the boxplots, because it is hard to read the gene names
@@ -1215,8 +1214,8 @@ boxplot(t(all.KLK.breast.clean[1:24,]),
         cex.axis=0.8,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("blue"), lwd=10)
 dev.off()
 
 #Boxplot2
@@ -1227,8 +1226,8 @@ boxplot(t(all.KLK.breast.clean[25:48,]),
         cex.axis=0.8,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("blue"), lwd=10)
 dev.off()
 
 #Boxplot3
@@ -1239,8 +1238,8 @@ boxplot(t(all.KLK.breast.clean[49:73,]),
         cex.axis=0.8,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.breast.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(unlist(all.KLK.breast.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("blue"), lwd=10)
 dev.off()
 
 
@@ -1426,7 +1425,7 @@ legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
 #checking the normaility of the breast cancer dataset 
 #QQ Plot
 setwd(here("Plots/Plots_breast"))
-png("QQPlot_breast.png")
+pdf("QQPlot_breast.pdf")
 qqnorm(breastExprs, main = "QQ-Plot GSE65216 (Maire et al. 2013)");qqline(breastExprs)
 dev.off()
 #the data is not normally distributed - therefore we will use the Wilcoxon Rank Sum test/ Mann-Whitney U test
@@ -1542,7 +1541,7 @@ gene.summary(lungExprs)
 
 #Histograms of genes expression
 setwd(here("Plots/Plots_lung"))
-png("Histogram_gene_expression_lines.png")
+pdf("Histogram_gene_expression_lines.pdf")
 hist(lungExprs, 
      main="Gene expression GSE149507 (Cai et al. 2021)",
      xlab="Expression value",
@@ -1559,53 +1558,54 @@ dev.off()
 ```{r Boxplots - lung cancer}
 #boxplots 
 setwd(here("Plots/Plots_lung"))
-png("all_KLK_boxplot_lung.png")
+pdf("all_KLK_boxplot_lung.pdf")
 boxplot(t(all.KLK.lung.clean),
         col=rainbow(length(rownames(all.KLK.lung.clean))),
         main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
         cex.axis=0.4,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(lungExprs), col= "red", lwd = 2, lty = 2)
+abline(h=median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all genes", "median all KLKs"), col=c("red", "blue"), lwd=10)
 dev.off()
 
 
 #split the boxplots, because it is hard to read the gene names
 #Boxplot1 
 setwd(here("Plots/Plots_lung"))
-png("all_KLK_boxplot_lung1.png")
+pdf("all_KLK_boxplot_lung1.pdf")
 boxplot(t(all.KLK.lung.clean[1:24,]),
         col=rainbow(length(rownames(all.KLK.lung.clean[1:24,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
         cex.axis=0.8,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("blue"), lwd=10)
 dev.off()
 
 #Boxplot2
 setwd(here("Plots/Plots_lung"))
-png("all_KLK_boxplot_lung2.png")
+pdf("all_KLK_boxplot_lung2.pdf")
 boxplot(t(all.KLK.lung.clean[25:48,]),
         col=rainbow(length(rownames(all.KLK.lung.clean[25:48,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
         cex.axis=0.8,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("blue"), lwd=10)
 dev.off()
 
 #Boxplot3
 setwd(here("Plots/Plots_lung"))
-png("all_KLK_boxplot_lung3.png")
+pdf("all_KLK_boxplot_lung3.pdf")
 boxplot(t(all.KLK.lung.clean[49:73,]),
         col=rainbow(length(rownames(all.KLK.lung.clean[49:73,]))),main="Gene expression of KLKs GSE149507 (Cai et al. 2021)",
         cex.axis=0.8,
         las = 2,
         )
-abline(h=median(unlist(all.KLK.lung.clean)), col= "red", lwd = 2, lty = 2)
-legend("topright", c("median all KLKs"), col=c("red"), lwd=10)
+abline(h=median(unlist(all.KLK.lung.clean)), col= "blue", lwd = 2, lty = 2)
+legend("topright", c("median all KLKs"), col=c("blue"), lwd=10)
 dev.off()
 ```
 
@@ -2005,7 +2005,7 @@ fviz_cluster(km.klk.breast, data=tf.klk.breast.clean,
 ```{r Hypothesis testing}
 #check the normality of the dataset with a QQ-plot
 setwd(here("Plots/Plots_lung"))
-png("QQPlot_lung.png")
+pdf("QQPlot_lung.pdf")
 qqnorm(breastExprs, main = "QQ-Plot GSE149507 (Cai et al. 2021)");qqline(breastExprs)
 dev.off()
 #The data is not normally distributed - we must use a non-parametric test!
