@@ -1785,7 +1785,7 @@ plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
      pch = 18,
      main = "PC1 / PC2 - plot",
      col = color.lung.cancer)
-legend("left", legend=c("TRA", "non-TRA"),
+legend("left", legend=c("cancer", "normal"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],

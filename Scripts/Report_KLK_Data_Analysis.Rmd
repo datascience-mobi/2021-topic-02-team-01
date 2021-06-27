@@ -29,6 +29,7 @@ library(here)
 here::here()
 ```
 
+\newpage
 
 # 1. Introduction
 
@@ -38,7 +39,7 @@ After we read in our data, the first step is to verify its quality. For this, we
 ## 2.1 Quality control - GSE65216 breast cancer
 ### Single chip control
 Here, an image of the scanned arrays is displayed. Upon examination of each array, there are no scratches or lighter areas detectable, which means the arrays themselve are fine.
-```{r echo=FALSE, fig.align="center", fig.cap="Working chip of breast cancer microarray GSE65216", out.width="50%"}
+```{r fig.align="center", fig.cap="Working chip of breast cancer microarray GSE65216", out.width="50%"}
 knitr::include_graphics(here("Plots/Plots_breast_qc/breast_chip_control_example1.png"))
 ```
 ### meanSd plot
@@ -116,13 +117,7 @@ The clean up follows the same method shown for the breast cancer data set. This 
 ### Hypothesis testing
 ### Discussion
 
-OVERVIEW(cut out later)
-#title(1, 2, ...)
-##subtitle(1.1 , 1.2 ...)
-###subsubtitle(1.1.1, 1.1.2 ....)
-"superscript^2^" to create superscript
-to start new paragraph : end line with two spaces
-insert pictures: "image: ![](path/to/smallorb.png)"
+
 
 
 
@@ -133,7 +128,7 @@ The Kallikrein - gene familiy comprises a subgroup of 15 genes, all encoding try
 
 # References
 
-- Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15  
-- Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
+#- Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15  
+#- Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
 
 
