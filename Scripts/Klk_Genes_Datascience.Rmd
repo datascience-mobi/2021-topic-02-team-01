@@ -2025,12 +2025,36 @@ all.KLK.lung.clean.ca
 all.KLK.lung.clean.n <- all.KLK.lung.clean[, grepl("n", colnames(all.KLK.lung.clean))]
 all.KLK.lung.clean.n
 
-cluster3.lung.names <- c("KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6")
-
 results <- matrix(data=NA, nrow=7, ncol=3)
 results[ ,1:2] <- cluster3.lung.names
 colnames(results) <- c("ca", "n", "p.value")
+
+
+#by hand 
+#KLK11
+results[1,3]<- wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK11", ]), as.matrix(all.KLK.lung.clean.n["KLK11", ]), paired = TRUE)$p.value
+#KLK11.2
+results[2,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK11.2", ]), as.matrix(all.KLK.lung.clean.n["KLK11.2", ]), paired = TRUE)$p.value
+#KLK12
+results[3,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12", ]), as.matrix(all.KLK.lung.clean.n["KLK12", ]), paired = TRUE)$p.value
+#KLK12.3
+results[4,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.3", ]), as.matrix(all.KLK.lung.clean.n["KLK12.3", ]), paired = TRUE)$p.value
+#KLK12.4
+results[5,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.4", ]), as.matrix(all.KLK.lung.clean.n["KLK12.4", ]), paired = TRUE)$p.value
+#KLK12.5
+results[6,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.5", ]), as.matrix(all.KLK.lung.clean.n["KLK12.5", ]), paired = TRUE)$p.value
+#KLK12.6
+results[7,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.6", ]), as.matrix(all.KLK.lung.clean.n["KLK12.6", ]), paired = TRUE)$p.value
 results
+
+identical(as.matrix(all.KLK.lung.clean.ca["KLK12.3", ]), as.matrix(all.KLK.lung.clean.ca["KLK12.4", ]))
+#KLK12-12.5 have the same p.value of 0.0625, although their values are not identical, they are so similar that they have the same p-value. 
+
+
+
+cluster3.lung.names <- c("KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6")
+
+
 
 for( ca in all.KLK.lung.clean.ca[cluster3.lung.names
                                 , ]){
@@ -2058,9 +2082,10 @@ median(as.matrix(all.KLK.lung.clean.n["KLK11", ]))
 dim(all.KLK.lung.clean.ca)
 
 
-
+all.KLK.lung.clean
 
 ```
+
 ```{r, Backup code testing }
 
 # <- lungExprs[grepl("ENST", colnames(lungExprs)), ]
@@ -2097,6 +2122,23 @@ t.data <- adply(combinations, 2, function(x) {
    
   return(out)
   })
+```
+
+```{r}
+cluster3.lung.names <- c("KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6")
+#cluster boxplots 
+library(gridExtra)
+library(ggplot2)
+p <- list()
+
+for (j in rownames(all.KLK.lung.clean)[cluster3.lung.names]) {
+  p[[j]] <- ggplot(data=all.KLK.lung.clean.ca, aes_string(x=grepl("ca", colnames(all.KLK.lung.clean)), y=j)) + # Specify dataset, input or grouping col name and Y
+            geom_boxplot(aes(fill=factor(grepl("ca", colnames(all.KLK.lung.clean))))) + guides(fill=FALSE) + # Boxplot by which factor + color guide
+            theme(axis.title.y = element_text(face="bold", size=14))  # Make the Y-axis labels bigger/bolder
+}
+
+do.call(grid.arrange, c(p, ncol=3))
+all.KLK.lung.clean
 ```
 
 
