@@ -2086,59 +2086,65 @@ all.KLK.lung.clean
 
 ```
 
-```{r, Backup code testing }
-
-# <- lungExprs[grepl("ENST", colnames(lungExprs)), ]
-
-w.test.gene.df.upper <- function(gene, df){
-  apply(as.matrix(df), 1, function(x){
-  test <- wilcox.test(as.matrix(gene), x,  
-                      alternative = "greater", 
-                      exact = FALSE, 
-                      paired = FALSE,
-                      digits.rank = 10)$p.value})
-
-}
-
-
-
-
-t.data <- adply(combinations, 2, function(x) {
-  test <- t.test(all.KLK.rawdata.clean[x[1], ],
-                 all.KLK.rawdata.clean[x[2], ],
-                 alternative = "two.sided") 
-
-  
-
-
-
-  out <- rbind.fill(data.frame(
-    "Var1" = colnames(all.KLK.rawdata.clean[ ,x[1]]),
-    "Var2" = colnames(all.KLK.rawdata.clean[ ,x[2]]),
-                    "W.value"= test$statistic,
-                    "df"= test$parameter,
-                    "p.value" = test$p.value
-                    ))
-   
-  return(out)
-  })
-```
-
 ```{r}
-cluster3.lung.names <- c("KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6")
-#cluster boxplots 
-library(gridExtra)
-library(ggplot2)
-p <- list()
+#Hypothesis testing cluster 3
 
-for (j in rownames(all.KLK.lung.clean)[cluster3.lung.names]) {
-  p[[j]] <- ggplot(data=all.KLK.lung.clean.ca, aes_string(x=grepl("ca", colnames(all.KLK.lung.clean)), y=j)) + # Specify dataset, input or grouping col name and Y
-            geom_boxplot(aes(fill=factor(grepl("ca", colnames(all.KLK.lung.clean))))) + guides(fill=FALSE) + # Boxplot by which factor + color guide
-            theme(axis.title.y = element_text(face="bold", size=14))  # Make the Y-axis labels bigger/bolder
-}
+#data needs the format of three columns (name, value, tissue type)
+#creating this dataframe for ca tissue 
+t.all.KLK.lung.clean.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
+tl.all.KLK.lung.clean.ca <- pivot_longer(t.all.KLK.lung.clean.ca, col= colnames(t.all.KLK.lung.clean.ca))
+cavec <- rep("ca", 438)
+tl.all.KLK.lung.clean.ca <- cbind(tl.all.KLK.lung.clean.ca, tissue_type= cavec)
 
-do.call(grid.arrange, c(p, ncol=3))
-all.KLK.lung.clean
+#dataframe n tissue 
+t.all.KLK.lung.clean.n <- as.data.frame(t(all.KLK.lung.clean.n))
+tl.all.KLK.lung.clean.n <- pivot_longer(t.all.KLK.lung.clean.n, col= colnames(t.all.KLK.lung.clean.n))
+nvec <- rep("n", 438)
+tl.all.KLK.lung.clean.n <- cbind(tl.all.KLK.lung.clean.n, tissue_type= nvec)
+
+#fusing the datasets  
+tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n)
+
+
+#subset dataframe: only genes of cluster3
+cluster3.lung.names <- c( "KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6", "KLK4.4")
+cluster3.lung.names <- as.matrix(cluster3.lung.names)
+b.cluster3.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
+tl.cluster3.lung <- which(b.cluster3.lung == TRUE)
+tl.cluster3.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster3.lung, ])
+tl.cluster3.lung
+
+#Plot with p.values cluster 3 
+setwd(here("Plots/Plots_lung"))
+pdf("Cluster3_lung.pdf")
+ggplot(tl.cluster3.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("Cluster 3, GSE149507 (Cai et al. 2021)")+
+  stat_boxplot(geom="errorbar")+
+  geom_boxplot()+
+  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
+dev.off()
+```
+```{r, Underexpression KLK10.3}
+#In the heatmap KLK10.3 seems underexpressed in the cancer tissue in comparison to the normal tissue 
+#filter the KLK10.3 from tl.lung df
+b.KLK10.3.lung <- tl.all.KLK.lung.clean[, 1] %in% "KLK10.3"
+tl.KLK10.3.lung <- which(b.KLK10.3.lung == TRUE)
+tl.KLK10.3.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.KLK10.3.lung, ])
+tl.KLK10.3.lung
+
+#ggplot 
+setwd(here("Plots/Plots_lung"))
+pdf("KLK10.3.pdf")
+ggplot(tl.KLK10.3.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("KLK10.3, GSE149507 (Cai et al. 2021)")+
+  stat_boxplot(geom="errorbar")+
+  geom_boxplot()+
+  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
+dev.off()
+```
+###Regression analysis
+```{r}
+
 ```
 
 
