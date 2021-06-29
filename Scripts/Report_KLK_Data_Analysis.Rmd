@@ -33,6 +33,12 @@ here::here()
 
 # 1. Introduction
 
+## 1.1 Overview TRA - KLK
+To get an overview about the distribution of Tissue Restricted Antigens, especially those that are Kallikrein genes, a pie chart was conducted.
+A pie chart in general allows a quick overview and a first assessment of numerical distribution values. In this pie chart, the distribution of Tissue Restricted Kallikrein-Antigens is displayed. Notable is the high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland. 
+Starting by combining the five given TRA datasets, we fused them into one big data frame, and extracted all those genes, that are Kallikreins. For the pie chart, we converted the only-Kallikrein data frame of TRAs into a table. Since we combined 5 datasets, annotations for the same tissue were different, so we fused them manually. For the tissue “skin” as an example there were 3 tissues given: “skin”, “Skin – Sun exposed” and “Skin – not Sun exposed”. All those were combined into “skin”.
+
+
 # 2. Quality control
 After we read in our data, the first step is to verify its quality. For this, we follow the measures presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. This significantly different expression would then be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristic will thereby be identified and replaced in the following quality control. We review the quality control measures of the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
 
@@ -118,11 +124,15 @@ The clean up follows the same method shown for the breast cancer data set. This 
 ### Discussion
 
 
+## Text k means but for both
+K-means was performed to be able to draw conclusions on characteristics and the distribution of different Kallikrein genes. Here, we first determined the optimal number k of clusters in doing a Within Cluster Sum of Squares – plot, also called the elbow method. A kink in the curve of a plot, in which the number k of clusters is plotted against the within cluster sum of squares, displays the optimal number of k clusters. Rising numbers of k will not cause a significant decline in the within cluster sum of squares anymore. 
+For the lung cancer dataset, the Within Cluster Sum of Squares – plot predicted an optimal number of k = 5, so k-means was performed using 5 clusters. The function of k-means automatically reduces dimensions to 2 if a dataset consists of 3 or more dimensions, so the k-means clustering does not directly cluster genes of interest according to their expression values, but since dimension reduction always consists of variables that explain most of the variance of the data, in this case k-means is still suitable to compare clusters of Kallikrein genes.
+K-means performed for the lung cancer dataset showed an interesting and distinct cluster, which only consisted of KLK-subtypes of Kallikrein 12. Kallikrein 4.4 was found on the top left corner.
+For the breast-cancer dataset, an optimal number of k = 6 was determined. Here, another cluster was highly distinct, containing KLK 4.4, which is also examined in the hypothesis testing. Interestingly, here we could find the cluster containing Kallikrein of the top right corner, on the opposite side than in the lung cancer dataset.
 
 
 
-# 1. Introduction  
-The Kallikrein - gene familiy comprises a subgroup of 15 genes, all encoding trypsin or chymotrypsin-like serine proteases.
+
 
 ```{r}
 
