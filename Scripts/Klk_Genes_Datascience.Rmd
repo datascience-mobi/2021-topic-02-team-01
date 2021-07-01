@@ -941,7 +941,7 @@ dev.off()
 ```{r PCA - rawdata breast}
 # center = TRUE
 # scale = FALSE, since we already did this in the vsn normalization
-pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = FALSE)
+pr.all.KLK.rawdata.clean <- prcomp(t(all.KLK.rawdata.clean), center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.rawdata.clean)
 # normally the first principle component are sufficient
@@ -987,6 +987,18 @@ legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
 # Rather annotate the color for the type of cancer
+
+# total weightage of each gene in this distribution
+gene.load.raw <- apply(pr.all.KLK.rawdata.clean$rotation, 1, sum)
+
+# arranging the weightage obtained above in a descending order by taking the absolute value of the total loadings for each gene
+gene.differ.raw <- order(abs(gene.load.raw), decreasing = TRUE)
+
+# show the top most different genes across the two groups
+top.10.raw <- gene.differ.raw[1:10]
+
+rownames(all.KLK.rawdata.clean[top.10.raw,])
+
 ```
 
 ### Clustering - kmeans
@@ -1341,7 +1353,7 @@ dev.off()
 ```{r PCA - breast cancer}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.breast.clean <- prcomp(all.KLK.breast.clean, center = TRUE, scale = FALSE)
+pr.all.KLK.breast.clean <- prcomp(t(all.KLK.breast.clean), center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.breast.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1370,8 +1382,8 @@ legend("topleft", legend=c("PC3"),
 color.breast = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (51,8%)",
-     ylab = "PC2 (21,47%)",
+     xlab="PC1 (46,49%)",
+     ylab = "PC2 (25,39%)",
      pch = 18,
      main = "PC1 / PC2 - plot",
      col = color.breast)
@@ -1379,8 +1391,8 @@ legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (51,8%)",
-     ylab = "PC3 (13,41%)",
+     xlab="PC1 (46,49%)",
+     ylab = "PC3 (12,44%)",
      pch = 18,
      main = "PC1 / PC3 - plot",
      col = color.breast)
@@ -1393,8 +1405,8 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 color.breast.mutation = c(ifelse(samples.annotation.breast == "TNBC", yes = "blue", no = ifelse(samples.annotation.breast == "Her2", yes = "red", no = ifelse(samples.annotation.breast == "LumA", yes = "green", no = "yellow"))))
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (51,8%)",
-     ylab = "PC2 (21,47%)",
+     xlab="PC1 (46,49%)",
+     ylab = "PC2 (25,39%)",
      pch = 18,
      main = "PC1 / PC2 - plot, mutation",
      col = color.breast.mutation)
@@ -1402,9 +1414,8 @@ legend("topleft", legend=c("TNBC", "Her2","LumA", "LumB"),
        col=c("blue", "red", "green", "yellow"), lwd= 7, cex=0.6)
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (51,8%)",
-     ylab = "PC3 (13,41%)",
-     main = "PC1 / PC3 - plot",
+     xlab="PC1 (46,49%)",
+     ylab = "PC3 (12,44%)",
      pch = 18,
      col = color.breast.mutation)
 legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
@@ -1412,6 +1423,19 @@ legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
 
 ### DO IT WITH CLUSTERING FROM k-means
 ### Mutation and tra-or-not differentation does not represent any information
+
+
+# total weightage of each gene in this distribution
+gene.load.breast <- apply(pr.all.KLK.breast.clean$rotation, 1, sum)
+# arranging the weightage obtained above in a descending order by taking the absolute value of the total loadings for each gene
+gene.differ.breast <- order(abs(gene.load.breast), decreasing = TRUE)
+
+# show the top most different genes across the two groups
+top.10.breast <- gene.differ.breast[1:10]
+
+rownames(all.KLK.breast.clean[top.10.breast,])
+
+
 
 ```
 
@@ -1728,7 +1752,7 @@ dev.off()
 ```{r PCA - lung cancer}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.lung.clean <- prcomp(all.KLK.lung.clean, center = TRUE, scale = FALSE)
+pr.all.KLK.lung.clean <- prcomp(t(all.KLK.lung.clean), center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.lung.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1759,16 +1783,16 @@ legend("topleft", legend=c("PC3"),
 color.lung = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (80,23%)",
-     ylab = "PC2 (12,13%)",
+     xlab="PC1 (73,4%)",
+     ylab = "PC2 (10,54%)",
      main = "PC1 / PC2 - plot",
      col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (80,23%)",
-     ylab = "PC3 (2,89%)",
+     xlab="PC1 (73,4%)",
+     ylab = "PC3 (5,42%)",
      main = "PC1 / PC3 - plot",
      col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
@@ -1780,8 +1804,8 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 color.lung.cancer = c(ifelse(samples.annotation.lung == "cancer", yes = "blue", no = "red"))
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (80,23%)",
-     ylab = "PC2 (12,13%)",
+     xlab="PC1 (73,4%)",
+     ylab = "PC2 (10,54%)",
      pch = 18,
      main = "PC1 / PC2 - plot",
      col = color.lung.cancer)
@@ -1789,8 +1813,8 @@ legend("left", legend=c("cancer", "normal"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (80,23%)",
-     ylab = "PC3 (2,89%)",
+     xlab="PC1 (73,4%)",
+     ylab = "PC3 (5,42%)",
      pch = 18,
      main = "PC1 / PC3 - plot",
      col = color.lung.cancer)
@@ -1800,6 +1824,15 @@ legend("bottomleft", legend=c("cancer", "normal"),
 
 # NOW annotate the clustering after k-means 
 
+# total weightage of each gene in this distribution
+gene.load.lung <- apply(pr.all.KLK.lung.clean$rotation, 1, sum)
+# arranging the weightage obtained above in a descending order by taking the absolute value of the total loadings for each gene
+gene.differ.lung <- order(abs(gene.load.lung), decreasing = TRUE)
+
+# show the top most different genes across the two groups
+top.10.lung <- gene.differ.lung[1:10]
+
+rownames(all.KLK.lung.clean[top.10.lung,]) #most different genes
 ```
 
 
