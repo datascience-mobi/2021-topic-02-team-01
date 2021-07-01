@@ -2183,6 +2183,77 @@ plot(reg.lung.all$tissue_type,reg.tissue.type$fitted.values,pch=20,col='blue', x
 
 ```
 
+```{r}
+#make this example reproducible
+set.seed(123)
+
+
+#70% training data, 30% test data 
+sample <- sample(c(TRUE, FALSE), nrow(reg.lung.all), replace = TRUE, prob = c(0.7, 0.3))
+train.reg <- reg.lung.all[sample, ]
+test.reg <- reg.lung.all[!sample, ]
+train.reg
+test.reg
+
+
+#Model 1 with all genes 
+model1 <- glm(as.factor(tissue_type)~ ., family = binomial(), data = reg.lung.all)
+summary(model1)
+#error 61 not defined because of singularities??? -> Colinearity! 
+
+#change tissue type frome character to numeric
+reg.lung.all$tissue_type <- as.numeric(reg.lung.all$tissue_type) 
+
+
+#Model 1: all genes which have the highest p.value when put into individually into the function.  
+#Identifying the genes 
+reg.model <- apply(minus.dat, 2, function(x){
+  sum <- summary(glm(as.factor(tissue_type)~x, family = binomial(), data = reg.lung.all))
+  out <- coef(sum)[, 4]
+  })
+reg.sig.05 <- which(reg.model[2, ] < 0.05) #only KLKB1 is significant 
+reg.sig.05#one gene not enough -> set level to 0.1
+reg.sig.10 <- which(reg.model[2, ] < 0.1)
+reg.sig.10 #KLK1, KLK5.3, KLK7, KLKB1, KLKB1.1, KLKB1.3
+
+model1 <- glm(tissue_type ~ KLK1+KLK5.3+KLK7+KLKB1+KLKB1.1+KLKB1.3, data = train.reg, family = binomial())
+model1 <- summary(model1)
+model1 #why is the z value=0 and the p.value=1???? something is wrong!
+
+#Modell 2: genes from cluster 3,4,5 which the lowest p.value 
+#KLK10.3, KLK1.3, KLK12 (KLK12.1 ect. noz incorporated due to Colinearity), KLK4.4
+model2 <- glm(tissue_type~KLK1.3+KLK10.3+KLK12+KLK4.4, family = binomial(), data = reg.lung.all)
+summary(model2) 
+#same problems!!!!
+
+```
+
+
+
+
+
+```{r}
+#neural network 1, incorporate all genes 
+nn1 <- neuralnet(tissue_type ~., data=train.reg, hidden = c(10,10,5), act.fct = "logistic")
+nn1$result.matrix
+plot(nn1)
+
+nn1.results <- compute(nn1, test.reg)
+pred.nn1.results <- data.frame(actual = test.reg$tissue_type, prediction = nn.results$net.result)
+pred.nn1.results #why two predictions? 
+#the model can differentiate very accurately between the different chip types!
+#further quality test needed! first solve problem of two predictions!
+
+#with the most significant genes of the clusters
+nn2 <- neuralnet(as.factor(tissue_type) ~ KLK1.3+KLK10.3+KLK12+KLK4.4, data=train.reg, hidden = c(10,10,5), act.fct = "logistic")
+nn2$result.matrix
+plot(nn2)
+nn2.results <- compute(nn2, test.reg)
+pred.nn2.results <- data.frame(actual = test.reg$tissue_type, prediction = nn.results$net.result)
+pred.nn2.results
+#check quality of the model!! 
+
+```
 
 
 #Piechart: Distribution KLK TRA
