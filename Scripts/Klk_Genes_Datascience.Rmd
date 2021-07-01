@@ -941,7 +941,7 @@ dev.off()
 ```{r PCA - rawdata breast}
 # center = TRUE
 # scale = FALSE, since we already did this in the vsn normalization
-pr.all.KLK.rawdata.clean <- prcomp(t(all.KLK.rawdata.clean), center = TRUE, scale = FALSE)
+pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.rawdata.clean)
 # normally the first principle component are sufficient
@@ -987,18 +987,6 @@ legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 # Since almost all KLKs are TRAs, annotating the color does not really show anything
 # Rather annotate the color for the type of cancer
-
-# total weightage of each gene in this distribution
-gene.load.raw <- apply(pr.all.KLK.rawdata.clean$rotation, 1, sum)
-
-# arranging the weightage obtained above in a descending order by taking the absolute value of the total loadings for each gene
-gene.differ.raw <- order(abs(gene.load.raw), decreasing = TRUE)
-
-# show the top most different genes across the two groups
-top.10.raw <- gene.differ.raw[1:10]
-
-rownames(all.KLK.rawdata.clean[top.10.raw,])
-
 ```
 
 ### Clustering - kmeans
@@ -1353,7 +1341,7 @@ dev.off()
 ```{r PCA - breast cancer}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.breast.clean <- prcomp(t(all.KLK.breast.clean), center = TRUE, scale = FALSE)
+pr.all.KLK.breast.clean <- prcomp(all.KLK.breast.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.breast.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1382,8 +1370,8 @@ legend("topleft", legend=c("PC3"),
 color.breast = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (46,49%)",
-     ylab = "PC2 (25,39%)",
+     xlab="PC1 (51,8%)",
+     ylab = "PC2 (21,47%)",
      pch = 18,
      main = "PC1 / PC2 - plot",
      col = color.breast)
@@ -1391,8 +1379,8 @@ legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (46,49%)",
-     ylab = "PC3 (12,44%)",
+     xlab="PC1 (51,8%)",
+     ylab = "PC3 (13,41%)",
      pch = 18,
      main = "PC1 / PC3 - plot",
      col = color.breast)
@@ -1405,8 +1393,8 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 color.breast.mutation = c(ifelse(samples.annotation.breast == "TNBC", yes = "blue", no = ifelse(samples.annotation.breast == "Her2", yes = "red", no = ifelse(samples.annotation.breast == "LumA", yes = "green", no = "yellow"))))
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (46,49%)",
-     ylab = "PC2 (25,39%)",
+     xlab="PC1 (51,8%)",
+     ylab = "PC2 (21,47%)",
      pch = 18,
      main = "PC1 / PC2 - plot, mutation",
      col = color.breast.mutation)
@@ -1414,8 +1402,9 @@ legend("topleft", legend=c("TNBC", "Her2","LumA", "LumB"),
        col=c("blue", "red", "green", "yellow"), lwd= 7, cex=0.6)
 
 plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (46,49%)",
-     ylab = "PC3 (12,44%)",
+     xlab="PC1 (51,8%)",
+     ylab = "PC3 (13,41%)",
+     main = "PC1 / PC3 - plot",
      pch = 18,
      col = color.breast.mutation)
 legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
@@ -1423,19 +1412,6 @@ legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
 
 ### DO IT WITH CLUSTERING FROM k-means
 ### Mutation and tra-or-not differentation does not represent any information
-
-
-# total weightage of each gene in this distribution
-gene.load.breast <- apply(pr.all.KLK.breast.clean$rotation, 1, sum)
-# arranging the weightage obtained above in a descending order by taking the absolute value of the total loadings for each gene
-gene.differ.breast <- order(abs(gene.load.breast), decreasing = TRUE)
-
-# show the top most different genes across the two groups
-top.10.breast <- gene.differ.breast[1:10]
-
-rownames(all.KLK.breast.clean[top.10.breast,])
-
-
 
 ```
 
@@ -1752,7 +1728,7 @@ dev.off()
 ```{r PCA - lung cancer}
 # run PCA on the KLK data frame
 # center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.lung.clean <- prcomp(t(all.KLK.lung.clean), center = TRUE, scale = FALSE)
+pr.all.KLK.lung.clean <- prcomp(all.KLK.lung.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.lung.clean)
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
@@ -1783,16 +1759,16 @@ legend("topleft", legend=c("PC3"),
 color.lung = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (73,4%)",
-     ylab = "PC2 (10,54%)",
+     xlab="PC1 (80,23%)",
+     ylab = "PC2 (12,13%)",
      main = "PC1 / PC2 - plot",
      col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (73,4%)",
-     ylab = "PC3 (5,42%)",
+     xlab="PC1 (80,23%)",
+     ylab = "PC3 (2,89%)",
      main = "PC1 / PC3 - plot",
      col = color.lung)
 legend("topleft", legend=c("TRA", "non-TRA"),
@@ -1804,8 +1780,8 @@ legend("topleft", legend=c("TRA", "non-TRA"),
 color.lung.cancer = c(ifelse(samples.annotation.lung == "cancer", yes = "blue", no = "red"))
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (73,4%)",
-     ylab = "PC2 (10,54%)",
+     xlab="PC1 (80,23%)",
+     ylab = "PC2 (12,13%)",
      pch = 18,
      main = "PC1 / PC2 - plot",
      col = color.lung.cancer)
@@ -1813,8 +1789,8 @@ legend("left", legend=c("cancer", "normal"),
        col=c("blue", "red"), lwd= 10, cex=0.6)
 
 plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (73,4%)",
-     ylab = "PC3 (5,42%)",
+     xlab="PC1 (80,23%)",
+     ylab = "PC3 (2,89%)",
      pch = 18,
      main = "PC1 / PC3 - plot",
      col = color.lung.cancer)
@@ -1824,15 +1800,6 @@ legend("bottomleft", legend=c("cancer", "normal"),
 
 # NOW annotate the clustering after k-means 
 
-# total weightage of each gene in this distribution
-gene.load.lung <- apply(pr.all.KLK.lung.clean$rotation, 1, sum)
-# arranging the weightage obtained above in a descending order by taking the absolute value of the total loadings for each gene
-gene.differ.lung <- order(abs(gene.load.lung), decreasing = TRUE)
-
-# show the top most different genes across the two groups
-top.10.lung <- gene.differ.lung[1:10]
-
-rownames(all.KLK.lung.clean[top.10.lung,]) #most different genes
 ```
 
 
@@ -1959,6 +1926,9 @@ fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM,
              labelsize = 5,
              repel=TRUE)
 dev.off()
+
+km.klk.lung.5
+which(km.klk.lung.5$cluster == 3)
 ##labelsize und text bei restlichen noch, repel anpassen
 
 km.klk.lung.7 <- kmeans(scale(all.KLK.lung.clean.noGSM),7, nstart=25)
@@ -2087,33 +2057,6 @@ identical(as.matrix(all.KLK.lung.clean.ca["KLK12.3", ]), as.matrix(all.KLK.lung.
 
 
 
-cluster3.lung.names <- c("KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6")
-
-
-
-for( ca in all.KLK.lung.clean.ca[cluster3.lung.names
-                                , ]){
-  for( n in all.KLK.lung.clean.n[cluster3.lung.names
-                                 , ]){
-    if (identical(rownames(ca),rownames(n))){
-      print(wilcox.test(ca, n, 
-               alternative = "greater",
-               paired = TRUE,
-               exact = NULL)$p.value)
-    }
-    else{break} 
-  }
-}
-
-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK11", ]) ,as.matrix(all.KLK.lung.clean.n["KLK11", ]),
-            paired= TRUE,                                         alternative = "greater")
-
-median(as.matrix(all.KLK.lung.clean.ca["KLK11", ]))
-median(as.matrix(all.KLK.lung.clean.n["KLK11", ]))
-
-
-
-
 dim(all.KLK.lung.clean.ca)
 
 
@@ -2142,53 +2085,71 @@ tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n
 
 
 #subset dataframe: only genes of cluster5
-cluster3.lung.names <- c("KLK1.3","KLK12","KLK12.1", "KLK12.3","KLK12.4","KLK12.5","KLK12.6")
-cluster3.lung.names <- as.matrix(cluster3.lung.names)
-b.cluster3.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
-tl.cluster3.lung <- which(b.cluster3.lung == TRUE)
-tl.cluster3.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster3.lung, ])
-tl.cluster3.lung
+cluster5.lung.names <- c("KLK1.3","KLK12","KLK12.1", "KLK12.3","KLK12.4","KLK12.5","KLK12.6")
+cluster5.lung.names <- as.matrix(cluster5.lung.names)
+b.cluster5.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
+tl.cluster5.lung <- which(b.cluster5.lung == TRUE)
+tl.cluster5.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster5.lung, ])
+tl.cluster5.lung
 
 #Plot with p.values cluster 3 
 setwd(here("Plots/Plots_lung"))
 pdf("Cluster5_lung.pdf")
-ggplot(tl.cluster3.lung, aes(x= name, y=value, fill= tissue_type))+
+ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
   ggtitle("Cluster 5, GSE149507 (Cai et al. 2021)")+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
 dev.off()
 ```
-```{r, Underexpression KLK10.3}
-#In the heatmap KLK10.3 seems underexpressed in the cancer tissue in comparison to the normal tissue 
+```{r, Cluster 4}
+#Check Cluster 4 from the kmeans
 #filter the KLK10.3 from tl.lung df
-b.KLK10.3.lung <- tl.all.KLK.lung.clean[, 1] %in% "KLK10.3"
-tl.KLK10.3.lung <- which(b.KLK10.3.lung == TRUE)
-tl.KLK10.3.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.KLK10.3.lung, ])
-tl.KLK10.3.lung
+cluster4.lung.names <- c("KLK8.8", "KLK10.3", "KLK11", "KLK11.2")
+b.cluster4.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster4.lung.names
+tl.cluster4.lung <- which(b.cluster4.lung == TRUE)
+tl.cluster4.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster4.lung, ])
+tl.cluster4.lung
 
-#ggplot 
+---#ggplot 
 setwd(here("Plots/Plots_lung"))
-pdf("KLK10.3.pdf")
-ggplot(tl.KLK10.3.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("KLK10.3, GSE149507 (Cai et al. 2021)")+
+pdf("Cluster4_lung.pdf")
+ggplot(tl.cluster4.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("Cluster 4, GSE149507 (Cai et al. 2021)")+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
 dev.off()
 ```
+```{r, Cluster 3}
+b.cluster3.lung <- tl.all.KLK.lung.clean[, 1] %in% "KLK4.4"
+tl.cluster3.lung <- which(b.cluster3.lung == TRUE)
+tl.cluster3.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster3.lung, ])
+tl.cluster3.lung
+
+setwd(here("Plots/Plots_lung"))
+pdf("Cluster3_lung.pdf")
+ggplot(tl.cluster3.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("Cluster 3, GSE149507 (Cai et al. 2021)")+
+  stat_boxplot(geom="errorbar")+
+  geom_boxplot()+
+  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
+dev.off()
+
+```
+
 ###Regression analysis
 ```{r}
 #need a different format with a numerical column for tissue type 
 #transform subset dataframe previously created for the hypothesis tests
 t.lung.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
-t.type.ca <- data.frame(rep("1.000000", 6))
+t.type.ca <- data.frame(rep("1", 6))
 colnames(t.type.ca) <- "tissue_type"
 reg.lung.ca <- cbind(t.lung.ca, t.type.ca)
 
 #transform n subset 
 t.lung.n <- as.data.frame(t(all.KLK.lung.clean.n))
-t.type.n <- data.frame(rep("0.000000", 6))
+t.type.n <- data.frame(rep("0", 6))
 colnames(t.type.n) <- "tissue_type"
 reg.lung.n <- cbind(t.lung.n, t.type.n)
 
@@ -2203,13 +2164,17 @@ all.KLK.lung.clean
 #Conditions for using regression analysis:
 #the residuals are normally distributed 
 #no correlation between the residuals and the explanatory variable 
+reg.tissue.type.all <- lm(tissue_type ~ KLK12+KLK10.3+KLK12+KLK12.3+KLK12.4+KLK12.5+KLK12.6, data = reg.lung.all)
+summary(reg.tissue.type)
 
 
-reg.tissue.type <- lm(tissue_type ~ KLK12+KLK10.3+KLK12+KLK12.3+KLK12.4+KLK12.5+KLK12.6, data = reg.lung.all)
+reg.tissue.type <- lm(tissue_type ~ KLK10.3, data = reg.lung.all)
 summary(reg.tissue.type)
 
 hist(reg.tissue.type$residuals, breaks=10)
 qqnorm(reg.tissue.type$residuals);qqline(reg.tissue.type$residuals)
+
+
 cor(reg.lung.all$KLK10.3, reg.tissue.type$residuals)
 plot(reg.lung.all$KLK10.3, reg.tissue.type$residuals, pch=20)
 
