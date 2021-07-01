@@ -1912,9 +1912,11 @@ wssplot.klk.lung <- function(all.KLK.lung.clean.noGSM, nc=15, seed=1234)
 wssplot.klk.lung(all.KLK.lung.clean.noGSM)
 
 #approx 5 or 7 clusters
-
+setwd(here("Plots/Plots_lung"))
+pdf("kmeans5_lung.pdf")
 km.klk.lung.5 <- kmeans(scale(all.KLK.lung.clean.noGSM),5, nstart=25)
 km.klk.lung.5$cluster
+
 
 fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM, 
              palette =c("#003333","#00AFBB", "#FC4E07", "#FF66CC", "#009900"), 
@@ -1922,9 +1924,9 @@ fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM,
              ellipse.type = "convex",
              ggtheme = theme_bw(),
              labelsize = 5,
-             repel=TRUE,
-             
-) ##labelsize und text bei restlichen noch, repel anpassen
+             repel=TRUE)
+dev.off()
+##labelsize und text bei restlichen noch, repel anpassen
 
 km.klk.lung.7 <- kmeans(scale(all.KLK.lung.clean.noGSM),7, nstart=25)
 km.klk.lung.7$cluster
@@ -2087,7 +2089,7 @@ all.KLK.lung.clean
 ```
 
 ```{r}
-#Hypothesis testing cluster 3
+#Hypothesis testing cluster 5
 
 #data needs the format of three columns (name, value, tissue type)
 #creating this dataframe for ca tissue 
@@ -2106,8 +2108,8 @@ tl.all.KLK.lung.clean.n <- cbind(tl.all.KLK.lung.clean.n, tissue_type= nvec)
 tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n)
 
 
-#subset dataframe: only genes of cluster3
-cluster3.lung.names <- c( "KLK11", "KLK11.2", "KLK12", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6", "KLK4.4")
+#subset dataframe: only genes of cluster5
+cluster3.lung.names <- c("KLK1.3","KLK12","KLK12.1", "KLK12.3","KLK12.4","KLK12.5","KLK12.6")
 cluster3.lung.names <- as.matrix(cluster3.lung.names)
 b.cluster3.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
 tl.cluster3.lung <- which(b.cluster3.lung == TRUE)
@@ -2116,9 +2118,9 @@ tl.cluster3.lung
 
 #Plot with p.values cluster 3 
 setwd(here("Plots/Plots_lung"))
-pdf("Cluster3_lung.pdf")
+pdf("Cluster5_lung.pdf")
 ggplot(tl.cluster3.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 3, GSE149507 (Cai et al. 2021)")+
+  ggtitle("Cluster 5, GSE149507 (Cai et al. 2021)")+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
@@ -2144,6 +2146,42 @@ dev.off()
 ```
 ###Regression analysis
 ```{r}
+#need a different format with a numerical column for tissue type 
+#transform subset dataframe previously created for the hypothesis tests
+t.lung.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
+t.type.ca <- data.frame(rep("1.000000", 6))
+colnames(t.type.ca) <- "tissue_type"
+reg.lung.ca <- cbind(t.lung.ca, t.type.ca)
+
+#transform n subset 
+t.lung.n <- as.data.frame(t(all.KLK.lung.clean.n))
+t.type.n <- data.frame(rep("0.000000", 6))
+colnames(t.type.n) <- "tissue_type"
+reg.lung.n <- cbind(t.lung.n, t.type.n)
+
+#fuse subsets
+reg.lung.all <- rbind(reg.lung.ca, reg.lung.n)
+reg.lung.all 
+
+reg.lung.ca
+all.KLK.lung.clean
+
+
+#Conditions for using regression analysis:
+#the residuals are normally distributed 
+#no correlation between the residuals and the explanatory variable 
+
+
+reg.tissue.type <- lm(tissue_type ~ KLK12+KLK10.3+KLK12+KLK12.3+KLK12.4+KLK12.5+KLK12.6, data = reg.lung.all)
+summary(reg.tissue.type)
+
+hist(reg.tissue.type$residuals, breaks=10)
+qqnorm(reg.tissue.type$residuals);qqline(reg.tissue.type$residuals)
+cor(reg.lung.all$KLK10.3, reg.tissue.type$residuals)
+plot(reg.lung.all$KLK10.3, reg.tissue.type$residuals, pch=20)
+
+plot(reg.lung.all$tissue_type,reg.tissue.type$fitted.values,pch=20,col='blue', xlab='Real values',ylab='Predicted values');abline(0,1,col='red')
+
 
 ```
 
