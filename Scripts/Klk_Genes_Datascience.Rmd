@@ -945,7 +945,7 @@ dev.off()
 pr.all.KLK.rawdata.clean <- prcomp(all.KLK.rawdata.clean, center = TRUE, scale = FALSE)
 #call summary
 summary(pr.all.KLK.rawdata.clean)
-# normally the first principle component are sufficient
+# normally the first principal component are sufficient
 
 # goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
 # in the summary we can see that this is almost achieved by the 4th pc
@@ -965,7 +965,7 @@ abline(h = 0.9320 , col="blue", lty=5)
 legend("topleft", legend=c("Cut-off @ PC3"),
        col=c("blue"), lty=5, cex=0.6)
 
-# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 93,20 %
+# we can see in this cumulative variance plot, that we only need about 3 principal components to achieve a a total variance of 93,20 %
 # the others do not represent a lot of information
 
 # Plot the PCs after TRAorNOT
@@ -1339,11 +1339,11 @@ dev.off()
 ```
 
 ### PCA
-```{r}
+```{r PCA breast cancer}
 # Perform the PCA
 pca.breast <- prcomp(t(all.KLK.breast.clean.noGSM), center = TRUE, scale = FALSE)
 
-# variance explained by each of the 20 principle components
+# variance explained by each of the 20 principal components
 pca.breast.eigenvalues <- pca.breast$sdev^2
 
 # crate table with PCs, variance, percent vairance and cumulative variance
@@ -1358,6 +1358,7 @@ setwd(here("Plots/Plots_breast"))
 pdf("Variance_pca_breast.pdf")
 pca.breast.eigenvalues %>% 
   ggplot(aes(x = PC)) +
+  ggtitle("PCA variance - GSE65216 (Maire et al. 2013)") +
   geom_col(aes(y = pct)) +
   geom_line(aes(y = pct_cum, group = 1)) + 
   geom_point(aes(y = pct_cum)) +
@@ -1384,7 +1385,6 @@ breast.pca.gg <- ggplot(pca.breast.scores, aes(x = PC1, y = PC2, col = Mutations
       xlab("PC1 (46,49%)") +
       ylab("PC2 (25,39%)") +
       geom_point(size= 3)+
-      labs(x="PC1 (46,49%)", y="PC2 (25,39%)")+
       scale_color_manual(values=c("#FFFF00", "#0000FF", "#FF00FF", "#00FF00")) +
       xlim(-7, 2.45) +
       ylim(-2.5,6.05)
@@ -1755,80 +1755,115 @@ dev.off()
 
 
 ### PCA
-```{r PCA - lung cancer}
-# run PCA on the KLK data frame
-# center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.lung.clean <- prcomp(t(all.KLK.lung.clean), center = TRUE, scale = FALSE)
-#call summary
-summary(pr.all.KLK.lung.clean)
-# goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
-# in the summary we can see that this is almost achieved by the 4th pc
-# the variance of the pcs rapidly declines, there is only about 5% variance for the 4th pc
+```{r PCA lung cancer}
+# Perform the PCA
+pca.lung <- prcomp(t(all.KLK.lung.clean.noGSM), center = TRUE, scale = FALSE)
 
-# get graphical overview (not really needed though)
+# variance explained by each of the 12 principal components
+pca.lung.eigenvalues <- pca.lung$sdev^2
 
-screeplot(pr.all.KLK.lung.clean, type = "l", npcs = 10, main = "Screeplot of the first 10 PCs")
-abline(h = 1, col="red", lty=5)
-legend("topright", legend=c("Eigenvalue = 1"),
-       col=c("red"), lty=5, cex=0.6)
+# crate table with PCs, variance, percent vairance and cumulative variance
+pca.lung.eigenvalues <- tibble(PC = factor(1:length(pca.lung.eigenvalues)), 
+                         variance = pca.lung.eigenvalues) %>% 
+   mutate(pct = variance/sum(variance)*100) %>% # percent variance
+   mutate(pct_cum = cumsum(pct)) #cumulative variance
 
-variance.lung <- cumsum(pr.all.KLK.lung.clean$sdev^2 / sum(pr.all.KLK.lung.clean$sdev^2))
-plot(variance.lung[0:12], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
-abline(v = 3, col="blue", lty=5)
-abline(h = 0.9525, col="blue", lty=5)
-legend("topleft", legend=c("PC3"),
-       col=c("blue"), lty=5, cex=0.6)
+pca.lung.eigenvalues
 
-# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 95%
-# This seems to be a very low number of pcs, the others do not represent a lot of information
+setwd(here("Plots/Plots_lung"))
+pdf("Variance_pca_lung.pdf")
+pca.lung.eigenvalues %>% 
+  ggplot(aes(x = PC)) +
+  ggtitle("PCA variance - lung cancer GSE149507 (Cai et al. 2021)")+
+  geom_col(aes(y = pct)) +
+  geom_line(aes(y = pct_cum, group = 1)) + 
+  geom_point(aes(y = pct_cum)) +
+  labs(x = "Principal component", y = "Amount of explained variance %")
+dev.off()
+# the first two PCs almost explain 75 % of the whole variance / information 
 
-# Plot the PCs
+pca.lung.scores <- pca.lung$x
+# needs to be converted from matrix to a dataframe for ggplot2
 
-### GROUP AFTER MUTATION
-
-color.lung = c(ifelse(annotation.hmap.lung[,2] == "TRA", "blue", "red"))
-
-plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (80,23%)",
-     ylab = "PC2 (12,13%)",
-     main = "PC1 / PC2 - plot",
-     col = color.lung)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
-
-plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (80,23%)",
-     ylab = "PC3 (2,89%)",
-     main = "PC1 / PC3 - plot",
-     col = color.lung)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
+pca.lung.scores <- pca.lung.scores %>% 
+  as_tibble(rownames = "Sample") # convert to a tibble retaining the sample names as a new column
 
 
-# Since almost all KLKs are TRAs, annotating the color does not really show anything
-
-color.lung.cancer = c(ifelse(samples.annotation.lung == "cancer", yes = "blue", no = "red"))
-
-plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,2],
-     xlab="PC1 (80,23%)",
-     ylab = "PC2 (12,13%)",
-     pch = 18,
-     main = "PC1 / PC2 - plot",
-     col = color.lung.cancer)
-legend("left", legend=c("cancer", "normal"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
-
-plot(pr.all.KLK.lung.clean$x[,1],pr.all.KLK.lung.clean$x[,3],
-     xlab="PC1 (80,23%)",
-     ylab = "PC3 (2,89%)",
-     pch = 18,
-     main = "PC1 / PC3 - plot",
-     col = color.lung.cancer)
-legend("bottomleft", legend=c("cancer", "normal"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
+# Let us plot the PCs
+# PC1 (73,40%) - PC2 (10,54%) - PC3 (5,42%)
 
 
-# NOW annotate the clustering after k-means 
+# Start with annotation and loadings
+Tissue <- factor(samples.annotation.lung[,1])
+
+lung.pca.gg<- ggplot(pca.lung.scores, aes(x = PC1, y = PC2, color = Tissue))+
+                  ggtitle("PC1/PC2 - lung cancer GSE149507 (Cai et al. 2021)") +
+                  xlab("PC1 (73,40%)") +
+                  ylab("PC2 (10,54%)") +
+                  geom_point(size= 3)+
+                  scale_color_manual(values=c("#2600BF", "#FF0000")) 
+lung.pca.gg
+
+lung.pca.gg.labeled <- ggplot(pca.lung.scores, aes(x = PC1, y = PC2, color = Tissue))+
+                          ggtitle("PC1/PC2 - lung cancer GSE149507 (Cai et al. 2021)") +
+                          xlab("PC1 (73,40%)") +
+                          ylab("PC2 (10,54%)") +
+                          geom_point(size= 3)+
+                          scale_color_manual(values=c("#2600BF", "#FF0000")) +
+                          geom_text(aes(label=Sample)) +
+                          xlim(-3.5,5)
+lung.pca.gg.labeled
+
+
+## Also, add loadings next to it
+pca.lung.loadings <- pca.lung$rotation
+
+pca.lung.loadings <- pca.lung.loadings %>% 
+  as_tibble(rownames = "Gene")
+
+top.lung.KLK <- pca.lung.loadings %>% 
+  select(Gene, PC1, PC2) %>%  # select only the PCs we are interested in
+  pivot_longer(matches("PC"), names_to = "PC", values_to = "loading") %>%   # convert to a "long" format
+  group_by(PC) %>% # for each PC
+  arrange(desc(abs(loading))) %>%  # arrange by descending order of loading
+  slice(1:10) %>% 
+  pull(Gene) # pull the gene column as a vector
+
+top.lung.KLK<- top.lung.KLK[-(2:6)]
+top.lung.KLK
+
+top.lung.loadings <- pca.lung.loadings %>% 
+  filter(Gene %in% top.lung.KLK)
+
+lung.loading <- ggplot(data = top.lung.loadings) +
+                    geom_segment(aes(x = 0, y = 0, xend = PC1, yend = PC2), 
+                                 arrow = arrow(length = unit(0.1, "in")),
+                                 color = "brown") +
+                    xlab("PC1 (73,40%)") +
+                    ylab("PC2 (10,54%)") +
+                    geom_text(aes(x = PC1, y = PC2, label = Gene),
+                              nudge_y = 0.005, size = 3) +
+                    xlim(-0.28, 0.66) +
+                    ylim(-0.15,0.27)
+                    
+
+lung.loading
+
+
+setwd(here("Plots/Plots_lung"))
+pdf("PCA_lung.pdf")
+lung.pca.gg.labeled
+dev.off()
+
+setwd(here("Plots/Plots_lung"))
+pdf("PCA_loadings_lung.pdf")
+lung.loading
+dev.off()
+
+setwd(here("Plots/Plots_lung"))
+pdf("PCA_lung_with_loadings.pdf")
+lung.pca.gg/lung.loading
+dev.off()
 
 ```
 
