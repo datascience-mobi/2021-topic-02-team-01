@@ -28,7 +28,8 @@ library(factoextra) #install.packages("factoextra")
 library(gtools) #install.packages("gtools")
 library(plyr)
 library(tidyverse) #install.packages("tidyverse")
-
+library(ggfortify)
+library(patchwork)
 library(RColorBrewer) #install.packages("RColorBrewer")
 #library(dendextend) #install.packages("dendextend")
 library(ggdendro) #install.packages("ggdendro")
@@ -1337,86 +1338,10 @@ pheatmap(all.KLK.breast.clean.noGSM,
 dev.off()
 ```
 
- ### PCA
-```{r PCA - breast cancer}
-# run PCA on the KLK data frame
-# center and scale = TRUE ? does vsnrma not already do this?
-pr.all.KLK.breast.clean <- prcomp(t(all.KLK.breast.clean), center = TRUE, scale = FALSE)
-#call summary
-summary(pr.all.KLK.breast.clean)
-# goal is to get information of roughly 95% of the KLK data -> 95% cumulative variance
-# in the summary we can see that this is almost achieved by the 4th pc
-# the variance of the pcs rapidly declines, there is only about 5% variance for the 4th pc
-
-# get graphical overview (not really needed though)
-
-screeplot(pr.all.KLK.breast.clean, type = "l", npcs = 10, main = "Screeplot of the first 10 PCs")
-#abline(h = 1, col="red", lty=5)
-#legend("topright", legend=c("Eigenvalue = 1"),
-#       col=c("red"), lty=5, cex=0.6)
-
-variance.breast <- cumsum(pr.all.KLK.breast.clean$sdev^2 / sum(pr.all.KLK.breast.clean$sdev^2))
-plot(variance.breast[0:20], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
-abline(v = 3, col="blue", lty=5)
-abline(h = 0.86583, col="blue", lty=5)
-legend("topleft", legend=c("PC3"),
-       col=c("blue"), lty=5, cex=0.6)
-
-# we can see in this cumulative variance plot, that we only need about 3 principle components to achieve a a total variance of 86,6 %
-# This seems to be a very low number of pcs, the others do not represent a lot of information
-
-# Plot the PCs
-# for TRAorNON
-color.breast = c(ifelse(annotation.hmap.breast[,2] == "TRA", "blue", "red"))
-
-plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (51,8%)",
-     ylab = "PC2 (21,47%)",
-     pch = 18,
-     main = "PC1 / PC2 - plot",
-     col = color.breast)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
-
-plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (51,8%)",
-     ylab = "PC3 (13,41%)",
-     pch = 18,
-     main = "PC1 / PC3 - plot",
-     col = color.breast)
-legend("topleft", legend=c("TRA", "non-TRA"),
-       col=c("blue", "red"), lwd= 10, cex=0.6)
-# Since almost all KLKs are TRAs, annotating the color does not really show anything
-# Rather annotate the color for the type of cancer
-
-## Group after treatment
-color.breast.mutation = c(ifelse(samples.annotation.breast == "TNBC", yes = "#66c2a5", no = ifelse(samples.annotation.breast == "Her2", yes = "red", no = ifelse(samples.annotation.breast == "LumA", yes = "green", no = "yellow"))))
-
-plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,2],
-     xlab="PC1 (51,8%)",
-     ylab = "PC2 (21,47%)",
-     pch = 18,
-     main = "PC1 / PC2 - plot, mutation",
-     col = color.breast.mutation)
-legend("topleft", legend=c("TNBC", "Her2","LumA", "LumB"),
-       col=c("blue", "red", "green", "yellow"), lwd= 7, cex=0.6)
-
-plot(pr.all.KLK.breast.clean$x[,1],pr.all.KLK.breast.clean$x[,3],
-     xlab="PC1 (51,8%)",
-     ylab = "PC3 (13,41%)",
-     main = "PC1 / PC3 - plot",
-     pch = 18,
-     col = color.breast.mutation)
-legend("bottomleft", legend=c("TNBC", "Her2","LumA", "LumB"),
-       col=c("blue", "red", "green", "yellow"), lwd= 7, cex=0.6)
-
-### DO IT WITH CLUSTERING FROM k-means
-### Mutation and tra-or-not differentation does not represent any information
-
-```
+### PCA
 ```{r}
 # Perform the PCA
-pca.breast <- prcomp(t(all.KLK.breast.clean), center = TRUE, scale = FALSE)
+pca.breast <- prcomp(t(all.KLK.breast.clean.noGSM), center = TRUE, scale = FALSE)
 
 # variance explained by each of the 20 principle components
 pca.breast.eigenvalues <- pca.breast$sdev^2
@@ -1429,43 +1354,92 @@ pca.breast.eigenvalues <- tibble(PC = factor(1:length(pca.breast.eigenvalues)),
 
 pca.breast.eigenvalues
 
+setwd(here("Plots/Plots_breast"))
+pdf("Variance_pca_breast.pdf")
 pca.breast.eigenvalues %>% 
   ggplot(aes(x = PC)) +
   geom_col(aes(y = pct)) +
   geom_line(aes(y = pct_cum, group = 1)) + 
   geom_point(aes(y = pct_cum)) +
   labs(x = "Principal component", y = "Amount of explained variance %")
-
+dev.off()
 # the first two PCs almost explain 75 % of the whole variance / information 
 
 pca.breast.scores <- pca.breast$x
 # needs to be converted from matrix to a dataframe for ggplot2
 
 pca.breast.scores <- pca.breast.scores %>% 
-  # convert to a tibble retaining the sample names as a new column
-  as_tibble(rownames = "sample")
+  as_tibble(rownames = "Sample") # convert to a tibble retaining the sample names as a new column
+
 
 # Let us plot the PCs
 # PC1 (46,49%) - PC2 (25,39%) - PC3 (12,44%)
-pca.breast.scores %>% 
-  # create the plot
-  ggplot(aes(x = PC1, y = PC2)) +
-    ggtitle("PCA GSE65216 (Maire et al. 2013)") +
-    xlab("PC1 (46,49%)") +
-    ylab("PC2 (25,39%)") +
-  geom_point()
+
 
 # Start with annotation and loadings
-color.breast.mutation = c(ifelse(samples.annotation.breast == "TNBC", yes = "TNBC", no = ifelse(samples.annotation.breast == "Her2", yes = "red", no = ifelse(samples.annotation.breast == "LumA", yes = "green", no = "yellow"))))
+Mutations <- factor(samples.annotation.breast[,1])
 
-mutations <- samples.annotation.breast[,1]
-
-ggplot(pca.breast.scores, aes(x = PC1, y = PC2, color = mutations))+
+breast.pca.gg <- ggplot(pca.breast.scores, aes(x = PC1, y = PC2, col = Mutations))+
+      ggtitle("PC1/PC2 - breast cancer GSE65216 (Maire et al. 2013)") +
+      xlab("PC1 (46,49%)") +
+      ylab("PC2 (25,39%)") +
       geom_point(size= 3)+
-      labs(x="PC1 (46,49%)", y="PC2 (25,39%)")
+      labs(x="PC1 (46,49%)", y="PC2 (25,39%)")+
+      scale_color_manual(values=c("#FFFF00", "#0000FF", "#FF00FF", "#00FF00")) +
+      xlim(-7, 2.45) +
+      ylim(-2.5,6.05)
+      # + geom_text(aes(label=Sample))
+breast.pca.gg
+
+## Also, add loadings next to it
+pca.breast.loadings <- pca.breast$rotation
+
+pca.breast.loadings <- pca.breast.loadings %>% 
+  as_tibble(rownames = "Gene")
+
+top.breast.KLK <- pca.breast.loadings %>% 
+  select(Gene, PC1, PC2) %>%  # select only the PCs we are interested in
+  pivot_longer(matches("PC"), names_to = "PC", values_to = "loading") %>%   # convert to a "long" format
+  group_by(PC) %>% # for each PC
+  arrange(desc(abs(loading))) %>%  # arrange by descending order of loading
+  slice(1:10) %>%   # take the 10 top rows
+  pull(Gene) %>%  # pull the gene column as a vector
+  unique() # ensure that we only get unique genes
+
+top.breast.KLK
+
+top.breast.loadings <- pca.breast.loadings %>% 
+  filter(Gene %in% top.breast.KLK)
+
+breast.loading <- ggplot(data = top.breast.loadings) +
+                    geom_segment(aes(x = 0, y = 0, xend = PC1, yend = PC2), 
+                                 arrow = arrow(length = unit(0.1, "in")),
+                                 color = "brown") +
+                    xlab("PC1 (46,49%)") +
+                    ylab("PC2 (25,39%)") +
+                    geom_text(aes(x = PC1, y = PC2, label = Gene),
+                              nudge_y = 0.005, size = 3) +
+                    xlim(-0.7, 0.245) +
+                    ylim(-0.25,0.605)
+                    
+
+breast.loading
 
 
+setwd(here("Plots/Plots_breast"))
+pdf("PCA_breast.pdf")
+breast.pca.gg
+dev.off()
 
+setwd(here("Plots/Plots_breast"))
+pdf("PCA_loadings_breast.pdf")
+breast.loading
+dev.off()
+
+setwd(here("Plots/Plots_breast"))
+pdf("PCA_breast_with_loadings.pdf")
+breast.pca.gg/breast.loading
+dev.off()
 
 ```
 
