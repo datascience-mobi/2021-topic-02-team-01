@@ -2211,20 +2211,34 @@ reg.model <- apply(minus.dat, 2, function(x){
   sum <- summary(glm(as.factor(tissue_type)~x, family = binomial(), data = reg.lung.all))
   out <- coef(sum)[, 4]
   })
+reg.model
 reg.sig.05 <- which(reg.model[2, ] < 0.05) #only KLKB1 is significant 
 reg.sig.05#one gene not enough -> set level to 0.1
 reg.sig.10 <- which(reg.model[2, ] < 0.1)
 reg.sig.10 #KLK1, KLK5.3, KLK7, KLKB1, KLKB1.1, KLKB1.3
 
 model1 <- glm(tissue_type ~ KLK1+KLK5.3+KLK7+KLKB1+KLKB1.1+KLKB1.3, data = train.reg, family = binomial())
-model1 <- summary(model1)
-model1 #why is the z value=0 and the p.value=1???? something is wrong!
+model1.sum <- summary(model1)
+model1.sum #why is the z value=0 and the p.value=1???? something is wrong!
 
 #Modell 2: genes from cluster 3,4,5 which the lowest p.value 
 #KLK10.3, KLK1.3, KLK12 (KLK12.1 ect. noz incorporated due to Colinearity), KLK4.4
 model2 <- glm(tissue_type~KLK1.3+KLK10.3+KLK12+KLK4.4, family = binomial(), data = reg.lung.all)
-summary(model2) 
+model2.sum<- summary(model2) 
+model2.sum
 #same problems!!!!
+
+
+#Prediction with model 1
+pred.model1 <- predict(model1, test.reg, type="response")
+as.data.frame(pred.model1)
+#imprecise 2/4 were false
+
+#prediction with model 2
+pre.model2 <- predict(model2, test.reg, type = "response")
+as.data.frame(pre.model2)
+#predictions are correct!
+
 
 ```
 
