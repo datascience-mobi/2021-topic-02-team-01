@@ -40,7 +40,7 @@ Starting by combining the five given TRA datasets, we fused them into one big da
 
 
 # 2. Quality control
-After we read in our data, the first step is to verify its quality. For this, we follow the measures presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. This significantly different expression would then be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristic will thereby be identified and replaced in the following quality control. We review the quality control measures of the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
+After reading in our data, the first step is to verify its quality by following the steps presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. This significantly different expression would then be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristic will thereby be identified and replaced in the following quality control. The quality control is performed of the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
 
 ## 2.1 Quality control - GSE65216 breast cancer
 ### Single chip control
@@ -65,7 +65,7 @@ We plotted each sample against the following sample. If the scattered points dev
 ### Density function
 ### RNA degeneration plot
 ### Scatter plots
-Here, we detected that the carcinoma tissue sample of patient number 5 did not show linear relationship to all of the other samples. Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each, we consequently replaced the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_ with new 2 new chips out of the gene expression omnibus. When performing the scatter plot control over again, we do not come across any discrepancies.
+The carcinoma tissue sample of patient number 5 did not show linear relationship to all of the other samples. Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each, we consequently replaced the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_ with new 2 new chips out of the gene expression omnibus. When performing the scatter plot control over again, there are no discrepancies anymore.
 
 # 3. Further data acquistion
 ## Importing and unification of TRA data
@@ -92,19 +92,18 @@ With the unified TRA data set Union.TRA, it is possible to extract all KLKs that
 
 ## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
 ### Clean up identical isoforms
-We came across the fact, that some of these isoforms of KLKs in our microarray appear more than once. So the first step is to clean up these identical isoforms. This is easily done by performing correlation between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are identical and one of both will be removed. Furthermore, we sorted the KLKs in ascending order for the visualization via the boxplots. In the end, we get cleared up 39 identical isoforms and ended up with a total of 73 KLK genes. 63 of these are TRAs, while only 10 are not tissue restricted.
+Having a look onto the data set itself, it is noticeable, that some of the Expression values of the KLK isoforms in our microarray are exactly identical. These identical isoforms will be cleared out of our data frame. This is easily done by performing correlation between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the visualization via the boxplots. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK isoforms for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
 
 ### Visualization of gene expression
 #### Overview gene expression (histogram)
-Since we performed vsnrma normalisation, the median does not fluctuate too much for all samples. We can also s, that the lowest value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale with a base of 2, a log-fold change of +1 represents a two times as high gene expression.  
-The histogram represent the frequency of the present gene expression in breast cancer samples. It also shows, that the median gene expression of KLKs is much lower than the overall median gene expression. This means KLK gene expression is normally down-regulated in the perspective of the whole genome. (VLLT NACHWEIS, DASS DAS AN HORMONREGUALTION LIEGT oder so)
+Since the data is vsnrma normalized, the median does not fluctuate too much for all samples. The lowest gene expression value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale with a base of 2, a log-fold change of +1 represents a two times as high gene expression.  
+The histogram represent the frequency of the present gene expression in breast cancer samples. It also shows, that the median gene expression of KLKs is much lower than the overall median gene expression. This means that most of the KLK gene expression is normally down-regulated in the perspective of the whole genome. (VLLT NACHWEIS, DASS DAS AN HORMONREGUALTION LIEGT oder so)
 
 #### Boxplots
-Here, the pattern for the fairly low gene expression of KLKs is also recognizable. Most of the boxpots of the single KLK genes seem to be lower than the median expression of the whole breast cancer genome. Some KLK isoforms like KLK2.3 are even below a gene expression value of 6, so KLK isoforms like these are clearly down-regulated. There are only two isoforms that even  exceed the median of the whole genome expression of the breast cancer set. These are the isoforms KLK4.4 and KLK8.8. (schauen ob KLK4 und KLK8 gen expression up-regulated). Since we now want to know whether the gene expression is different across the breast cancer and their respective mutations, we will have a look onto the KLK heatmap.
+Here, the pattern for the fairly low gene expression of KLKs is also recognizable. Most of the boxpots of the single KLK genes seem to be lower than the median expression of the whole breast cancer genome. Some KLK isoforms like KLK2.3 are even below a gene expression value of 6, so KLK isoforms like these are clearly down-regulated. There are only two isoforms that even  exceed the median of the whole genome expression of the breast cancer set. These are the isoforms KLK4.4 and KLK8.8. (schauen ob KLK4 und KLK8 gen expression up-regulated). Since we now want to know whether the gene expression differs across the breast cancer samples and their respective mutations, a heatmap is helpful.
 
 #### Heatmap
-The dendrogram is the core for the emerging clustering in heatmaps.(DENDROGRAM EINBLENDEN) Here clustering is performed after the complete-linkage method. If we have a look onto the dendrogram, we can see that KLK4.4 forms its own branch independent of all the others. In contrast to that, the other KLK isoforms are closelier clustered. This is due to the fact as we already have seen in the boxplots, that expression of KLK4.4 was much higher than for all the others. Looking on the bigger picture of the dendrogram, it is notable that besides KLK4.4 there are two closelier related clusters. Thereby altogether, the dendrogram distinguishes between the relatively high gene expression o f KLK4.4, a medium high expression in cluster 2 and very low gene expression for the 3rd cluster. 
-We will use this result to increase clarity for the heatmap, by cutting the dendrogram-tree, so that there are 3 distinguished clusters. This classification into 3 clusters is just for visuality purposes, since k-means will be performed later on.
+The dendrogram is the core for the emerging clustering in heatmaps.(DENDROGRAM EINBLENDEN) Here clustering is performed after the complete-linkage method. Interesting in this respect is, that KLK4.4 forms its own branch independent of all the others. As already shown in the boxplot, KLK4.4 was up-regulated. Looking onto the other branches of the dendrogram, it is notable that besides KLK4.4 there are two more distinct clusters. Using these 3 distinguished clusters the clarity of the heatmap can be increased. This classification into 3 clusters is just for visuality purposes, since k-means analysis will be performed later on.
 
 ### PCA
 ### Clustering - kmeans
@@ -134,11 +133,14 @@ For the breast-cancer dataset, an optimal number of k = 6 was determined. Here, 
 
 
 
-```{r}
 
 # References
 
-#- Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15  
-#- Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
+- Maire V, Némati F, Richardson M, Vincent-Salomon A et al. Polo-like kinase 1: a potential therapeutic option in combination with conventional chemotherapy for the management of patients with triple-negative breast cancer. Cancer Res 2013 Jan 15
+- Cai L, Liu H, Huang F, Fujimoto J et al. Cell-autonomous immune gene expression is repressed in pulmonary neuroendocrine cells and small cell lung cancer. Commun Biol 2021 Mar 9
+- Dinkelacker 2019. Chromosomal clustering of tissue restricted antigens, Dissertation, University Heidelberg, Germany.
+- Dinkelacker 2007. A database of genes that are expressed in a tissue-restricted manner to analyse promiscous gene expression in medullary thymic epithelial cells. Diplomarbeit, Albert-Ludwigs-Universitaet, Freiburg, Germany.
+
+
 
 
