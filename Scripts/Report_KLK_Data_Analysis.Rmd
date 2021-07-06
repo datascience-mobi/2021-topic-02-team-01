@@ -184,7 +184,7 @@ Having a look onto the data set itself, it is noticeable, that some of the Expre
 ### Visualization of gene expression
 #### Overview gene expression
 Since the data is vsnrma normalized, the median does not fluctuate too much for all samples. The lowest gene expression value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale with a base of 2, a log-fold change of +1 represents a two times as high gene expression. 
-```{r Overview and Histogram rawdata breast}
+```{r Overview and Histogram breast cancer}
 gene.summary <- function(x){
  round(apply(x, 2, summary), digits = 2)
 }
@@ -209,32 +209,56 @@ The dendrogram is the core for the emerging clustering in heatmaps. Here, cluste
 knitr::include_graphics("images/Dendrogram_breast.png")
 ```
 Interesting in this respect is, that KLK4.4 forms its own branch independent of all the others. As already shown in the boxplot, KLK4.4 was distinctly up-regulated. Looking onto the other branches of the dendrogram, it is notable that besides KLK4.4 there are more possible clusters. To increase the clarity of the heatmap 3 distinguished are used. Optimal clusters via K-means will still be performed later on.  
-```{r Heatmap - breast , echo=FALSE, fig.align="center", fig.cap="Dendrogram of KLK genes in breast cancer", out.width="50%"}
+```{r Heatmap - breast , echo=FALSE, fig.align="center", fig.cap="Heatmap of KLK gene expression in breast cancer", out.width="50%"}
 knitr::include_graphics("images/Heatmap_breast.png")
 ```
 KLK4.4 clearly stands out (cluster 2) with an overall higher expression across all sample. Furthermore, as it is annotated KLK4.4 belongs to TRA group. Also in cluster 1 the expression values are higher than in the third. In addition there are a few samples which seem to have up-regulated KLK isoforms. For instance, the tumor sample number 1 with TNBC got one of the highest expression values across the KLKs: KLK10.3, KLK6 and KLK5.
 
 ### PCA
+The principal component analysis was conducted over the samples. Centering was enabled, while scaling was not included, due to the data being vsnrma normalized.  
 ```{r PCA variance - breast , echo=FALSE, fig.align="center", fig.cap="Variance plot of the principal components for breast cancer", out.width="50%"}
 knitr::include_graphics("images/PCA_variance_breast.png")
 ```
+The cumulative variance shows, that 72% of the total variance or of the total information is explained by the first 2 principal components (PCs). These two PCs are sufficient for the analysis of the distribution of the breast cancer samples across the loadings of the KLK gene expression.  
 ```{r PCA plot - breast , echo=FALSE, fig.align="center", fig.cap="PC1 vs. PC2 with their respective loadings for breast cancer", out.width="50%"}
 knitr::include_graphics("images/PCAplot_breast.png")
 ```
-
+The loadings consists of the (SHOW CODE OF THE PCA plot) the top 10 most differentiated KLK isoforms. This was conducted by adding up the values of the rotation matrix for each individual KLK isoform. As it is displayed in Fig. #NR some samples are more characterized by the expression of KLK11 and KLK11.2. This is mostly the case for two of the LumA samples. This was also observable in the heatmap by the higher expression of KLK11 in the tumor samples 71 and 76. 
+Another result of the PCA is that TNBC mutations are affected by KLK5 and KLK6 expression, which is also observable in the heatmap. For the up-regulation of KLK5 and KLK6 for some of the TNBC samples it woud be interesting if this does also hold truth for a higher sample size. If so, KLK5 and KLK6 expression could presumably be used as biomarker for TNBC breast cancer.
+We assume that KLK4.4 is not part of the top 10 loadings, since it is higher expressed across all tumor samples.
 ### K-means clustering
 ### Hypothesis testing
 ### Discussion
 
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
 The lung cancer microarray GSE149507 (Cai et al. 2021) were taken out of 6 patients with small cell lung cancer. The healthy lung tissue is adjacent to the carcinoma and the data set thereby consists of a total of 12 samples.  
-### Clean up identical isoforms
-The clean up follows the same method shown for the breast cancer data set. This results in 73 KLK gene isoforms, 63 of which are TRAs.
+
 ### Visualization of gene expression 
-#### Overview gene expression (histogram)
+#### Overview gene expression
+```{r Histogram - lung , echo=FALSE, fig.align="center", fig.cap="Histogram of lung cancer gene expression", out.width="50%"}
+knitr::include_graphics("images/Histogram_lung.png")
+```
 #### Boxplots
+```{r Boxplot - lung , echo=FALSE, fig.align="center", fig.cap="Boxplot of KLK gene expression in lung cancer", out.width="50%"}
+knitr::include_graphics("images/Boxplot_lung.png")
+```
 #### Heatmap
+```{r Dendrogram - lung , echo=FALSE, fig.align="center", fig.cap="Dendrogram of KLK genes in lung cancer", out.width="50%"}
+knitr::include_graphics("images/Dendrogram_lung.png")
+```
+
+```{r Heatmap - lung , echo=FALSE, fig.align="center", fig.cap="Heatmap of KLK gene expression in lung cancer", out.width="50%"}
+knitr::include_graphics("images/Heatmap_lung.png")
+```
 ### PCA
+
+```{r PCA variance - lung , echo=FALSE, fig.align="center", fig.cap="Variance plot of the principal components for lung cancer", out.width="50%"}
+knitr::include_graphics("images/PCA_variance_lung.png")
+```
+The cumulative variance shows, that 84% of the total variance or of the total information is explained by the first 2 principal components (PCs). These two PCs are sufficient for the analysis of the distribution of the breast cancer samples across the loadings of the KLK gene expression.  
+```{r PCA plot - lung , echo=FALSE, fig.align="center", fig.cap="PC1 vs. PC2 with their respective loadings for lung cancer", out.width="50%"}
+knitr::include_graphics("images/PCAplot_lung.png")
+```
 ### Clustering - kmeans
 ### Hypothesis testing
 ### Discussion
