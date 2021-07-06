@@ -215,14 +215,21 @@ knitr::include_graphics("images/Heatmap_breast.png")
 KLK4.4 clearly stands out (cluster 2) with an overall higher expression across all sample. Furthermore, as it is annotated KLK4.4 belongs to TRA group. Also in cluster 1 the expression values are higher than in the third. In addition there are a few samples which seem to have up-regulated KLK isoforms. For instance, the tumor sample number 1 with TNBC got one of the highest expression values across the KLKs: KLK10.3, KLK6 and KLK5.
 
 ### PCA
+```{r PCA variance - breast , echo=FALSE, fig.align="center", fig.cap="Variance plot of the principal components for breast cancer", out.width="50%"}
+knitr::include_graphics("images/PCA_variance_breast.png")
+```
+```{r PCA plot - breast , echo=FALSE, fig.align="center", fig.cap="PC1 vs. PC2 with their respective loadings for breast cancer", out.width="50%"}
+knitr::include_graphics("images/PCAplot_breast.png")
+```
 
 ### K-means clustering
 ### Hypothesis testing
 ### Discussion
 
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
+The lung cancer microarray GSE149507 (Cai et al. 2021) were taken out of 6 patients with small cell lung cancer. The healthy lung tissue is adjacent to the carcinoma and the data set thereby consists of a total of 12 samples.  
 ### Clean up identical isoforms
-The clean up follows the same method shown for the breast cancer data set. This results in 73 KLK genes, 63 of which are TRAs.
+The clean up follows the same method shown for the breast cancer data set. This results in 73 KLK gene isoforms, 63 of which are TRAs.
 ### Visualization of gene expression 
 #### Overview gene expression (histogram)
 #### Boxplots
