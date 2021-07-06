@@ -92,11 +92,11 @@ With the unified TRA data set Union.TRA, it is possible to extract all KLKs that
 
 ## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
 ### Clean up identical isoforms
-Having a look onto the data set itself, it is noticeable, that some of the Expression values of the KLK isoforms in our microarray are exactly identical. These identical isoforms will be cleared out of our data frame. This is easily done by performing correlation between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the visualization via the boxplots. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK isoforms for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
+Having a look onto the data set itself, it is noticeable, that some of the Expression values of the KLK isoforms in our microarray are exactly identical. These identical isoforms will be cleared out of our data frame. This is easily done by performing correlation between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the visualization via the boxplots. In the end, 39 identical isoforms are removed. A total of 73 KLK RNA transcripts  are being kept. This is coherend with85 transcripts, the classical- and their isoforms combined, that Borgono et al. reported over all tissues. Out of the 73 transcripts, 63 are TRAs (?????), while only 10 are regarded as tissue restricted.    
 
 ### Visualization of gene expression
 #### Overview gene expression (histogram)
-Since the data is vsnrma normalized, the median does not fluctuate too much for all samples. The lowest gene expression value is about 5 while the highest gene expression value is around 15. Due to the logarithmic scale with a base of 2, a log-fold change of +1 represents a two times as high gene expression.  
+Since the data is vsnrma normalized, the median does not fluctuate too much for all samples. The lowest gene expression value is about 5, while the highest gene expression value is around 15. Due to the logarithmic scale with a base of 2, a log-fold change of +1 represents a two times as high gene expression.  
 The histogram represent the frequency of the present gene expression in breast cancer samples. It also shows, that the median gene expression of KLKs is much lower than the overall median gene expression. This means that most of the KLK gene expression is normally down-regulated in the perspective of the whole genome. (VLLT NACHWEIS, DASS DAS AN HORMONREGUALTION LIEGT oder so)
 
 #### Boxplots
@@ -108,6 +108,8 @@ The dendrogram is the core for the emerging clustering in heatmaps.(DENDROGRAM E
 ### PCA
 ### Clustering - kmeans
 ### Hypothesis testing
+
+
 ### Discussion
 
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
@@ -120,6 +122,9 @@ The clean up follows the same method shown for the breast cancer data set. This 
 ### PCA
 ### Clustering - kmeans
 ### Hypothesis testing
+The results of the PCA and the k-means indicate that for some KLKs the expression differs, between the cancerous and normal tissue. Since the data the data is not normally distributes (QQ-PLOT?) the Wilcoxon signed-rank test was applied. 
+
+
 ### Discussion
 
 

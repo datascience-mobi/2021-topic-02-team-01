@@ -1989,7 +1989,10 @@ fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM,
              ellipse.type = "convex",
              ggtheme = theme_bw(),
              labelsize = 5,
-             repel=TRUE)
+             repel=TRUE,
+             main="K-Means-Clustering, GSE149507 (Cai et al. 2021)"
+             )
+
 dev.off()
 
 km.klk.lung.5
@@ -2129,8 +2132,8 @@ all.KLK.lung.clean
 
 ```
 
-```{r}
-#Hypothesis testing cluster 5
+```{r, Hypothesis testing Cluster 1}
+#Hypothesis testing cluster 1
 
 #data needs the format of three columns (name, value, tissue type)
 #creating this dataframe for ca tissue 
@@ -2149,53 +2152,65 @@ tl.all.KLK.lung.clean.n <- cbind(tl.all.KLK.lung.clean.n, tissue_type= nvec)
 tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n)
 
 
-#subset dataframe: only genes of cluster5
-cluster5.lung.names <- c("KLK1.3","KLK12","KLK12.1", "KLK12.3","KLK12.4","KLK12.5","KLK12.6")
-cluster5.lung.names <- as.matrix(cluster5.lung.names)
+#subset dataframe: only genes of cluster1
+cluster1.lung.names <- c("KLK12", "KLK12.1", "KLK12.3", "KLK12.4", "KLK12.5")
+cluster1.lung.names <- as.matrix(cluster1.lung.names)
 b.cluster5.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
 tl.cluster5.lung <- which(b.cluster5.lung == TRUE)
 tl.cluster5.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster5.lung, ])
 tl.cluster5.lung
 
-#Plot with p.values cluster 3 
+#Plot with p.values cluster 5 
 setwd(here("Plots/Plots_lung"))
-pdf("Cluster5_lung.pdf")
+pdf("Cluster1_lung.pdf")
 ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 5, GSE149507 (Cai et al. 2021)")+
+  ggtitle("Cluster 1, GSE149507 (Cai et al. 2021)")+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
 dev.off()
-```
-```{r, Cluster 4}
-#Check Cluster 4 from the kmeans
-#filter the KLK10.3 from tl.lung df
-cluster4.lung.names <- c("KLK8.8", "KLK10.3", "KLK11", "KLK11.2")
-b.cluster4.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster4.lung.names
-tl.cluster4.lung <- which(b.cluster4.lung == TRUE)
-tl.cluster4.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster4.lung, ])
-tl.cluster4.lung
 
----#ggplot 
+#check p.value KLK1.3
+wilcox.test(t.all.KLK.lung.clean.ca$KLK1.3, t.all.KLK.lung.clean.n$KLK1.3, paired = TRUE)
+```
+
+
+```{r, Cluster 2}
+#Check Cluster 2 from the kmeans
+#filter the KLKs from tl.lung df
+cluster2.lung.names <- c("KLK4.4",  "KLK8.8", "KLK10.3", "KLK11", "KLK11.2")
+b.cluster2.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster4.lung.names
+tl.cluster2.lung <- which(b.cluster4.lung == TRUE)
+tl.cluster2.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster2.lung, ])
+tl.cluster2.lung
+
+#ggplot 
 setwd(here("Plots/Plots_lung"))
-pdf("Cluster4_lung.pdf")
-ggplot(tl.cluster4.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 4, GSE149507 (Cai et al. 2021)")+
+pdf("Cluster2_lung.pdf")
+ggplot(tl.cluster2.lung, aes(x= name, y=value, fill= tissue_type))+
+  scale_fill_manual(labels=c("cancerous", "normal"),
+                    values= c("red", "blue"))+
+  ggtitle("Cluster 2, GSE149507 (Cai et al. 2021)")+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
 dev.off()
+
+
 ```
-```{r, Cluster 3}
-b.cluster3.lung <- tl.all.KLK.lung.clean[, 1] %in% "KLK4.4"
-tl.cluster3.lung <- which(b.cluster3.lung == TRUE)
-tl.cluster3.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster3.lung, ])
-tl.cluster3.lung
+
+
+```{r, PCA genes}
+PCA.lung.names <- c("KLK1.3", "KLK4.4", "KLK6", "KLK12", "KLK13.1", "KLKB1.1", "KLKB1.3")
+b.PCA.lung <- tl.all.KLK.lung.clean[, 1] %in% PCA.lung.names
+tl.PCA.lung <- which(b.PCA.lung == TRUE)
+tl.PCA.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.PCA.lung, ])
+tl.PCA.lung
 
 setwd(here("Plots/Plots_lung"))
-pdf("Cluster3_lung.pdf")
-ggplot(tl.cluster3.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 3, GSE149507 (Cai et al. 2021)")+
+pdf("PCA_Hyp_lung.pdf")
+ggplot(tl.PCA.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("PCA Genes, GSE149507 (Cai et al. 2021)")+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
