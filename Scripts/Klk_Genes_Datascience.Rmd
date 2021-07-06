@@ -33,7 +33,7 @@ library(patchwork)
 library(RColorBrewer) #install.packages("RColorBrewer")
 #library(dendextend) #install.packages("dendextend")
 library(ggdendro) #install.packages("ggdendro")
-
+library(detectseparation)
 ###here package 
 library(here)
 #set the top level folder with here
@@ -2213,7 +2213,9 @@ plot(reg.lung.all$tissue_type,reg.tissue.type$fitted.values,pch=20,col='blue', x
 
 ```
 
-```{r}
+```{r, logistic regression Model 0}
+#change tissue type frome character to numeric
+reg.lung.all$tissue_type <- as.numeric(reg.lung.all$tissue_type) 
 #make this example reproducible
 set.seed(123)
 
@@ -2226,20 +2228,59 @@ train.reg
 test.reg
 
 
-#Model 1 with all genes 
-model1 <- glm(as.factor(tissue_type)~ ., family = binomial(), data = reg.lung.all)
-summary(model1)
-#error 61 not defined because of singularities??? -> Colinearity! 
+#Model 0 with all genes 
+model0 <- glm(as.factor(tissue_type)~ ., family = binomial(), data = reg.lung.all)
+summary(model0)
+#error 61 not defined because of singularities??? -> Collinearity! 
+#eliminate all genes with a correlation higher than 0.7
 
-#change tissue type frome character to numeric
-reg.lung.all$tissue_type <- as.numeric(reg.lung.all$tissue_type) 
+tmp <- cor(reg.lung.all)
+tmp[upper.tri(tmp)]<- 0
+diag(tmp) <- 0
+length(which(tmp > 0.7))
+#with 0.7 still Colliniarity - set to 0.6
+low.cor.reg.lung.all <- reg.lung.all[ , !apply(tmp, 2, function(x){ any(x>0.6)})]
+low.cor.reg.lung.all
+#only 10 genes left!
+#glm with the low correlation dataset
+model0.1<- glm(as.factor(tissue_type)~ ., family = binomial(), data = low.cor.reg.lung.all)
+sum.model0.1 <- summary(model0.1)
+sum.model0.1
+#the for every gene Std.Error is enormous and the p.value is always 1! Something is wrong!
+#we probably a separation in our dataset
+#1. Fisher scoring iterations is 23 (4-5 is typical)
+#2. huge standard errors
+#Rule from literature: 10 outcome events per predictor variable! 
+ggplot(sum.model0.1, aes(GSM4504101_SCLC_01_ca, GSM4504103_SCLC_02_ca   ))
+plot(model0.1)
+
+
+sep.model0.1<- glm(tissue_type~ .,data = low.cor.reg.lung.all, family = binomial("logit"), method = "detect_separation")
+sep.model0.1
+#there is separation in the dataset! Infinite estimates for coefficients
+
+
+#predict Model 0.1
+pred.model0.1 <- predict(model0.1, test.reg, type="response")
+pred.model0.1
+actual0.1 <- c(1, 0, 0, 0)
+separationplot(pred.model0.1, actual0.1, type = "line", line = T)
+
+
+predi
+
+```
+
+
+
+```{r, Logistic Regression Model 1+2}
 
 
 #Model 1: all genes which have the highest p.value when put into individually into the function.  
 #Identifying the genes 
 reg.model <- apply(minus.dat, 2, function(x){
   sum <- summary(glm(as.factor(tissue_type)~x, family = binomial(), data = reg.lung.all))
-  out <- coef(sum)[, 4]
+  out <- sum
   })
 reg.model
 reg.sig.05 <- which(reg.model[2, ] < 0.05) #only KLKB1 is significant 
@@ -2268,8 +2309,6 @@ as.data.frame(pred.model1)
 pre.model2 <- predict(model2, test.reg, type = "response")
 as.data.frame(pre.model2)
 #predictions are correct!
-
-
 ```
 
 
