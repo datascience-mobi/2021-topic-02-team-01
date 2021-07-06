@@ -132,7 +132,7 @@ knitr::include_graphics("images/breast_scatter_example1.png")
 ### RNA degeneration plot
 ### Scatter plots
 The carcinoma tissue sample of patient number 5 did not show linear relationship to all of the other samples. Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each, we consequently replaced the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_ with new 2 new chips out of the gene expression omnibus. When performing the scatter plot control over again, there are no discrepancies anymore.
-```{r Boxplots - breast qc, echo=FALSE, fig.align="center", fig.cap="Example of scatter plot breast cancer GSE65216", out.width="50%"}
+```{r Broken chip - lung qc, echo=FALSE, fig.align="center", fig.cap="Example of scatter plot breast cancer GSE65216", out.width="50%"}
 knitr::include_graphics("images/breast_scatter_example1.png")
 ```
 
@@ -144,7 +144,7 @@ To distinguish between TRA KLK genes and non-TRA KLK genes, we imported a total 
 # 4. Expression Analysis
 ## Extraction of KLK and KLK TRA genes
 With the unified TRA data set Union.TRA, it is possible to extract all KLKs that are tissue-restricted by their transcript number.
-```{r Isolating KLK genes, results=FALSE}
+```{r Isolating KLK genes, eval=FALSE, include=FALSE, results=FALSE}
 # All KLK genes
 ind.all.KLK=grep("^KLK",symbol)
 Kallikreins.all=symbol[ind.all.KLK]
