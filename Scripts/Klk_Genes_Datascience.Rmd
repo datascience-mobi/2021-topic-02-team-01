@@ -1917,6 +1917,7 @@ wssplot <- function(all.KLK.rawdata.clean, nc=15, seed=1234)
 wssplot(all.KLK.rawdata.clean)
 
 
+
 #approx 4 clusters
 
 km.klk.rawdata <- kmeans(scale(all.KLK.rawdata.clean),5, nstart=25)
@@ -1950,6 +1951,8 @@ wssplot.lung <- function(lungExprs, nc=15, seed=1234)
 
 wssplot.lung(lungExprs)
 
+
+
 ## bekomme code nicht zum laufen, Anmerkung für später: Anzahl cluster determinieren!!!
 #code für cluster lungexprs
 km.lung <- kmeans(scale(lungExprs),4, nstart=25)
@@ -1964,7 +1967,8 @@ fviz_cluster(km.lung, data=lungExprs,
 
 #k-means analysis fpr klks from lungcancer
 #(all.KLK.lung.clean.noGSM)
-
+setwd(here("Plots/Plots_lung"))
+pdf("wssplot_lung.pdf")
 wssplot.klk.lung <- function(all.KLK.lung.clean.noGSM, nc=15, seed=1234)
 {
   wss <- (nrow(all.KLK.lung.clean.noGSM)-1)*sum(apply(all.KLK.lung.clean.noGSM ,2,var))
@@ -1975,6 +1979,8 @@ wssplot.klk.lung <- function(all.KLK.lung.clean.noGSM, nc=15, seed=1234)
 }
 
 wssplot.klk.lung(all.KLK.lung.clean.noGSM)
+
+dev.off()
 
 #approx 5 or 7 clusters
 setwd(here("Plots/Plots_lung"))
@@ -1990,26 +1996,31 @@ fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM,
              ggtheme = theme_bw(),
              labelsize = 5,
              repel=TRUE,
+<<<<<<< Updated upstream
              main="K-Means-Clustering, GSE149507 (Cai et al. 2021)"
              )
 
+=======
+             main = "Cluster plot for GSE149507 lung cancer (Cai et al.2021)"
+             )
+>>>>>>> Stashed changes
 dev.off()
 
 km.klk.lung.5
 which(km.klk.lung.5$cluster == 3)
 ##labelsize und text bei restlichen noch, repel anpassen
 
-km.klk.lung.7 <- kmeans(scale(all.KLK.lung.clean.noGSM),7, nstart=25)
-km.klk.lung.7$cluster
+#km.klk.lung.7 <- kmeans(scale(all.KLK.lung.clean.noGSM),7, nstart=25)
+#km.klk.lung.7$cluster
 
-fviz_cluster(km.klk.lung.7, data=all.KLK.lung.clean.noGSM, 
-             palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800", "#009900", "#3399FF", "#003333"), 
-             geom = "point", 
-             ellipse.type = "convex",
-             ggtheme = theme_bw(),
+#fviz_cluster(km.klk.lung.7, data=all.KLK.lung.clean.noGSM, 
+            # palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800", "#009900", "#3399FF", "#003333"), 
+            # geom = "point", 
+            # ellipse.type = "convex",
+            # ggtheme = theme_bw(),
             
             
-)
+#)
 
 #i would choose the 5 cluster plot, since clusters are more distinct there
 
@@ -2047,7 +2058,8 @@ fviz_cluster(km.breast, data=breastExprs,
 #(all.KLK.breast.clean.noGSM)
 
 tf.klk.breast.clean = t(all.KLK.breast.clean.noGSM)
-
+setwd(here("Plots/Plots_breast"))
+pdf("wssplot_breast.pdf")
 wssplot.klk.breast <- function(tf.klk.breast.clean, nc=15, seed=1234)
 {
   wss <- (nrow(tf.klk.breast.clean)-1)*sum(apply(tf.klk.breast.clean ,2,var))
@@ -2059,7 +2071,10 @@ wssplot.klk.breast <- function(tf.klk.breast.clean, nc=15, seed=1234)
 
 wssplot.klk.breast(tf.klk.breast.clean)
 
+dev.off()
 
+setwd(here("Plots/Plots_breast"))
+pdf("kmeans6_breast.pdf")
 km.klk.breast <- kmeans(scale(tf.klk.breast.clean),6, nstart=25)
 km.klk.breast$cluster
 
@@ -2069,9 +2084,10 @@ fviz_cluster(km.klk.breast, data=tf.klk.breast.clean,
              ellipse.type = "convex",
              ggtheme = theme_bw(),
              labelsize = 5,
-             repel=TRUE
+             repel=TRUE,
+             main="Cluster plot GSE65216 breast cancer (Maire et al.2013)"
 )
-
+dev.off()
 
 ```
 ###Hypothesis testing lung 
