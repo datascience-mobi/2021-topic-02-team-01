@@ -163,7 +163,7 @@ all.KLK.breast = breastExprs[ind.all.human,]
 all.KLK.lung = lungExprs[ind.all.human,]
 
 
-ind.KLK.all.human.tra <- which(as.character(names(symbol)) %in% 
+ind.KLK.all.human.tra <- which(as.character(names(symbol))  %in% 
 as.character(unlist(tra.all.human[1])))
 
 ## For first breast cancer data set
