@@ -32,7 +32,7 @@ library(ggfortify)
 library(patchwork)
 library(RColorBrewer) #install.packages("RColorBrewer")
 #library(dendextend) #install.packages("dendextend")
-library(ggdendro) #install.packages("ggdendro")
+library(ggdendro)#install.packages("ggdendro")
 library(detectseparation)
 ###here package 
 library(here)
@@ -1996,14 +1996,10 @@ fviz_cluster(km.klk.lung.5, data=all.KLK.lung.clean.noGSM,
              ggtheme = theme_bw(),
              labelsize = 5,
              repel=TRUE,
-<<<<<<< Updated upstream
              main="K-Means-Clustering, GSE149507 (Cai et al. 2021)"
              )
 
-=======
-             main = "Cluster plot for GSE149507 lung cancer (Cai et al.2021)"
-             )
->>>>>>> Stashed changes
+
 dev.off()
 
 km.klk.lung.5
@@ -2085,7 +2081,7 @@ fviz_cluster(km.klk.breast, data=tf.klk.breast.clean,
              ggtheme = theme_bw(),
              labelsize = 5,
              repel=TRUE,
-             main="Cluster plot GSE65216 breast cancer (Maire et al.2013)"
+             main="K-Means-Clustering, GSE65216 (Maire et al.2013)"
 )
 dev.off()
 
