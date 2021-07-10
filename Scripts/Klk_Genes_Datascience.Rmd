@@ -1451,7 +1451,8 @@ dev.off()
 ```
 
 ###Hypothesis testing 
-```{r Hypothesis testing - breast}
+In the Boxplot and the heatmap KLK8.8 and 4.4 seem overexpressed. In the k-means both are in cluster 1.
+```{r Hypothesis testing - Cluster 1}
 #checking the normaility of the breast cancer dataset 
 #QQ Plot
 setwd(here("Plots/Plots_breast"))
@@ -1460,31 +1461,48 @@ qqnorm(breastExprs, main = "QQ-Plot GSE65216 (Maire et al. 2013)");qqline(breast
 dev.off()
 #the data is not normally distributed - therefore we will use the Wilcoxon Rank Sum test/ Mann-Whitney U test
 
-#In the heatmap KLK4.4 in its own cluster 2 seems to be higher expressed than the other genes.
-#Test weather KLK4.4 is significantly higher expressed
+#testing wheather KLK8.8 has a higher expression than all other genes individually
+#KLK8.8 (NON-TRA)
+b.KLK8.8.vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK8.8", ], all.KLK.breast.clean)
+b.KLK8.8.vsall.sig <- significant.pvalues.05(b.KLK8.8vsall)
+b.KLK8.8.vsall.sig
+which(b.KLK8.8vsall > 0.05)
+#KLK8.8 is significantly higher expressed than all other genes, except KLK4.4 and of cause itself
+
+#KLK4.4 TRA
 b.KLK4.4vsall<- w.test.gene.df.upper(all.KLK.breast.clean["KLK4.4", ], all.KLK.breast.clean)
 b.KLK4.4.vsall.sig <- significant.pvalues.05(b.KLK4.4vsall)
 b.KLK4.4.vsall.sig
 which(b.KLK4.4vsall > 0.05)
-#KLK4.4 is significantly higher expressed than all other genes, execpt itself.
+#KLK4.4 is significantly higher expressed than all other genes, except itself.
+
+#prepare datat for boxplot
+#KLK8.8.sig <- b.KLK8.8vsall.sig[ ,1]
+#KLK8.8non <- b.KLK8.8vsall.sig[ ,2]
+#KLK4.4.sig <- b.KLK4.4.vsall.sig[ ,1]
+#KLK4.4.non <- b.KLK4.4.vsall.sig[ ,2] 
+
+#barplot(KLK8.8.sig, KLK8.8non, KLK4.4.sig, KLK4.4.non)
+
+#results.cluster1.breast <- matrix(c("KLK8.8",71,1,"KLK4.4" ,72,0), nrow= 2, ncol = 3, byrow=TRUE)
+#the non-significance from the genes vs. themself was subtracted 
+#colnames(results.cluster1.breast) <- c("names", "significant", "non-significant")
+#results.cluster1.breast
+
+#ggplot(data=results.cluster1.breast, aes(x=names  ))+geom_bar(stat="identity")
+  
+
+#barplot(results.cluster1.breast, beside = TRUE)
+#ggplot(results.cluster1.breast)
+
+
+
 ```
+KLK8.8 and KLK4.4 are significantly over-expressed, compared to the other genes. Especially KLK8.8 is interesting because it is not an TRA. This means there is likely no central tolerance against this KLK, which makes it a good drug target. 
 
 
-```{r Hypothesis testing - cluster 2}
-#Test whether genes in cluster 3 are higher expressed than the other genes. 
-#KLK10.3, KLK6, KLK5, KLK5.3 are in cluster 3. 
-
-#KLK10.3
-b.KLK10.3vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK10.3", ], all.KLK.breast.clean)
-b.KLK10.3.vsall.sig <- significant.pvalues.05(b.KLK10.3vsall)
-b.KLK10.3.vsall.sig
-#KLK10.3 is not significantly higher expressed, compared to the other genes. 
-
-#KLK6
-b.KLK6vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK6", ], all.KLK.breast.clean)
-b.KLK6vsall.sig <- significant.pvalues.05(b.KLK6vsall)
-b.KLK6vsall.sig
-#KLK6 is only significantly higher expressed than two thirds of the genes. 
+```{r, Hypothesis testing - cluster 4}
+#Cluster 4 from k-means: KLK6, KLK5.3, KLK5, KLK10.3 - cluster matches with cluster 3 from the heatmap. In some chips the KLKs are higher expressed -> enough to be significant?
 
 #KLK5
 b.KLK5vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK5", ], all.KLK.breast.clean)
@@ -1493,31 +1511,146 @@ b.KLK5vsall.sig
 #KLK5 is not significantly higher expressed than most of the other genes
 
 #KLK5.3
-b.KLK5.3vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK5.3", ], all.KLK.breast.clean)
-b.KLK5.3vsall.sig <- significant.pvalues.05(b.KLK5.3vsall)
-b.KLK5.3vsall.sig
+b.KLK6.vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK6", ], all.KLK.breast.clean)
+b.KLK6.vsall.sig <- significant.pvalues.05(b.KLK6vsall)
+b.KLK6.vsall.sig
+which(b.KLK6.vsall > 0.05)
 #KLK5.3 is only significantly higher expressed than half of the genes. 
+
+#KLK6
+b.KLK6.vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK6", ], all.KLK.breast.clean)
+b.KLK6.vsall.sig <- significant.pvalues.05(b.KLK6vsall)
+b.KLK6.vsall.sig
+which(b.KLK6.vsall > 0.05)
+#KLK6 is only significantly higher expressed than two thirds of the genes. 
+
+#KLK10.3
+b.KLK10.3vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK10.3", ], all.KLK.breast.clean)
+b.KLK10.3.vsall.sig <- significant.pvalues.05(b.KLK10.3vsall)
+b.KLK10.3.vsall.sig
+#KLK10.3 is not significantly higher expressed, compared to the other genes. 
 ```
-Conclusion: the KLKs in cluster two are not clearly higher expressed than the other genes. They only got in the same cluster together because the genes of cluster two are higher expressed in 5 of the chips (Tum01+0.4+06_TNBC, Tum103_LumB, Tum075_LumA). 
+Conclusion: the KLKs in cluster four are not clearly higher expressed than the other genes. They only got in the same cluster together because the genes of cluster two are higher expressed in 5 of the chips (Tum01+0.4+06_TNBC, Tum103_LumB, Tum075_LumA). 
 
-```{r, Hypothesis testing  KLK8.3, 8.8}
-#In the heatmap KLK8.3, KLK8.8 seem to be higher expressed than the other genes. 
 
-#Hypothesis test on KLK8.3 (TRA)
-b.KLK8.3vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK8.3", ], all.KLK.breast.clean)
-b.KLK8.3vsall.sig <- significant.pvalues.05(b.KLK8.3vsall)
-b.KLK8.3vsall.sig
-which(b.KLK8.3vsall > 0.05)
-#KLK8.3 is significantly higher expressed than all genes, except KLK4.4 and KLK8.8
+The main characteristic of this dataset is the subdivision into the different mutations. In the heatmap there are four genes, which are overexpressed in at least two of the five chips for one mutation. KLK10.3+KLK6 for Her2, KLK11+KLK11.2 for LumA. These foru genes are also found in the loadings of the PCA. In the following all KLKs, which are presented as the 12 main loadings. 
+```{r Hypothesis testing - Subsets}
+#define function for grabbing chips 
+grep.chips <- function(df, pattern){
+  df[ ,grepl(pattern, colnames(df))]
+}
 
-#KLK8.8 (NON-TRA)
-b.KLK8.8vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK8.8", ], all.KLK.breast.clean)
-b.KLK8.8vsall.sig <- significant.pvalues.05(b.KLK8.8vsall)
-b.KLK8.8vsall.sig
-which(b.KLK8.8vsall > 0.05)
-#KLK8.8 is significantly higher expressed than all other genes, except KLK4.4
+#for ggplot the  format of three columns (name, value, mutation type) is needed
+#defining a function for that 
+ggplot.format <- function(df, thirdcolumn){
+  step1 <- pivot_longer(as.data.frame(t(df)), col= colnames(t(df)))
+  step2 <- rep(thirdcolumn, nrow(step1))
+  step3 <- cbind(step1, mutation_type= step2)
+  print(step3)
+}
+
+#creating subdatasets for each mutation 
+#Her2
+all.KLK.breast.clean.Her2 <- grep.chips(all.KLK.breast.clean, "Her2")
+tl.breast.Her2 <- ggplot.format(all.KLK.breast.clean.Her2, "Her2")
+
+#LumA
+all.KLK.breast.clean.LumA <- grep.chips(all.KLK.breast.clean, "LumA")
+tl.breast.LumA <- ggplot.format(all.KLK.breast.clean.LumA, "LumA")
+  
+#LumB
+all.KLK.breast.clean.LumB <- grep.chips(all.KLK.breast.clean, "LumB")
+tl.breast.LumB <- ggplot.format(all.KLK.breast.clean.LumB, "LumB")
+
+
+#TNBC
+all.KLK.breast.clean.TNBC <- grep.chips(all.KLK.breast.clean, "TNBC")
+tl.breast.TNBC <- ggplot.format(all.KLK.breast.clean.TNBC, "TNBC")
+
+#fusing the datasets  
+tl.breast.all <- rbind(tl.breast.Her2, tl.breast.LumA, tl.breast.LumB, tl.breast.TNBC)
+tl.breast.all
 ```
-Conclusion: KLK8.3 and KLK8.8 are significantly over-expressed, compared to the other genes, except KLK4.4. Especially KLK8.8 is interesting because it is not an TRA. This means there is likely no central tolerance against this KLK, which makes it a good drug target. 
+```{r Hypothesis testing - plot loadings}
+#subset dataframe: only genes of cluster1
+pca.loadings.breast.names <- as.matrix(c("KLK11", "KLK11.2", "KLK13.1", "KLK4.1", "KLK10", "KLK10.3", "KLK7", "KLK5.3", "KLK5", "KLK6", "KLK8.4", "KLK8.5"))
+b.breast.loadings <- tl.breast.all[ ,1] %in% pca.loadings.breast.names
+tl.breast.loadings <- as.data.frame(tl.breast.all[which(b.breast.loadings == TRUE), ] )
+tl.breast.loadings
+
+#create boxplots
+setwd(here("Plots/Plots_breast"))
+pdf("test_loadings_breast.pdf", width = 12, height=7)
+ggplot(tl.breast.loadings, aes(x=name, y=value, fill = mutation_type), size=1)+
+  ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
+  stat_boxplot(geom = "errorbar", position = position_dodge(0.5))+
+  geom_boxplot(position = position_dodge(0.5), width = 0.35)+
+  theme(axis.text.x = element_text(size=9))
+  #stat_compare_means(aes(group = mutation_type), label = "p.format", paired = FALSE)
+dev.off()
+
+
+
+setwd(here("Plots/Plots_lung"))
+pdf("Cluster1_lung.pdf")
+ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("Cluster 1, GSE149507 (Cai et al. 2021)")+
+  stat_boxplot(geom="errorbar", )+
+  geom_boxplot()
+  #stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
+dev.off()
+
+```
+
+
+```{r, Hypothesis testing Cluster 1}
+#Sub dataset with all cancer mikrochips
+all.KLK.lung.clean.ca <- all.KLK.lung.clean[, grepl("ca", colnames(all.KLK.lung.clean))]
+all.KLK.lung.clean.ca
+
+
+#Hypothesis testing cluster 1
+
+#data needs the format of three columns (name, value, tissue type)
+#creating the dataframe for ca tissue 
+t.all.KLK.lung.clean.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
+tl.all.KLK.lung.clean.ca <- pivot_longer(t.all.KLK.lung.clean.ca, col= colnames(t.all.KLK.lung.clean.ca))
+cavec <- rep("ca", 438)
+tl.all.KLK.lung.clean.ca <- cbind(tl.all.KLK.lung.clean.ca, tissue_type= cavec)
+
+
+colnames(t.all.KLK.lung.clean.ca)
+#dataframe n tissue 
+t.all.KLK.lung.clean.n <- as.data.frame(t(all.KLK.lung.clean.n))
+tl.all.KLK.lung.clean.n <- pivot_longer(t.all.KLK.lung.clean.n, col= colnames(t.all.KLK.lung.clean.n))
+nvec <- rep("n", 438)
+tl.all.KLK.lung.clean.n <- cbind(tl.all.KLK.lung.clean.n, tissue_type= nvec)
+
+#fusing the datasets  
+tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n)
+
+
+#subset dataframe: only genes of cluster1
+cluster1.lung.names <- c("KLK12", "KLK12.1", "KLK12.3", "KLK12.4", "KLK12.5")
+cluster1.lung.names <- as.matrix(cluster1.lung.names)
+b.cluster5.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
+tl.cluster5.lung <- which(b.cluster5.lung == TRUE)
+tl.cluster5.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster5.lung, ])
+tl.cluster5.lung
+
+#Plot with p.values cluster 5 
+setwd(here("Plots/Plots_lung"))
+pdf("Cluster1_lung.pdf")
+ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
+  ggtitle("Cluster 1, GSE149507 (Cai et al. 2021)")+
+  stat_boxplot(geom="errorbar")+
+  geom_boxplot()+
+  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
+dev.off()
+
+#check p.value KLK1.3
+wilcox.test(t.all.KLK.lung.clean.ca$KLK1.3, t.all.KLK.lung.clean.n$KLK1.3, paired = TRUE)
+```
 
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
 

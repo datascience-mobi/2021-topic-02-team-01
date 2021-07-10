@@ -2,7 +2,9 @@
 title: "Klk_Genes_Data_Analysis"
 author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
 date: "06.07.2021"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 \pagenumbering{gobble}
 \pagebreak
