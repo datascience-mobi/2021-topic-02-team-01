@@ -177,9 +177,9 @@ TRA.KLK.lung = lungExprs[ind.KLK.all.human.tra,]
 ```
 
 ## 4.2 Breast cancer GSE65216 (Maire et al. 2013)
-The breast cancer microarray GSE65216 (Maire et al. 2013) consists of 20 samples. The samples are all breast cancer tissue differentiated by four types of mutations. These are Triple negative breast cancer (TNBC), Her2, Luminal A and Luminal B.  
+The breast cancer microarray GSE65216 (Maire et al. 2013) chips consists of 20 samples. The samples are all breast cancer tissue differentiated by four types of mutations. These are Triple negative breast cancer (TNBC), Her2, Luminal A and Luminal B.  
 ### Clean up identical isoforms
-Having a look onto the data set itself, it is noticeable, that some of the Expression values of the KLK isoforms in our microarray are exactly identical. These identical isoforms will be cleared out of our data frame. This is easily done by performing correlation, here the pearson correlation, between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the visualization via the boxplots. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK isoforms for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
+Having a look onto the data set itself, it is noticeable, that some of the Expression values of the KLK isoforms in our microarray are exactly identical. These identical isoforms will be cleared out of our data frame. This is easily done by performing correlation, here the pearson correlation, between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the visualization via the boxplots. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK transcripts for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
 
 ### Visualization of gene expression
 #### Overview gene expression
