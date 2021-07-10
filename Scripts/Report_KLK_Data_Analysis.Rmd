@@ -98,9 +98,11 @@ After reading in our data, the first step is to verify its quality by following 
 ## 2.1 Quality control - GSE65216 breast cancer
 ### Single chip control
 An example image of the scanned arrays is displayed. Upon examination of each array, there are no scratches or lighter areas detectable, which means the arrays themselves are fine.
+<div style= "float:right;position: relative; top: -80px;">
 ```{r echo=FALSE, fig.show="hold", fig.align="center", fig.cap="Working chip of breast cancer microarray GSE65216", out.width="50%"}
 knitr::include_graphics("images/breast_chip_control_example1.png")
 ```
+</div>
 ### meanSd plot
 The meanSd plot shows the standard deviation of the vsn normalized data, across all samples, plotted against the mean. Here, the logarithmic transformation consists with the base of 2.
 ```{r echo=FALSE, fig.align="center", fig.cap="meanSD plot of breast cancer microarray GSE65216", out.width="50%"}
