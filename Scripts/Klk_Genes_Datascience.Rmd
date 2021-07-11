@@ -2588,13 +2588,15 @@ names.piechart = c("Cervix","Colon","Esophagus","Liver","Minor Salivary Gland","
 coul <- brewer.pal(10, "Paired")
 coul <- colorRampPalette(coul)(25)
 
-#pieeee
+#pie
+setwd(here("Plots"))
+pdf("piechart_TRAs.pdf")
 pie(piechart.vec, labels = names.piechart,
     edges = 200, radius = 1, col= brewer.pal(13, "Paired") ,
     main = "Distribution of KLK-TRA genes over tissue",
     cex =0.55,
     )
-
+dev.off()
 
 ```
 
