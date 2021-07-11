@@ -192,7 +192,7 @@ Since the data is vsnrma normalized, the median does not fluctuate too much for 
 gene.summary <- function(x){
  round(apply(x, 2, summary), digits = 2)
 }
-gene.summary(breastExprs)
+gene.summary(breastExprs)[,1]
 ```
 The histogram represent the frequency of the present gene expression in breast cancer samples. It also shows, that the median gene expression of KLKs is much lower than the overall median gene expression. This means that most of the KLK gene expression is normally down-regulated in the perspective of the whole genome. (Yousef et al. 2004)
 ```{r Histogram - breast , echo=FALSE, fig.align="center", fig.cap="Histogram of breast cancer gene expression", out.width="50%"}
