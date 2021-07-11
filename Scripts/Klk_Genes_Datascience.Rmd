@@ -1578,79 +1578,76 @@ b.breast.loadings <- tl.breast.all[ ,1] %in% pca.loadings.breast.names
 tl.breast.loadings <- as.data.frame(tl.breast.all[which(b.breast.loadings == TRUE), ] )
 tl.breast.loadings
 
+#custom order 
+tl.breast.loadings <- within(tl.breast.loadings, name <- factor(name, levels = c("KLK4.1", "KLK5", "KLK5.3", "KLK6", "KLK7", "KLK8.4", "KLK11", "KLK8.5","KLK10",  "KLK10.3", "KLK11.2", "KLK13.1")))
+
 #create boxplots
 setwd(here("Plots/Plots_breast"))
-pdf("test_loadings_breast.pdf", width = 12, height=7)
+pdf("Boxplot_loadings_breast.pdf", width = 12, height=7)
 ggplot(tl.breast.loadings, aes(x=name, y=value, fill = mutation_type), size=1)+
   ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
   stat_boxplot(geom = "errorbar", position = position_dodge(0.5))+
   geom_boxplot(position = position_dodge(0.5), width = 0.35)+
-  theme(axis.text.x = element_text(size=9))
+  theme(axis.text.x = element_text(size=9))+
+  scale_fill_manual(values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
+  xlab("Genes") +
+  ylab("Expression") 
   #stat_compare_means(aes(group = mutation_type), label = "p.format", paired = FALSE)
 dev.off()
 
 
 
-setwd(here("Plots/Plots_lung"))
-pdf("Cluster1_lung.pdf")
-ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 1, GSE149507 (Cai et al. 2021)")+
-  stat_boxplot(geom="errorbar", )+
-  geom_boxplot()
-  #stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
-dev.off()
 
 ```
+Some genes seem to be significantly higher expressed - proof this with the w-test
 
+```{r}
+#annotation df for ggsignif
+annotation_df <- data.frame(
+  name = c("KLK4.1"),
+  start = c("LumA"),
+  end = c("TNBC"),
+  y = c(7.2),
+  lable= c("ns")
+)
+annotation_df
 
-```{r, Hypothesis testing Cluster 1}
-#Sub dataset with all cancer mikrochips
-all.KLK.lung.clean.ca <- all.KLK.lung.clean[, grepl("ca", colnames(all.KLK.lung.clean))]
-all.KLK.lung.clean.ca
+loadings.test <- tl.breast.loadings %>% 
+  group_by(name) %>%
+  wilcox_test(value ~ mutation_type)
+loadings.test
+loadings.test <- loadings.test %>% add_xy_position(x="mutation_type")
+loadings.test
 
-
-#Hypothesis testing cluster 1
-
-#data needs the format of three columns (name, value, tissue type)
-#creating the dataframe for ca tissue 
-t.all.KLK.lung.clean.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
-tl.all.KLK.lung.clean.ca <- pivot_longer(t.all.KLK.lung.clean.ca, col= colnames(t.all.KLK.lung.clean.ca))
-cavec <- rep("ca", 438)
-tl.all.KLK.lung.clean.ca <- cbind(tl.all.KLK.lung.clean.ca, tissue_type= cavec)
-
-
-colnames(t.all.KLK.lung.clean.ca)
-#dataframe n tissue 
-t.all.KLK.lung.clean.n <- as.data.frame(t(all.KLK.lung.clean.n))
-tl.all.KLK.lung.clean.n <- pivot_longer(t.all.KLK.lung.clean.n, col= colnames(t.all.KLK.lung.clean.n))
-nvec <- rep("n", 438)
-tl.all.KLK.lung.clean.n <- cbind(tl.all.KLK.lung.clean.n, tissue_type= nvec)
-
-#fusing the datasets  
-tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n)
-
-
-#subset dataframe: only genes of cluster1
-cluster1.lung.names <- c("KLK12", "KLK12.1", "KLK12.3", "KLK12.4", "KLK12.5")
-cluster1.lung.names <- as.matrix(cluster1.lung.names)
-b.cluster5.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
-tl.cluster5.lung <- which(b.cluster5.lung == TRUE)
-tl.cluster5.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster5.lung, ])
-tl.cluster5.lung
-
-#Plot with p.values cluster 5 
-setwd(here("Plots/Plots_lung"))
-pdf("Cluster1_lung.pdf")
-ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 1, GSE149507 (Cai et al. 2021)")+
-  stat_boxplot(geom="errorbar")+
+setwd(here("Plots/Plots_breast"))
+pdf("Wraped_boxplotloadings_breast.pdf")
+ggplot(tl.breast.loadings, aes(x=name, y=value, fill = mutation_type))+
+  ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
   geom_boxplot()+
-  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())+
+  facet_wrap(~name, scales = "free_x")+
+  scale_fill_manual(values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
+  xlab("Genes") +
+  ylab("Expression")+
+  geom_segment(data = loadings.test)
+  #stat_pvalue_manual(loadings.test, hide.ns = TRUE, tip.length = 0, step.increase = 0) 
+    
+  
+
+  #geom_signif(data = annotation_df, aes(xmin=start, xmax=end), manual = TRUE)
+  
+  #stat_compare_means(aes(group = mutation_type), label = "p.format", paired = FALSE)
+  #stat_pvalue_manual(loadings.test,  label = "p.adj.signif", tip.length = 0.01)
+  
 dev.off()
 
-#check p.value KLK1.3
-wilcox.test(t.all.KLK.lung.clean.ca$KLK1.3, t.all.KLK.lung.clean.n$KLK1.3, paired = TRUE)
+tl.breast.loadings
+
 ```
+
+
+
 
 ## 4.3 Lung cancer GSE149507 (Cai et al. 2021)
 
