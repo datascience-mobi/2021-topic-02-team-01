@@ -1476,27 +1476,6 @@ b.KLK4.4.vsall.sig
 which(b.KLK4.4vsall > 0.05)
 #KLK4.4 is significantly higher expressed than all other genes, except itself.
 
-#prepare datat for boxplot
-#KLK8.8.sig <- b.KLK8.8vsall.sig[ ,1]
-#KLK8.8non <- b.KLK8.8vsall.sig[ ,2]
-#KLK4.4.sig <- b.KLK4.4.vsall.sig[ ,1]
-#KLK4.4.non <- b.KLK4.4.vsall.sig[ ,2] 
-
-#barplot(KLK8.8.sig, KLK8.8non, KLK4.4.sig, KLK4.4.non)
-
-#results.cluster1.breast <- matrix(c("KLK8.8",71,1,"KLK4.4" ,72,0), nrow= 2, ncol = 3, byrow=TRUE)
-#the non-significance from the genes vs. themself was subtracted 
-#colnames(results.cluster1.breast) <- c("names", "significant", "non-significant")
-#results.cluster1.breast
-
-#ggplot(data=results.cluster1.breast, aes(x=names  ))+geom_bar(stat="identity")
-  
-
-#barplot(results.cluster1.breast, beside = TRUE)
-#ggplot(results.cluster1.breast)
-
-
-
 ```
 KLK8.8 and KLK4.4 are significantly over-expressed, compared to the other genes. Especially KLK8.8 is interesting because it is not an TRA. This means there is likely no central tolerance against this KLK, which makes it a good drug target. 
 
@@ -1508,32 +1487,32 @@ KLK8.8 and KLK4.4 are significantly over-expressed, compared to the other genes.
 b.KLK5vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK5", ], all.KLK.breast.clean)
 b.KLK5vsall.sig <- significant.pvalues.05(b.KLK5vsall)
 b.KLK5vsall.sig
-#KLK5 is not significantly higher expressed than most of the other genes
+#KLK5 is not significantly higher expressed (9 sig., 64 non-sig.) than most of the other genes
 
 #KLK5.3
 b.KLK6.vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK6", ], all.KLK.breast.clean)
 b.KLK6.vsall.sig <- significant.pvalues.05(b.KLK6vsall)
 b.KLK6.vsall.sig
 which(b.KLK6.vsall > 0.05)
-#KLK5.3 is only significantly higher expressed than half of the genes. 
+#KLK5.3 is only significantly higher expressed (53 sig., 20 non-sig.) than two thirdsof the genes. 
 
 #KLK6
 b.KLK6.vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK6", ], all.KLK.breast.clean)
 b.KLK6.vsall.sig <- significant.pvalues.05(b.KLK6vsall)
 b.KLK6.vsall.sig
 which(b.KLK6.vsall > 0.05)
-#KLK6 is only significantly higher expressed than two thirds of the genes. 
+#KLK6 is only significantly higher expressed (53 sig., 20 non-sig.) than two thirds of the genes. 
 
 #KLK10.3
 b.KLK10.3vsall <- w.test.gene.df.upper(all.KLK.breast.clean["KLK10.3", ], all.KLK.breast.clean)
 b.KLK10.3.vsall.sig <- significant.pvalues.05(b.KLK10.3vsall)
 b.KLK10.3.vsall.sig
-#KLK10.3 is not significantly higher expressed, compared to the other genes. 
+#KLK10.3 is not significantly (1sig., 72 non-sig.) higher expressed, compared to the other genes. 
 ```
 Conclusion: the KLKs in cluster four are not clearly higher expressed than the other genes. They only got in the same cluster together because the genes of cluster two are higher expressed in 5 of the chips (Tum01+0.4+06_TNBC, Tum103_LumB, Tum075_LumA). 
 
 
-The main characteristic of this dataset is the subdivision into the different mutations. In the heatmap there are four genes, which are overexpressed in at least two of the five chips for one mutation. KLK10.3+KLK6 for Her2, KLK11+KLK11.2 for LumA. These foru genes are also found in the loadings of the PCA. In the following all KLKs, which are presented as the 12 main loadings. 
+The main characteristic of this dataset is the subdivision into the different mutations. In the heatmap there are four genes, which are overexpressed in at least two of the five chips for one mutation. KLK10.3+KLK6 for Her2, KLK11+KLK11.2 for LumA. These four genes are also identified as one of the main loadings of the PCA. In the following all KLKs, which are presented as the 12 main loadings. 
 ```{r Hypothesis testing - Subsets}
 #define function for grabbing chips 
 grep.chips <- function(df, pattern){
@@ -1571,6 +1550,8 @@ tl.breast.TNBC <- ggplot.format(all.KLK.breast.clean.TNBC, "TNBC")
 tl.breast.all <- rbind(tl.breast.Her2, tl.breast.LumA, tl.breast.LumB, tl.breast.TNBC)
 tl.breast.all
 ```
+
+
 ```{r Hypothesis testing - plot loadings}
 #subset dataframe: only genes of cluster1
 pca.loadings.breast.names <- as.matrix(c("KLK11", "KLK11.2", "KLK13.1", "KLK4.1", "KLK10", "KLK10.3", "KLK7", "KLK5.3", "KLK5", "KLK6", "KLK8.4", "KLK8.5"))
@@ -1579,7 +1560,7 @@ tl.breast.loadings <- as.data.frame(tl.breast.all[which(b.breast.loadings == TRU
 tl.breast.loadings
 
 #custom order 
-tl.breast.loadings <- within(tl.breast.loadings, name <- factor(name, levels = c("KLK4.1", "KLK5", "KLK5.3", "KLK6", "KLK7", "KLK8.4", "KLK11", "KLK8.5","KLK10",  "KLK10.3", "KLK11.2", "KLK13.1")))
+tl.breast.loadings <- within(tl.breast.loadings, name <- factor(name, levels = c("KLK4.1", "KLK5", "KLK5.3", "KLK6", "KLK7", "KLK8.4", "KLK8.5","KLK10",  "KLK10.3", "KLK11",  "KLK11.2", "KLK13.1")))
 
 #create boxplots
 setwd(here("Plots/Plots_breast"))
@@ -1602,68 +1583,124 @@ dev.off()
 Some genes seem to be significantly higher expressed - proof this with the w-test
 
 ```{r}
-
+#Her2 first
 #transform mutation type into factor
 tl.breast.loadings$mutation_type <- as.factor(tl.breast.loadings$mutation_type)
 
-loadings.test <- tl.breast.loadings %>% 
-  group_by(name) %>%
-  wilcox_test(value ~ mutation_type, paired = FALSE, alternative = "greater", p.adjust.method = "none") %>%
+loadings.test0 <- tl.breast.loadings %>% 
+  group_by(name)%>%
+  wilcox_test(value ~ mutation_type, paired = FALSE, alternative = "greater", p.adjust.method = "none")%>%
   add_significance()%>%
   add_xy_position()
+loadings.test0 <- loadings.test0[str_detect(loadings.test0$group1, "Her2"), ]
+loadings.test0
+
+
+#Problem: not every possibilty was tested! Only the combinations were tested (6) but we need the permutations because for w.tests the order matters! there are 12 possible permutations for each gene. 
+#Solution: running the code for each mutation seperatly, taking 3 permuatation per gene each and fuse the datasets
+
+
+#LumA first
+tl.breast.loadings1 <- within(tl.breast.loadings, mutation_type <- factor(mutation_type, levels = c("LumA", "LumB", "TNBC", "Her2")))
+
+loadings.test1 <- tl.breast.loadings1 %>% 
+  group_by(name)%>%
+  wilcox_test(value ~ mutation_type, paired = FALSE, alternative = "greater", p.adjust.method = "none")%>%
+  add_significance()%>%
+  add_xy_position()
+loadings.test1 <- loadings.test1[str_detect(loadings.test1$group1, "LumA"), ]
+loadings.test1
+
+
+#LumB first
+tl.breast.loadings2 <- within(tl.breast.loadings, mutation_type <- factor(mutation_type, levels = c( "LumB", "TNBC", "Her2", "LumA")))
+loadings.test2 <- tl.breast.loadings2 %>% 
+  group_by(name)%>%
+  wilcox_test(value ~ mutation_type, paired = FALSE, alternative = "greater", p.adjust.method = "none")%>%
+  add_significance()%>%
+  add_xy_position()
+loadings.test2 <- loadings.test2[str_detect(loadings.test2$group1, "LumB"), ]
+loadings.test2
+
+
+#TNBC first 
+tl.breast.loadings3 <- within(tl.breast.loadings, mutation_type <- factor(mutation_type, levels = c(  "TNBC", "Her2", "LumA", "LumB")))
+loadings.test3 <- tl.breast.loadings3 %>% 
+  group_by(name)%>%
+  wilcox_test(value ~ mutation_type, paired = FALSE, alternative = "greater", p.adjust.method = "none")%>%
+  add_significance()%>%
+  add_xy_position()
+loadings.test3 <- loadings.test3[str_detect(loadings.test3$group1, "TNBC"), ]
+loadings.test3
+
+
+#fuse and reorder the datasets
+loadings.test <- rbind(loadings.test0, loadings.test1, loadings.test2, loadings.test3 )
+loadings.test <- within(loadings.test, name <- factor(name, levels = c("KLK4.1", "KLK5", "KLK5.3", "KLK6", "KLK7", "KLK8.4", "KLK8.5","KLK10",  "KLK10.3", "KLK11", "KLK11.2", "KLK13.1")))
+loadings.test <- loadings.test %>% arrange(name)
+
 
 loadings.test
-#Significant: 
-#KLK4.1 LumA greater than TNBC
-#KLK5: LumA greater than LumB
-#KLK5.3 LumA greater than LumB
-#KLK6: Her2 greater than LumB
-#KLK13.1: LumA greater than TNBC
 
+#filtering the rows which have a significant p-value
+loadings.test.results <- loadings.test[loadings.test$p < 0.05, ]
+loadings.test.results
+```
 
+```{r}
+#changeing Her2 to 1, LumA=2, LumB=3, TNBC=4 for annotation dataframe
+loadings.test.results[loadings.test.results == "Her2"] <- "1"
+loadings.test.results[loadings.test.results == "LumA"] <- "2"
+loadings.test.results[loadings.test.results == "LumB"] <- "3"
+loadings.test.results[loadings.test.results == "TNBC"] <- "4"
+loadings.test.results
 
+loadings.test.results$group1 <- as.numeric(loadings.test.results$group1)
+loadings.test.results$group2 <- as.numeric(loadings.test.results$group2)
+loadings.test.results
+
+#test with ggsignif
+#annotation dataframe
+annotation_df <- data.frame(
+  name = loadings.test.results$name,
+  start = loadings.test.results$group1,
+  end = loadings.test.results$group2,
+  y = c(10, 10, 10.7, 10.4, 9.5, 10.1, 9.8, 10, 10, 10, 9.5, 10, 9.5, 10, 10.75, 10, 10, 9.5),
+  label = c("*", "*", "*", "*", "*", "*", "*", "*","*","*","**","*","*","*","*","*","*", "*" )
+)
+annotation_df
+
+#1 Her2, 2 LumA, 3 LumB, 4 TNBC
 
 setwd(here("Plots/Plots_breast"))
 pdf("mboxplot_loadings_breast.pdf")
-ggplot(tl.breast.loadings, aes(x=name, y=value))+
-  ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
-  geom_boxplot(aes(x=name, y=value, fill=mutation_type))+
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()
-        )+
-  scale_fill_manual("Mutation type", values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
-  xlab("Genes") +
+ggplot(tl.breast.loadings, aes(x=mutation_type, y=value))+
+  ggtitle("PCA Loadings, GSE65216 (Maire et al.   2013)")+
+  geom_boxplot(aes( fill=mutation_type))+
+  scale_fill_manual("Mutation type", values      =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"), labels=c("Her2, n=5", "LumA, n=5", "LumB, n=5", "TNBC, n=5"))+
+  xlab("Mutation type") +
   ylab("Expression")+
-  facet_wrap(~name, scales = "free_x")
-  
-  #stat_pvalue_manual(loadings.test, hide.ns = TRUE)
-  
-  #stat_compare_means(comparisons = combn(tl.breast.loadings$mutation_type, 2, simplify = FALSE), method="wilcox.test", paired=FALSE)
-  #stat_pvalue_manual(loadings.test, hide.ns = TRUE, tip.length = 0, step.increase = 0) 
-  #stat_compare_means(aes(group = mutation_type), label = "p.format", paired = FALSE)
-
-
+  geom_signif(data=annotation_df,
+              aes(xmin=start,
+              xmax=end,
+              annotations = label,
+              y_position=y),
+              textsize = 3, vjust = +0.6,
+              manual = TRUE
+  )+
+  facet_wrap(~name, scales = "fixed")+
+  theme(axis.text.x = element_text(size=8))
 dev.off()
-```
-Since there are only 
+ 
 
-```{r}
-setwd(here("Plots/Plots_breast"))
-pdf("Wraped_boxplotloadings_breast.pdf")
-ggboxplot(tl.breast.loadings, x="name", y="value", facet.by="name", color = "mutation_type", scales = "free_x")+
-  ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())+
-  xlab("Genes") +
-  ylab("Expression")+
-  stat_pvalue_manual(loadings.test, hide.ns = TRUE)
   
-
-
-
-#scale_fill_manual(values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
+   
 
 ```
+Her2 is mostly underexpressed, except from KLK8.4
+
+
+
 
 
 
@@ -2236,6 +2273,7 @@ dev.off()
 
 ```
 ###Hypothesis testing lung 
+
 ```{r Hypothesis testing}
 #check the normality of the dataset with a QQ-plot
 setwd(here("Plots/Plots_lung"))
