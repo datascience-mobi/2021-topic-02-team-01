@@ -235,7 +235,18 @@ knitr::include_graphics("images/PCAplot_breast.png")
 The loadings consists of the (SHOW CODE OF THE PCA plot) the top 10 most differentiated KLK isoforms. This was conducted by adding up the values of the rotation matrix for each individual KLK isoform. As it is displayed in Fig. #NR some samples are more characterized by the expression of KLK11 and KLK11.2. This is mostly the case for two of the LumA samples. This was also observable in the heatmap by the higher expression of KLK11 in the tumor samples 71 and 76. 
 Another result of the PCA is that TNBC mutations are affected by KLK5 and KLK6 expression, which is also observable in the heatmap. For the up-regulation of KLK5 and KLK6 for some of the TNBC samples it woud be interesting if this does also hold truth for a higher sample size. If so, KLK5 and KLK6 expression could presumably be used as biomarker for TNBC breast cancer.
 We assume that KLK4.4 is not part of the top 10 loadings, since it is higher expressed across all tumor samples.
+
 ### K-means clustering
+
+K-means was performed to be able to draw conclusions on characteristics and the distribution of different Kallikrein genes. Here, the optimal number k of clusters was determined in doing a Within Cluster Sum of Squares – plot, also called the elbow method. A kink in the curve of a plot, in which the number k of clusters is plotted against the within cluster sum of squares, displays the optimal number of k clusters. Rising numbers of k will not cause a significant decline in the within cluster sum of squares anymore. 
+For the breast cancer GSE65216 data set, the Within Cluster Sum of Squares – plot predicted an optimal number of k = 6, so k-means was performed using 6 clusters. The function of k-means automatically reduces dimensions to 2 if a dataset consists of 3 or more dimensions, so the k-means clustering does not directly cluster genes of interest according to their expression values, but cluster according to two dimensions that are influenced by expression values, as those explain most of the variance of the data. Due to this influence, k-means is still suited for clustering and thus comparing KLK expression patterns. Outstanding cluster is here marked as cluster 1 in green, containing KLKs like 4.4 or 8.8 that already stood out in the heatmap analysis. Interestingly, cluster 4 is also very distinct but on the very other direction on the graph of two dimensions.
+
+```{r K-means plot - breast , echo=FALSE, fig.align="center", fig.cap="K-means cluster analysis with k = 6 clusters for the breast cancer data set", out.width="50%"}
+
+knitr::include_graphics("images/kmeans_6_breast.png")
+
+```
+
 ### Hypothesis testing
 
 
@@ -271,6 +282,14 @@ The cumulative variance shows, that 84% of the total variance or of the total in
 knitr::include_graphics("images/PCAplot_lung.png")
 ```
 ### Clustering - kmeans
+
+K-means performed for the lung cancer GSE149507 dataset showed an interesting and distinct cluster, which only consisted of KLK-subtypes of KLK12. Other genes that stood out in the heatmap analysis, for example KLK4.4 and KLK8.8, were found in the first cluster on the top left corner. The finding of optimal k clusters happened following the same procedure as for the breast cancer data set, described above. An optimal number of k = 5 clusters was determined using a Within Cluster Sum of Squares – plot.
+```{r K-means plot - lung , echo=FALSE, fig.align="center", fig.cap="K-means cluster analysis with k = 5 clusters for the lung cancer data set", out.width="50%"}
+
+knitr::include_graphics("images/kmeans_5_lung.png")
+
+```
+
 ### Hypothesis testing
 The results of the PCA and the k-means indicate that for some KLKs the expression differs, between the cancerous and normal tissue. Since the data the data is not normally distributes (QQ-PLOT?) the Wilcoxon signed-rank test was applied. 
 
