@@ -232,14 +232,14 @@ The cumulative variance shows, that 72% of the total variance or of the total in
 ```{r PCA plot - breast , echo=FALSE, fig.align="center", fig.cap="PC1 vs. PC2 with their respective loadings for breast cancer", out.width="50%"}
 knitr::include_graphics("images/PCAplot_breast.png")
 ```
-The loadings consists of the (SHOW CODE OF THE PCA plot) the top 10 most differentiated KLK isoforms. This was conducted by adding up the values of the rotation matrix for each individual KLK isoform. As it is displayed in Fig. #NR some samples are more characterized by the expression of KLK11 and KLK11.2. This is mostly the case for two of the LumA samples. This was also observable in the heatmap by the higher expression of KLK11 in the tumor samples 71 and 76. 
+The loadings consists of the (SHOW CODE OF THE PCA plot) the top 12 most differentiated KLK isoforms. This was conducted by adding up the values of the rotation matrix for each individual KLK isoform. As it is displayed in Fig. #NR some samples are more characterized by the expression of KLK11 and KLK11.2. This is mostly the case for two of the LumA samples. This was also observable in the heatmap by the higher expression of KLK11 in the tumor samples 71 and 76. 
 Another result of the PCA is that TNBC mutations are affected by KLK5 and KLK6 expression, which is also observable in the heatmap. For the up-regulation of KLK5 and KLK6 for some of the TNBC samples it woud be interesting if this does also hold truth for a higher sample size. If so, KLK5 and KLK6 expression could presumably be used as biomarker for TNBC breast cancer.
 We assume that KLK4.4 is not part of the top 10 loadings, since it is higher expressed across all tumor samples.
 
 ### K-means clustering
 
 K-means was performed to be able to draw conclusions on characteristics and the distribution of different Kallikrein genes. Here, the optimal number k of clusters was determined in doing a Within Cluster Sum of Squares – plot, also called the elbow method. A kink in the curve of a plot, in which the number k of clusters is plotted against the within cluster sum of squares, displays the optimal number of k clusters. Rising numbers of k will not cause a significant decline in the within cluster sum of squares anymore. 
-For the breast cancer GSE65216 data set, the Within Cluster Sum of Squares – plot predicted an optimal number of k = 6, so k-means was performed using 6 clusters. The function of k-means automatically reduces dimensions to 2 if a dataset consists of 3 or more dimensions, so the k-means clustering does not directly cluster genes of interest according to their expression values, but cluster according to two dimensions that are influenced by expression values, as those explain most of the variance of the data. Due to this influence, k-means is still suited for clustering and thus comparing KLK expression patterns. Outstanding cluster is here marked as cluster 1 in green, containing KLKs like 4.4 or 8.8 that already stood out in the heatmap analysis. Interestingly, cluster 4 is also very distinct but on the very other direction on the graph of two dimensions.
+For the breast cancer GSE65216 data set, the Within Cluster Sum of Squares – plot predicted an optimal number of k = 6, so k-means was performed using 6 clusters. The function of k-means automatically reduces dimensions to 2 if a dataset consists of 3 or more dimensions, so the k-means clustering does not directly cluster genes of interest according to their expression values, but cluster according to two dimensions that are influenced by expression values, as those explain most of the variance of the data. Due to this influence, k-means is still suited for clustering and thus comparing KLK expression patterns. Outstanding cluster is here marked as cluster 1 in green, containing KLKs4.4 and KLK8.8. Those genes already stood out in the heatmap analysis. Interestingly, cluster 4 is also very distinct but on the very other direction on the graph of two dimensions.
 
 ```{r K-means plot - breast , echo=FALSE, fig.align="center", fig.cap="K-means cluster analysis with k = 6 clusters for the breast cancer data set", out.width="50%"}
 
@@ -248,6 +248,23 @@ knitr::include_graphics("images/kmeans_6_breast.png")
 ```
 
 ### Hypothesis testing
+The expression values of the Kallikrein genes obtained from Marie et al. were not normally distributed. Therefore the Wilcoxon-Mann-Whitney-Test was used. First, cluster 1 (KLK4.4 and KLK8.8) were tested for overexpression against all other KLKs individually from the dataset. KLK4.4 (TRA) was significantly higher expressed than all other KLK genes from the dataset. Likewise, KLK8.8 (non-TRA) was significantly hiher expressed than all KLK genes, except KLK4.4. Those results conform with the observations from the heatmap and the k-means clustering. 
+Cluster-4 (KLK5,5.3,6,10.3) was isolated in the k-means clustering. On the heatmap it was conspicuous that for some tumor types the genes of this cluster were higher expressed. Thus the upper-tail Wilcoxon-test was used. In contrast to Cluster-1, Cluster-4 could not be clearly identified as an overexpression cluster. KLK5.3 and KLK6 were higher expressed than two thirds of the other KLK genes, wereas KLK5,10.3 were not significantly higher expressed than most of the other KLKs.
+
+The main characteristic of the dataset from Marie et al. is the subdivision into the different mutations (Her2, LumA, LumB, TNBC). In the heatmap four genes were identified, which were overexpressed in at least two of the five mutation specific chips. KLK10.3,6 for Her2, KLK11,11.2 for LumA. These four genes are also identified as one of the twelve main loadings of the PCA. 
+
+```{r, Hypothesis test panel plot with significant bars, echo=FALSE, fig.align="center", fig.cap="Panel plot of the PCA loading genes with significant bars. *: p-value <= 0.5, **: p-value <= 0.01 ", out.width="50%"}
+knitr::include_graphics("images/breast_panel_loadings_test.png")
+
+```
+
+The difference in expression between the mutations types, within a gene, were determined with the Wilcoxon-Mann-Whitney-Test. The significant differences are indicated in the panel plot with bars. Results: 
+-LumB is not highly expressed in any gene
+-Her2 only higher expressed in KLK8.4 and 8.5
+-Pattern in significance: TNBC often higher expressed, in that case mostly significantly higher in comparison to Her2 and LumB
+-apart from that no obvious pattern - unlikly to determine the Mutation type based on those KLK gene expression 
+
+
 
 
 ### Discussion
