@@ -1602,47 +1602,66 @@ dev.off()
 Some genes seem to be significantly higher expressed - proof this with the w-test
 
 ```{r}
-#annotation df for ggsignif
-annotation_df <- data.frame(
-  name = c("KLK4.1"),
-  start = c("LumA"),
-  end = c("TNBC"),
-  y = c(7.2),
-  lable= c("ns")
-)
-annotation_df
+
+#transform mutation type into factor
+tl.breast.loadings$mutation_type <- as.factor(tl.breast.loadings$mutation_type)
 
 loadings.test <- tl.breast.loadings %>% 
   group_by(name) %>%
-  wilcox_test(value ~ mutation_type)
+  wilcox_test(value ~ mutation_type, paired = FALSE, alternative = "greater", p.adjust.method = "none") %>%
+  add_significance()%>%
+  add_xy_position()
+
 loadings.test
-loadings.test <- loadings.test %>% add_xy_position(x="mutation_type")
-loadings.test
+#Significant: 
+#KLK4.1 LumA greater than TNBC
+#KLK5: LumA greater than LumB
+#KLK5.3 LumA greater than LumB
+#KLK6: Her2 greater than LumB
+#KLK13.1: LumA greater than TNBC
+
+
+
 
 setwd(here("Plots/Plots_breast"))
-pdf("Wraped_boxplotloadings_breast.pdf")
-ggplot(tl.breast.loadings, aes(x=name, y=value, fill = mutation_type))+
+pdf("mboxplot_loadings_breast.pdf")
+ggplot(tl.breast.loadings, aes(x=name, y=value))+
   ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
-  geom_boxplot()+
+  geom_boxplot(aes(x=name, y=value, fill=mutation_type))+
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())+
-  facet_wrap(~name, scales = "free_x")+
-  scale_fill_manual(values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
+        axis.ticks.x = element_blank()
+        )+
+  scale_fill_manual("Mutation type", values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
   xlab("Genes") +
   ylab("Expression")+
-  geom_segment(data = loadings.test)
+  facet_wrap(~name, scales = "free_x")
+  
+  #stat_pvalue_manual(loadings.test, hide.ns = TRUE)
+  
+  #stat_compare_means(comparisons = combn(tl.breast.loadings$mutation_type, 2, simplify = FALSE), method="wilcox.test", paired=FALSE)
   #stat_pvalue_manual(loadings.test, hide.ns = TRUE, tip.length = 0, step.increase = 0) 
-    
-  
-
-  #geom_signif(data = annotation_df, aes(xmin=start, xmax=end), manual = TRUE)
-  
   #stat_compare_means(aes(group = mutation_type), label = "p.format", paired = FALSE)
-  #stat_pvalue_manual(loadings.test,  label = "p.adj.signif", tip.length = 0.01)
-  
-dev.off()
 
-tl.breast.loadings
+
+dev.off()
+```
+Since there are only 
+
+```{r}
+setwd(here("Plots/Plots_breast"))
+pdf("Wraped_boxplotloadings_breast.pdf")
+ggboxplot(tl.breast.loadings, x="name", y="value", facet.by="name", color = "mutation_type", scales = "free_x")+
+  ggtitle("PCA Loadings, GSE65216 (Maire et al. 2013) ")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())+
+  xlab("Genes") +
+  ylab("Expression")+
+  stat_pvalue_manual(loadings.test, hide.ns = TRUE)
+  
+
+
+
+#scale_fill_manual(values =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"))+
 
 ```
 
