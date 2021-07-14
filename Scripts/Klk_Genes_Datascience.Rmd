@@ -22,6 +22,7 @@ library(hgu133plus2hsenstcdf)
 library(hgu133plus2hsenstprobe)
 library(hexbin)
 library(ggplot2)
+library(ggpubr)
 library(pheatmap)
 library(dendextend) #install.packages("dendextend")
 library(factoextra) #install.packages("factoextra")
@@ -36,6 +37,7 @@ library(ggdendro)#install.packages("ggdendro")
 library(detectseparation)
 ###here package 
 library(here)
+library(rstatix)
 #set the top level folder with here
 here::here()
 ```
@@ -1689,7 +1691,11 @@ ggplot(tl.breast.loadings, aes(x=mutation_type, y=value))+
               manual = TRUE
   )+
   facet_wrap(~name, scales = "fixed")+
-  theme(axis.text.x = element_text(size=8))
+  theme_light()+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()
+        )
+
 dev.off()
  
 
@@ -2274,7 +2280,7 @@ dev.off()
 ```
 ###Hypothesis testing lung 
 
-```{r Hypothesis testing}
+```{r Hypothesis testing - Data preperation}
 #check the normality of the dataset with a QQ-plot
 setwd(here("Plots/Plots_lung"))
 pdf("QQPlot_lung.pdf")
@@ -2284,10 +2290,8 @@ dev.off()
 #But in this dataset we have the the gene expression values of the genes in non-cancer and cancer tissues.
 #Therefore this time we do not use the Mann-Whitney-U test (unpaired Wilcoxon rank sum test), but the Wilcoxon signed rank test, with 2 paired probes. 
 
-#In the heatmap the genes of cluster 3, except KLK4.4) seem to be higher expressed in the cancer sample than in the healthy sample. 
-#Cluster 3: KLK11, KLK11.2, KLK12, KLK12.3, KLK12.4, KLK12.5, KLK12.6
+#The p-value will be calculated using a ggplot function - but therefore we need a 3 column structure (name, value, tissue-type)
 
-#new function to check for each gene weather their are higher expressed in the cancer probes for multiple KLKs
 
 #Sub dataset with all cancer mikrochips
 all.KLK.lung.clean.ca <- all.KLK.lung.clean[, grepl("ca", colnames(all.KLK.lung.clean))]
@@ -2301,40 +2305,6 @@ results <- matrix(data=NA, nrow=7, ncol=3)
 results[ ,1:2] <- cluster3.lung.names
 colnames(results) <- c("ca", "n", "p.value")
 
-
-#by hand 
-#KLK11
-results[1,3]<- wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK11", ]), as.matrix(all.KLK.lung.clean.n["KLK11", ]), paired = TRUE)$p.value
-#KLK11.2
-results[2,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK11.2", ]), as.matrix(all.KLK.lung.clean.n["KLK11.2", ]), paired = TRUE)$p.value
-#KLK12
-results[3,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12", ]), as.matrix(all.KLK.lung.clean.n["KLK12", ]), paired = TRUE)$p.value
-#KLK12.3
-results[4,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.3", ]), as.matrix(all.KLK.lung.clean.n["KLK12.3", ]), paired = TRUE)$p.value
-#KLK12.4
-results[5,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.4", ]), as.matrix(all.KLK.lung.clean.n["KLK12.4", ]), paired = TRUE)$p.value
-#KLK12.5
-results[6,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.5", ]), as.matrix(all.KLK.lung.clean.n["KLK12.5", ]), paired = TRUE)$p.value
-#KLK12.6
-results[7,3]<-wilcox.test(as.matrix(all.KLK.lung.clean.ca["KLK12.6", ]), as.matrix(all.KLK.lung.clean.n["KLK12.6", ]), paired = TRUE)$p.value
-results
-
-identical(as.matrix(all.KLK.lung.clean.ca["KLK12.3", ]), as.matrix(all.KLK.lung.clean.ca["KLK12.4", ]))
-#KLK12-12.5 have the same p.value of 0.0625, although their values are not identical, they are so similar that they have the same p-value. 
-
-
-
-dim(all.KLK.lung.clean.ca)
-
-
-all.KLK.lung.clean
-
-```
-
-```{r, Hypothesis testing Cluster 1}
-#Hypothesis testing cluster 1
-
-#data needs the format of three columns (name, value, tissue type)
 #creating this dataframe for ca tissue 
 t.all.KLK.lung.clean.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
 tl.all.KLK.lung.clean.ca <- pivot_longer(t.all.KLK.lung.clean.ca, col= colnames(t.all.KLK.lung.clean.ca))
@@ -2350,73 +2320,156 @@ tl.all.KLK.lung.clean.n <- cbind(tl.all.KLK.lung.clean.n, tissue_type= nvec)
 #fusing the datasets  
 tl.all.KLK.lung.clean <- rbind(tl.all.KLK.lung.clean.ca, tl.all.KLK.lung.clean.n)
 
+```
+
+```{r, Hypothesis testing Cluster 1}
+#Hypothesis testing cluster 1 form k-means
 
 #subset dataframe: only genes of cluster1
-cluster1.lung.names <- c("KLK12", "KLK12.1", "KLK12.3", "KLK12.4", "KLK12.5")
+cluster1.lung.names <- c("KLK4.4", "KLK8.8", "KLK10.3", "KLK11")
 cluster1.lung.names <- as.matrix(cluster1.lung.names)
-b.cluster5.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster3.lung.names
-tl.cluster5.lung <- which(b.cluster5.lung == TRUE)
-tl.cluster5.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster5.lung, ])
-tl.cluster5.lung
+b.cluster1.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster1.lung.names
+tl.cluster1.lung <- which(b.cluster1.lung == TRUE)
+tl.cluster1.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster1.lung, ])
+tl.cluster1.lung
 
 #Plot with p.values cluster 5 
-setwd(here("Plots/Plots_lung"))
-pdf("Cluster1_lung.pdf")
-ggplot(tl.cluster5.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("Cluster 1, GSE149507 (Cai et al. 2021)")+
+gg.cluster1 <- ggplot(tl.cluster1.lung, aes(x= name, y=value, fill= factor(tissue_type, levels = c("n", "ca"))))+
+  
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
-  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
-dev.off()
+  theme_light()+
+  theme( axis.text.x= element_text(size=7))+
+  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="less"), paired = TRUE, label = "p.signif", size = 5, vjust = 1, bracket.size = 0.5, hide.ns = TRUE)+
+  xlab("Genes")+
+  ylab("Expression")+
+  scale_fill_manual("Tissue", values=c("n"="#2600BF", "ca"="#FF0000"), labels=c( "normal, n=6", "cancer, n=6"))+
+  scale_y_continuous(limits=c(5, 9))
+ 
 
-#check p.value KLK1.3
-wilcox.test(t.all.KLK.lung.clean.ca$KLK1.3, t.all.KLK.lung.clean.n$KLK1.3, paired = TRUE)
+#alternative less because non-cancerous tissue is first displayed -> H1: KLKxn is significantly lower expressed than KLKxca  --> if true, with an upper tail test the result is  KLKxca is significantly higher expressed than KLKxn
+
+#test:
+wilcox.test(as.numeric(all.KLK.lung.clean.n["KLK4.4", ]), as.numeric(all.KLK.lung.clean.ca["KLK4.4", ]), paired = TRUE, alternative = "less")
+
+wilcox.test(as.numeric(all.KLK.lung.clean.ca["KLK4.4", ]), as.numeric(all.KLK.lung.clean.n["KLK4.4", ]), paired = TRUE, alternative = "greater")
+#same p.value
+
+
+gg.cluster1
 ```
 
 
-```{r, Cluster 2}
-#Check Cluster 2 from the kmeans
+```{r, Cluster 4}
+#Check Cluster 4 from the kmeans
 #filter the KLKs from tl.lung df
-cluster2.lung.names <- c("KLK4.4",  "KLK8.8", "KLK10.3", "KLK11", "KLK11.2")
-b.cluster2.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster4.lung.names
-tl.cluster2.lung <- which(b.cluster4.lung == TRUE)
-tl.cluster2.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster2.lung, ])
-tl.cluster2.lung
+cluster4.lung.names <- c("KLK12", "KLK12.1", "KLK12.3", "KLK12.4", "KLK12.5", "KLK12.6")
+cluster4.lung.names <- as.matrix(cluster4.lung.names)
+b.cluster4.lung <- tl.all.KLK.lung.clean[, 1] %in% cluster4.lung.names
+tl.cluster4.lung <- which(b.cluster4.lung == TRUE)
+tl.cluster4.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster4.lung, ])
+tl.cluster4.lung
 
 #ggplot 
-setwd(here("Plots/Plots_lung"))
-pdf("Cluster2_lung.pdf")
-ggplot(tl.cluster2.lung, aes(x= name, y=value, fill= tissue_type))+
-  scale_fill_manual(labels=c("cancerous", "normal"),
-                    values= c("red", "blue"))+
-  ggtitle("Cluster 2, GSE149507 (Cai et al. 2021)")+
+gg.cluster4 <- ggplot(tl.cluster4.lung, aes(x= name, y=value, fill= factor(tissue_type, levels = c("n", "ca"))))+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
-  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
-dev.off()
+  theme_light()+
+  theme( axis.text.x= element_text(size=7))+
+  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="less"), paired = TRUE, label = "p.signif", size = 5, vjust = +0.5, bracket.size = 0.5, hide.ns = FALSE)+
+  xlab("Genes")+
+  ylab("Expression")+
+  scale_fill_manual("Tissue ", values=c("n"="#2600BF", "ca"="#FF0000"), labels=c( "normal, n=6", "cancer n=6"))+
+  scale_y_continuous(limits = c(5.5, 10))
+  #ggtitle("Cluster 4, GSE149507 (Cai et al. 2021)")+
 
 
+gg.cluster4
 ```
 
 
 ```{r, PCA genes}
-PCA.lung.names <- c("KLK1.3", "KLK4.4", "KLK6", "KLK12", "KLK13.1", "KLKB1.1", "KLKB1.3")
-b.PCA.lung <- tl.all.KLK.lung.clean[, 1] %in% PCA.lung.names
-tl.PCA.lung <- which(b.PCA.lung == TRUE)
-tl.PCA.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.PCA.lung, ])
-tl.PCA.lung
+#PCA loadings caner 
+PCA.lung.names.ca <- c("KLK1.3", "KLK4.4", "KLK6", "KLK12" )
+b.PCA.lung.ca <- tl.all.KLK.lung.clean[, 1] %in% PCA.lung.names.ca
+tl.PCA.lung.ca <- which(b.PCA.lung.ca == TRUE)
+tl.PCA.lung.ca <- as.data.frame(tl.all.KLK.lung.clean[tl.PCA.lung.ca, ])
 
-setwd(here("Plots/Plots_lung"))
-pdf("PCA_Hyp_lung.pdf")
-ggplot(tl.PCA.lung, aes(x= name, y=value, fill= tissue_type))+
-  ggtitle("PCA Genes, GSE149507 (Cai et al. 2021)")+
+#ggplot PCA loading cancer
+ggPCA.ca <- ggplot(tl.PCA.lung.ca, aes(x= name, y=value, fill= factor(tissue_type, levels = c("n", "ca"))))+
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
-  stat_compare_means(aes(group = tissue_type), label = "p.format", paired = TRUE, size = 3.5)
-dev.off()
+  theme_light()+
+  theme( axis.text.x= element_text(size=7))+
+  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="less"), paired = TRUE, label = "p.signif", size = 5, vjust = 0.5, bracket.size = 0.5, hide.ns = TRUE)+
+  xlab("Genes")+
+  ylab("Expression")+
+  scale_fill_manual("Tissue", values=c("n"="#2600BF", "ca"="#FF0000"), labels=c( "normal, n=6", "cancer, n=6"))+
+  scale_y_continuous(limits=c(5, 10))
+    #ggtitle("PCA loadings cancer, GSE149507 (Cai et al. 2021)")+
+
+
+ggPCA.ca
+
+#PCA loadings normal
+PCA.lung.names.n <- c("KLK13.1", "KLKB1.1", "KLK1.3")
+b.PCA.lung.n <- tl.all.KLK.lung.clean[, 1] %in% PCA.lung.names.n
+tl.PCA.lung.n <- which(b.PCA.lung.n == TRUE)
+tl.PCA.lung.n <- as.data.frame(tl.all.KLK.lung.clean[tl.PCA.lung.n, ])
+
+
+ggPCA.n <- ggplot(tl.PCA.lung.n, aes(x= name, y=value, fill= factor(tissue_type, levels = c("n", "ca"))))+
+  stat_boxplot(geom="errorbar")+
+  geom_boxplot()+
+  theme_light()+
+  theme( axis.text.x= element_text(size=7))+
+  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="less"), paired = TRUE, label = "p.signif", size = 5, vjust = 0.5, bracket.size = 0.5, hide.ns = TRUE)+
+  xlab("Genes")+
+  ylab("Expression")+
+  scale_fill_manual("Tissue", values=c("n"="#2600BF", "ca"="#FF0000"), labels=c( "normal, n=6", "cancer, n=6"))+
+  scale_y_continuous(limits=c(5.4, 9))
+  #  ggtitle("PCA loadings normal, GSE149507 (Cai et al. 2021)")+
+
+
+ggPCA.n
+
 
 ```
 
+
+```{r}
+
+titel <- "Identification of expression differences, GSE149507 (Cai et al. 2021)"
+
+
+
+exprdiff <- ggarrange(gg.cluster1 + rremove("legend")+rremove("xlab"), 
+                      gg.cluster4 + rremove("legend")+rremove("ylab")+rremove("xlab"),
+                      ggPCA.ca + rremove("legend"),  
+                      ggPCA.n+ rremove("legend")+rremove("ylab"), 
+          labels = c("A", "B", "C", "D"), 
+          font.label = list(size=10), 
+          hjust = -0.25,
+          vjust = 0.9,
+          nrow=2, ncol=2, 
+          common.legend = TRUE,
+          legend = c("bottom")
+         )
+
+exprdiff.anno <- annotate_figure(exprdiff, top=text_grob("Identification of Expression Differences, GSE149507 (Cai et al. 2021)", size = 12))
+
+setwd(here("Plots/Plots_lung"))
+pdf("Expr_diff_lung_PCA_kmeans.pdf")
+exprdiff.anno
+dev.off()
+
+
+                      
+
+
+
+```
+Identification of expression differences 
 ###Regression analysis
 ```{r}
 #need a different format with a numerical column for tissue type 
