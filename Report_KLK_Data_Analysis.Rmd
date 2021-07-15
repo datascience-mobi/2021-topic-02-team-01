@@ -311,6 +311,25 @@ knitr::include_graphics("images/kmeans_5_lung.png")
 The results of the PCA and the k-means indicate that for some KLKs the expression differs, between the cancerous and normal tissue. Since the data the data is not normally distributes (QQ-PLOT?) the Wilcoxon signed-rank test was applied. 
 
 
+###Logistsic regression
+KLKs are already used in cancer diagnostics to determine the tumor type of sample. Since expression patterns of many different genes are very complex and hard to interpret regression models are a helpful tool to determine the cancer type. 
+For the lung cancer data used in this analysis a binary outcome for the mikrochips (cancer or normal tissue)  is possible. Therefore logistic regression was chosen. 
+The basic assumtions for logistsic regression are:
+1. Independency of errors, every observation has to be  separate from the others.
+2. Linearity of the continuous variables in logit - the relationship between the variable and their logit transformed outcome should be linear. 
+3. Absence of multicollinearity or redundancy.
+4. No outliners with a strong influence. 
+5. For every independent variable there should be at least ten outcomes (Jill C.Stoltzfus 2011). 
+
+These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression. First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). Therefore expected problems of high standard error and large beta-coefficients for the independent variables were in encountered when including more then one independent variable. This phenomenon of unstable models is also called overfit-model. In fact, even for most individual genes, which had been identified ro have an significant expression difference, the described problems were encountered. It is worth noting that the data was split into a training dataset of 7 mikrochips and a test dataset of 3 mikrochips. But even with all the available mikrochips, the standard error of all of the individual tested genes, except KLK1.3 and KLK12, could not be decreased significantly. 
+
+Second, although genes with a correlation equal to one were removed, some genes are still highly correlating. This is primarily true for the different isoforms of the same gene, as visualized in figure x, plot B (hypothesis testing KLK12 and isoforms). Therefore, the effect of colliniarity would probably cause problems, even if more mikrochips were included. Hence a second cleanup, removing genes with high correlation (e.g. corr > 0.8), would be necessary. 
+
+As mentioned above KLK1.3 and KLK12 (and its isoforms) were the only gene were the standard error were not abnormaly high, but the p-value (KLK1.3 p=0.199, KLK12 p=0.314) of the independent variable was, in both cases, not significant. Therefore, the prediction rate 
+
+The 
+
+
 ### Discussion
 
 

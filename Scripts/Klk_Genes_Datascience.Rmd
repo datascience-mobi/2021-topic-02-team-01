@@ -1678,6 +1678,7 @@ setwd(here("Plots/Plots_breast"))
 pdf("mboxplot_loadings_breast.pdf")
 ggplot(tl.breast.loadings, aes(x=mutation_type, y=value))+
   ggtitle("PCA Loadings, GSE65216 (Maire et al.   2013)")+
+  stat_boxplot(geom = "errorbar")+
   geom_boxplot(aes( fill=mutation_type))+
   scale_fill_manual("Mutation type", values      =c("Her2"= "#FFFF00", "LumA"="#0000FF","LumB"= "#FF00FF","TNBC"="#00FF00"), labels=c("Her2, n=5", "LumA, n=5", "LumB, n=5", "TNBC, n=5"))+
   xlab("Mutation type") +
@@ -2412,7 +2413,7 @@ ggPCA.ca <- ggplot(tl.PCA.lung.ca, aes(x= name, y=value, fill= factor(tissue_typ
 ggPCA.ca
 
 #PCA loadings normal
-PCA.lung.names.n <- c("KLK13.1", "KLKB1.1", "KLK1.3")
+PCA.lung.names.n <- c("KLK13.1", "KLKB1.1", "KLKB1.3")
 b.PCA.lung.n <- tl.all.KLK.lung.clean[, 1] %in% PCA.lung.names.n
 tl.PCA.lung.n <- which(b.PCA.lung.n == TRUE)
 tl.PCA.lung.n <- as.data.frame(tl.all.KLK.lung.clean[tl.PCA.lung.n, ])
@@ -2423,7 +2424,7 @@ ggPCA.n <- ggplot(tl.PCA.lung.n, aes(x= name, y=value, fill= factor(tissue_type,
   geom_boxplot()+
   theme_light()+
   theme( axis.text.x= element_text(size=7))+
-  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="less"), paired = TRUE, label = "p.signif", size = 5, vjust = 0.5, bracket.size = 0.5, hide.ns = TRUE)+
+  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="greater"), paired = TRUE, label = "p.signif", size = 5, vjust = 0.5, bracket.size = 0.5, hide.ns = TRUE)+
   xlab("Genes")+
   ylab("Expression")+
   scale_fill_manual("Tissue", values=c("n"="#2600BF", "ca"="#FF0000"), labels=c( "normal, n=6", "cancer, n=6"))+
@@ -2471,7 +2472,7 @@ dev.off()
 ```
 Identification of expression differences 
 ###Regression analysis
-```{r}
+```{r, Regression analysis - data preperation}
 #need a different format with a numerical column for tissue type 
 #transform subset dataframe previously created for the hypothesis tests
 t.lung.ca <- as.data.frame(t(all.KLK.lung.clean.ca))
@@ -2493,29 +2494,6 @@ reg.lung.ca
 all.KLK.lung.clean
 
 
-#Conditions for using regression analysis:
-#the residuals are normally distributed 
-#no correlation between the residuals and the explanatory variable 
-reg.tissue.type.all <- lm(tissue_type ~ KLK12+KLK10.3+KLK12+KLK12.3+KLK12.4+KLK12.5+KLK12.6, data = reg.lung.all)
-summary(reg.tissue.type)
-
-
-reg.tissue.type <- lm(tissue_type ~ KLK10.3, data = reg.lung.all)
-summary(reg.tissue.type)
-
-hist(reg.tissue.type$residuals, breaks=10)
-qqnorm(reg.tissue.type$residuals);qqline(reg.tissue.type$residuals)
-
-
-cor(reg.lung.all$KLK10.3, reg.tissue.type$residuals)
-plot(reg.lung.all$KLK10.3, reg.tissue.type$residuals, pch=20)
-
-plot(reg.lung.all$tissue_type,reg.tissue.type$fitted.values,pch=20,col='blue', xlab='Real values',ylab='Predicted values');abline(0,1,col='red')
-
-
-```
-
-```{r, logistic regression Model 0}
 #change tissue type frome character to numeric
 reg.lung.all$tissue_type <- as.numeric(reg.lung.all$tissue_type) 
 #make this example reproducible
@@ -2530,24 +2508,113 @@ train.reg
 test.reg
 
 
-#Model 0 with all genes 
-model0 <- glm(as.factor(tissue_type)~ ., family = binomial(), data = reg.lung.all)
-summary(model0)
-#error 61 not defined because of singularities??? -> Collinearity! 
-#eliminate all genes with a correlation higher than 0.7
+```
 
-tmp <- cor(reg.lung.all)
-tmp[upper.tri(tmp)]<- 0
-diag(tmp) <- 0
-length(which(tmp > 0.7))
+```{r, logistic regression Model 0}
+#Model 0 :
+#Rule of thumb: 1 variable per 10 ten events. (PAPER needed!)
+#If we choose more then one variable the standard error and fisher iterations become extremely high+ p-value=1 -> model gets invalid
+#same is true for every tested gene we put in individually except KLK12
+#show problems with multiple genes 
+modelKLK10.3.12 <- glm(tissue_type ~  KLK12+KLK10.3, family = binomial(), data = train.reg)
+summary(modelKLK10.3.12)
+plot(modelKLK10.3.12)
+#model is invalid -> changing train.reg to reg.lung.all with 10 events lowers the standard error not significantly 
+
+#KLK10.3 with training dataset (/ mikrochips)
+modelKLK10.3.7 <- glm(tissue_type ~  KLK10.3, family = binomial(), data = train.reg)
+summary(modelKLK10.3.7)
+
+#KLK10.3 with full dataset (10 mikrochips)
+modelKLK10.3.10 <- glm(tissue_type ~  KLK10.3, family = binomial(), data = reg.lung.all)
+summary(modelKLK10.3.10)
+#KLK10.3 is not suited to predict the tissue type of a mikrochip
+
+
+#KLK1.3
+modelKLK1.3 <- glm(tissue_type ~  KLK1.3, family = binomial(), data = train.reg)
+summary(modelKLK1.3)
+plot(modelKLK1.3)
+#p.value: 0.198
+
+#KLK4.4
+modelKLK4.4 <- glm(tissue_type ~  KLK4.4, family = binomial(), data = train.reg)
+summary(modelKLK4.4)
+##KLK4.4 is not suited to predict the tissue type of a mikrochip
+
+#KLKB1.1
+modelKLKB1.1 <- glm(tissue_type ~  KLKB1.1, family = binomial(), data = train.reg)
+summary(modelKLKB1.1)
+##KLK4.4 is not suited to predict the tissue type of a mikrochip
+
+#KLKB1.3
+modelKLKB1.3 <- glm(tissue_type ~  KLKB1.3, family = binomial(), data = train.reg)
+summary(modelKLKB1.3)
+##KLK4.4 is not suited to predict the tissue type of a mikrochip
+
+
+#KLK12 model
+modelKLK12 <- glm(tissue_type ~  KLK12, family = binomial(), data = train.reg)
+summary(modelKLK12)
+plot(modelKLK12)
+#p-value is not significant! 
+
+#test the isoforms 
+modelKLK12.3 <- glm(tissue_type ~  KLK12.3, family = binomial(), data = train.reg)
+summary(modelKLK12.3)
+plot(modelKLK12.3)
+
+modelKLK12.5 <- glm(tissue_type ~  KLK12.5, family = binomial(), data = train.reg)
+summary(modelKLK12.5)
+plot(modelKLK12.5)
+
+
+```
+
+```{r, models}
+#KLK1.3
+summary(modelKLK1.3)
+predictionKLK1.3 <- predict(modelKLK1.3, test.reg, type="response")
+
+#KLK12 
+summary(modelKLK12)
+predictionKLK12 <- predict(modelKLK12, test.reg, type="response")
+
+
+#results
+predictionKLK1.3.classes <- ifelse(predictionKLK1.3 > 0.5, "ca", "n")
+predictionKLK12.classes <- ifelse(predictionKLK12 > 0.5, "ca", "n")
+predictionKLK1.3.classes
+#
+predictionKLK12.classes
+
+```
+
+
+```{r}
+#Trying to remove collinearity by removing genes with a correlation greater then 0.7
+train.corr <- cor(train.reg)
+train.corr[upper.tri(train.corr)]<- 0
+diag(train.corr) <- 0
+length(which(train.corr > 0.7))
+train.corr.low <- train.reg[ , !apply(train.corr, 2, function(x){ any(x>0.7)})]
+train.corr.low
+
+train
+modelKLK12.low <- glm(tissue_type ~  KLK12, family = binomial(), data = train.reg)
+summary(model0)
+plot(modelKLK12)
+
 #with 0.7 still Colliniarity - set to 0.6
-low.cor.reg.lung.all <- reg.lung.all[ , !apply(tmp, 2, function(x){ any(x>0.6)})]
+low.cor.reg.lung.all <- reg.lung.all[ , !apply(tmp, 2, function(x){ any(x>0.7)})]
 low.cor.reg.lung.all
 #only 10 genes left!
 #glm with the low correlation dataset
 model0.1<- glm(as.factor(tissue_type)~ ., family = binomial(), data = low.cor.reg.lung.all)
 sum.model0.1 <- summary(model0.1)
 sum.model0.1
+
+
 #the for every gene Std.Error is enormous and the p.value is always 1! Something is wrong!
 #we probably a separation in our dataset
 #1. Fisher scoring iterations is 23 (4-5 is typical)
@@ -2555,6 +2622,7 @@ sum.model0.1
 #Rule from literature: 10 outcome events per predictor variable! 
 ggplot(sum.model0.1, aes(GSM4504101_SCLC_01_ca, GSM4504103_SCLC_02_ca   ))
 plot(model0.1)
+
 
 
 sep.model0.1<- glm(tissue_type~ .,data = low.cor.reg.lung.all, family = binomial("logit"), method = "detect_separation")
@@ -2572,7 +2640,6 @@ separationplot(pred.model0.1, actual0.1, type = "line", line = T)
 predi
 
 ```
-
 
 
 ```{r, Logistic Regression Model 1+2}
