@@ -1284,7 +1284,8 @@ ggplot() +
         panel.grid.minor.y = element_blank(),
         legend.position = c(0.05, 0.95),
         legend.justification = c("left", "top")
-        )
+        )+
+   theme_light()
 dev.off()
 
 
@@ -1852,27 +1853,6 @@ clust.lung    <- cutree(hclust.genes.lung, k=3)
 clust.lung.df <- data.frame(label=names(clust.lung), cluster=factor(clust.lung))
 dendr.lung[["labels"]] <- merge(dendr.lung[["labels"]],clust.lung.df, by="label")
 
-
-setwd(here("Plots/Plots_lung"))
-png("all_KLK_dendrogram_lung.png")
-ggplot() +
-  ggtitle("Dendrogram of all KLKs GSE149507 (Cai et al. 2021)") +
-  ylab("Distance (complete-linkage)") +
-  geom_segment(data=segment(dendr.lung), aes(x=x, y=y, xend=xend, yend=yend)) + 
-  geom_text(data=label(dendr.lung), aes(x, y, label=label, hjust=0, color=cluster), 
-           size=2) +
-  coord_flip() + scale_y_reverse(expand=c(0.1, 0)) + 
-  theme(axis.line.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.title.y=element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        legend.position = c(0.05, 0.95),
-        legend.justification = c("left", "top")
-        )
-dev.off()
-
 setwd(here("Plots/Plots_lung"))
 pdf("all_KLK_dendrogram_lung.pdf")
 ggplot() +
@@ -1890,7 +1870,8 @@ ggplot() +
         panel.grid.minor.y = element_blank(),
         legend.position = c(0.05, 0.95),
         legend.justification = c("left", "top")
-        )
+        )+
+  theme_light()
 dev.off()
 
 
