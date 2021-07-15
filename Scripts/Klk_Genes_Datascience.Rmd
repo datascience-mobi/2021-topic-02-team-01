@@ -1364,7 +1364,8 @@ pca.breast.eigenvalues %>%
   geom_col(aes(y = pct)) +
   geom_line(aes(y = pct_cum, group = 1)) + 
   geom_point(aes(y = pct_cum)) +
-  labs(x = "Principal component", y = "Amount of explained variance %")
+  labs(x = "Principal component", y = "Amount of explained variance %")+
+  theme_light()
 dev.off()
 # the first two PCs almost explain 75 % of the whole variance / information 
 
@@ -1389,7 +1390,8 @@ breast.pca.gg <- ggplot(pca.breast.scores, aes(x = PC1, y = PC2, col = Mutations
       geom_point(size= 3)+
       scale_color_manual(values=c("#FFFF00", "#0000FF", "#FF00FF", "#00FF00")) +
       xlim(-7, 2.45) +
-      ylim(-2.5,6.05)
+      ylim(-2.5,6.05)+
+      theme_light()
       # + geom_text(aes(label=Sample))
 breast.pca.gg
 
@@ -1422,7 +1424,8 @@ breast.loading <- ggplot(data = top.breast.loadings) +
                     geom_text(aes(x = PC1, y = PC2, label = Gene),
                               nudge_y = 0.005, size = 3) +
                     xlim(-0.7, 0.245) +
-                    ylim(-0.25,0.605)
+                    ylim(-0.25,0.605)+
+                    theme_light()
                     
 
 breast.loading
@@ -1970,7 +1973,8 @@ pca.lung.eigenvalues %>%
   geom_col(aes(y = pct)) +
   geom_line(aes(y = pct_cum, group = 1)) + 
   geom_point(aes(y = pct_cum)) +
-  labs(x = "Principal component", y = "Amount of explained variance %")
+  labs(x = "Principal component", y = "Amount of explained variance %")+
+  theme_light()
 dev.off()
 # the first two PCs almost explain 75 % of the whole variance / information 
 
@@ -1993,7 +1997,8 @@ lung.pca.gg<- ggplot(pca.lung.scores, aes(x = PC1, y = PC2, color = Tissue))+
                   xlab("PC1 (73,40%)") +
                   ylab("PC2 (10,54%)") +
                   geom_point(size= 3)+
-                  scale_color_manual(values=c("#2600BF", "#FF0000")) 
+                  scale_color_manual(values=c("#2600BF", "#FF0000"))+
+                  theme_light() 
 lung.pca.gg
 
 lung.pca.gg.labeled <- ggplot(pca.lung.scores, aes(x = PC1, y = PC2, color = Tissue))+
@@ -2003,7 +2008,8 @@ lung.pca.gg.labeled <- ggplot(pca.lung.scores, aes(x = PC1, y = PC2, color = Tis
                           geom_point(size= 3)+
                           scale_color_manual(values=c("#2600BF", "#FF0000")) +
                           geom_text(aes(label=Sample)) +
-                          xlim(-3.5,5)
+                          xlim(-3.5,5)+
+                          theme_light()
 lung.pca.gg.labeled
 
 
@@ -2036,7 +2042,8 @@ lung.loading <- ggplot(data = top.lung.loadings) +
                     geom_text(aes(x = PC1, y = PC2, label = Gene),
                               nudge_y = 0.005, size = 3) +
                     xlim(-0.28, 0.66) +
-                    ylim(-0.15,0.27)
+                    ylim(-0.15,0.27)+
+                    theme_light()
                     
 
 lung.loading
