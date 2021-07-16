@@ -219,36 +219,28 @@ knitr::include_graphics("images/kmeans_6_breast.png")
 ```
 
 ### Hypothesis testing
-The expression values of the Kallikrein genes obtained from Marie et al. were not normally distributed. Therefore the Wilcoxon-Mann-Whitney-Test was used. First, cluster 1 (KLK4.4 and KLK8.8) were tested for overexpression against all other KLKs individually from the dataset. KLK4.4 (TRA) was significantly higher expressed than all other KLK genes from the dataset. Likewise, KLK8.8 (non-TRA) was significantly hiher expressed than all KLK genes, except KLK4.4. Those results conform with the observations from the heatmap and the k-means clustering. 
-Cluster-4 (KLK5,5.3,6,10.3) was isolated in the k-means clustering. On the heatmap it was conspicuous that for some tumor types the genes of this cluster were higher expressed. Thus the upper-tail Wilcoxon-test was used. In contrast to Cluster-1, Cluster-4 could not be clearly identified as an overexpression cluster. KLK5.3 and KLK6 were higher expressed than two thirds of the other KLK genes, wereas KLK5,10.3 were not significantly higher expressed than most of the other KLKs.
+WILCOX TEST WEITER AUSFÜHREN?! DATENSTRUKTUR ERKLÄREN?!
 
-The main characteristic of the dataset from Marie et al. is the subdivision into the different mutations (Her2, LumA, LumB, TNBC). In the heatmap four genes were identified, which were overexpressed in at least two of the five mutation specific chips. KLK10.3,6 for Her2, KLK11,11.2 for LumA. These four genes are also identified as one of the twelve main loadings of the PCA. 
+The expression values of the Kallikrein genes obtained from Marie et al. were not normally distributed. Therefore the non- parametric Wilcoxon-Mann-Whitney-Test was used. 
+
+(First, cluster 1 (KLK4.4 and KLK8.8) were tested for overexpression against all other KLKs individually from the dataset. KLK4.4 (TRA) was significantly higher expressed than all other KLK genes from the dataset. Likewise, KLK8.8 (non-TRA) was significantly higher expressed than all KLK genes, except KLK4.4. Those results conform with the observations from the heatmap and the k-means clustering. 
+Cluster-4 (KLK5,5.3,6,10.3) was isolated in the k-means clustering. On the heatmap it was conspicuous that for some tumor types the genes of this cluster were higher expressed. Thus the upper-tail Wilcoxon-test was used. In contrast to Cluster-1, Cluster-4 could not be clearly identified as an overexpression cluster. KLK5.3 and KLK6 were higher expressed than two thirds of the other KLK genes, wereas KLK5,10.3 were not significantly higher expressed than most of the other KLKs.)
+
+The main characteristic of the dataset from Marie et al. is the subdivision into the samples with different mutations (Her2, LumA, LumB, TNBC). In the heatmap four genes were identified, which were overexpressed in at least two of the five mutation specific mikrochips. KLK10.3,6 for Her2, KLK11,11.2 for LumA. Those four genes are also identified as one of the twelve main loadings of the PCA. 
 
 ```{r, Hypothesis test panel plot with significant bars, echo=FALSE, fig.align="center", fig.cap="Panel plot of the PCA loading genes with significant bars. *: p-value <= 0.5, **: p-value <= 0.01 ", out.width="50%"}
 knitr::include_graphics("images/breast_panel_loadings_test.png")
 
 ```
-The difference in expression between the mutations types, within a gene, were determined with the Wilcoxon-Mann-Whitney-Test. The significant differences are indicated in the panel plot with bars.
-In a previous study (Haritos et al. 2018) KLK6 expression was found to be generally downregulated in breast cancer tissue, but in HER2 and TNBC positive tumors it is overexpressed. These results could only 
+In Figure X, these genes are shown with the subdivision into the different mutation types. Significant expression differences between mutation samples are indicated with brackets.
 
+In a previous study (Haritos et al. 2018) KLK6 expression was found to be generally downregulated in breast cancer tissue, but in HER2 and TNBC positive tumors KLK6 was overexpressed. Those findings are only reflected to a limited extend in this analysis. Only Her2 was found to be significantly higher expressed than LumA. TNBC was not significantly higher expressed compared to the other mutations. 
 
-KLK8.4 was not identified as a clear indicator for Her2, in contrast to KLK6 where Her2 was significantly higher expressed then LumB. These results are coherent with Haritos et al. findings that KLK6 is generally downregulated in breast cancer tissue, but in HER2 and TNBC positive tumors it is overexpressed. For TNBC significant overexpression in comparison to the other mutation  samples in KLK6 could not be confirmed, although the boxplot indicates  
-Michaelidou et al. reported a higher expression of KLK8 in TNBC and Her2 positive tumors compared to LumA and LumB positive tumors. However, this analysis could only confirm significant TNBC overexpression for the isoform KLK8.5 compared to LumA and LumB. Nevertheless, the boxplots of KLK8.4 and KLK8.5 show the trend of Her2 and TNBC overexpression. 
+Another study from Michaelidou et al. reported a higher expression of KLK8 in TNBC and Her2 positive tumors compared to LumA and LumB positive tumors. However, this analysis could only confirm significant TNBC overexpression for the isoform KLK8.5 compared to LumA and LumB. Nevertheless, the boxplots of KLK8.4 and KLK8.5 show the trend of Her2 and TNBC overexpression. 
 
+In contrast, a recurring pattern in figure X is the significant overexpression of TNBC in comparison to Her2. This observation includes KLK5, KLK5.3, KLK10, KLK10.3. 
 
-
-Although, the dataset had no normal tissue to compare the expression to, these results are cohered with the findings of Haritos et al. which confirmed Her2 and TNBC overexpression in TNBC
-KLK11 and KLK11.2 orientation in the PCA loadings suggested a correlation with LumA, but this could not be confirmed by the Hypothesis testing. 
-
-
-Four genes (KLK5,5.3,10,10.3) were significantly higher expressed in the TNBC samples compared to the Her2 samples. The expression values of the TNBC samples were also significantly higher than 
-
-
-Results: 
--LumB is not highly expressed in any gene
--Her2 only higher expressed in KLK8.4 and 8.5
--Pattern in significance: TNBC often higher expressed, in that case mostly significantly higher in comparison to Her2 and LumB
--apart from that no obvious pattern - unlikly to determine the Mutation type based on those KLK gene expression 
+In summary, the conducted analysis could partially conform the findings from other research groups. The differences can probably be explained by the small amount of samples used in this analysis. In conclusion Kallikrein gene expression can be used for identifying tumor subtypes and even predict the outcome for a patient (Haritos et al. 2018). 
 
 
 
@@ -301,7 +293,13 @@ knitr::include_graphics("images/kmeans_5_lung.png")
 ```
 
 ### Hypothesis testing
-The results of the PCA and the k-means indicate that for some KLKs the expression differs, between the cancerous and normal tissue. Since the data the data is not normally distributes (QQ-PLOT?) the Wilcoxon signed-rank test was applied. 
+The results of the PCA and the k-means indicate that for some KLKs the expression differs, between the cancerous and normal tissue. Since the data the data is not normally distributes the Wilcoxon signed-rank test was applied. In 
+
+
+```{r}
+knitr::include_graphics("images/Expr_diff_kmeans_PCA_lung.png")
+```
+
 
 
 ###Logistsic regression
@@ -348,6 +346,13 @@ For the breast-cancer dataset, an optimal number of k = 6 was determined. Here, 
 
 
 # References
+UNFORMATIERT!
+Kallikrein-related peptidase 6 (KLK6) expression differentiates tumor subtypes and predicts clinical outcome in breast cancer patients,  Haritos et al. Clinical and Experimental Medicine volume 18, pages 203–213 (2018)
+
+
+Clinical relevance of the deregulated kallikrein-related peptidase 8 mRNA expression in breast cancer: a novel independent indicator of disease-free survival
+Kleita Michaelidou, Alexandros Ardavanis & Andreas Scorilas 
+Breast Cancer Research and Treatment volume 152, pages 323–336 (2015)
 
 
 

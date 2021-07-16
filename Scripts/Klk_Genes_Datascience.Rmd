@@ -2322,30 +2322,25 @@ tl.cluster1.lung <- which(b.cluster1.lung == TRUE)
 tl.cluster1.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster1.lung, ])
 tl.cluster1.lung
 
+
+
 #Plot with p.values cluster 5 
 gg.cluster1 <- ggplot(tl.cluster1.lung, aes(x= name, y=value, fill= factor(tissue_type, levels = c("n", "ca"))))+
-  
   stat_boxplot(geom="errorbar")+
   geom_boxplot()+
   theme_light()+
   theme( axis.text.x= element_text(size=7))+
   stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="less"), paired = TRUE, label = "p.signif", size = 5, vjust = 1, bracket.size = 0.5, hide.ns = TRUE)+
+  stat_compare_means(aes(group = tissue_type), method = "wilcox.test", method.args = list(alternative="greater"), paired = TRUE, label = "p.signif", size = 5, vjust = 1, bracket.size = 0.5, hide.ns = TRUE)+
   xlab("Genes")+
   ylab("Expression")+
   scale_fill_manual("Tissue", values=c("n"="#2600BF", "ca"="#FF0000"), labels=c( "normal, n=6", "cancer, n=6"))+
   scale_y_continuous(limits=c(5, 9))
- 
-
-#alternative less because non-cancerous tissue is first displayed -> H1: KLKxn is significantly lower expressed than KLKxca  --> if true, with an upper tail test the result is  KLKxca is significantly higher expressed than KLKxn
-
-#test:
-wilcox.test(as.numeric(all.KLK.lung.clean.n["KLK4.4", ]), as.numeric(all.KLK.lung.clean.ca["KLK4.4", ]), paired = TRUE, alternative = "less")
-
-wilcox.test(as.numeric(all.KLK.lung.clean.ca["KLK4.4", ]), as.numeric(all.KLK.lung.clean.n["KLK4.4", ]), paired = TRUE, alternative = "greater")
-#same p.value
 
 
 gg.cluster1
+
+
 ```
 
 
@@ -2454,6 +2449,8 @@ dev.off()
 
 
                       
+
+
 
 
 
@@ -2577,97 +2574,6 @@ predictionKLK1.3.classes
 predictionKLK12.classes
 
 ```
-
-
-```{r}
-#Trying to remove collinearity by removing genes with a correlation greater then 0.7
-train.corr <- cor(train.reg)
-train.corr[upper.tri(train.corr)]<- 0
-diag(train.corr) <- 0
-length(which(train.corr > 0.7))
-train.corr.low <- train.reg[ , !apply(train.corr, 2, function(x){ any(x>0.7)})]
-train.corr.low
-
-train
-modelKLK12.low <- glm(tissue_type ~  KLK12, family = binomial(), data = train.reg)
-summary(model0)
-plot(modelKLK12)
-
-#with 0.7 still Colliniarity - set to 0.6
-low.cor.reg.lung.all <- reg.lung.all[ , !apply(tmp, 2, function(x){ any(x>0.7)})]
-low.cor.reg.lung.all
-#only 10 genes left!
-#glm with the low correlation dataset
-model0.1<- glm(as.factor(tissue_type)~ ., family = binomial(), data = low.cor.reg.lung.all)
-sum.model0.1 <- summary(model0.1)
-sum.model0.1
-
-
-#the for every gene Std.Error is enormous and the p.value is always 1! Something is wrong!
-#we probably a separation in our dataset
-#1. Fisher scoring iterations is 23 (4-5 is typical)
-#2. huge standard errors
-#Rule from literature: 10 outcome events per predictor variable! 
-ggplot(sum.model0.1, aes(GSM4504101_SCLC_01_ca, GSM4504103_SCLC_02_ca   ))
-plot(model0.1)
-
-
-
-sep.model0.1<- glm(tissue_type~ .,data = low.cor.reg.lung.all, family = binomial("logit"), method = "detect_separation")
-sep.model0.1
-#there is separation in the dataset! Infinite estimates for coefficients
-
-
-#predict Model 0.1
-pred.model0.1 <- predict(model0.1, test.reg, type="response")
-pred.model0.1
-actual0.1 <- c(1, 0, 0, 0)
-separationplot(pred.model0.1, actual0.1, type = "line", line = T)
-
-
-predi
-
-```
-
-
-```{r, Logistic Regression Model 1+2}
-
-
-#Model 1: all genes which have the highest p.value when put into individually into the function.  
-#Identifying the genes 
-reg.model <- apply(minus.dat, 2, function(x){
-  sum <- summary(glm(as.factor(tissue_type)~x, family = binomial(), data = reg.lung.all))
-  out <- sum
-  })
-reg.model
-reg.sig.05 <- which(reg.model[2, ] < 0.05) #only KLKB1 is significant 
-reg.sig.05#one gene not enough -> set level to 0.1
-reg.sig.10 <- which(reg.model[2, ] < 0.1)
-reg.sig.10 #KLK1, KLK5.3, KLK7, KLKB1, KLKB1.1, KLKB1.3
-
-model1 <- glm(tissue_type ~ KLK1+KLK5.3+KLK7+KLKB1+KLKB1.1+KLKB1.3, data = train.reg, family = binomial())
-model1.sum <- summary(model1)
-model1.sum #why is the z value=0 and the p.value=1???? something is wrong!
-
-#Modell 2: genes from cluster 3,4,5 which the lowest p.value 
-#KLK10.3, KLK1.3, KLK12 (KLK12.1 ect. noz incorporated due to Colinearity), KLK4.4
-model2 <- glm(tissue_type~KLK1.3+KLK10.3+KLK12+KLK4.4, family = binomial(), data = reg.lung.all)
-model2.sum<- summary(model2) 
-model2.sum
-#same problems!!!!
-
-
-#Prediction with model 1
-pred.model1 <- predict(model1, test.reg, type="response")
-as.data.frame(pred.model1)
-#imprecise 2/4 were false
-
-#prediction with model 2
-pre.model2 <- predict(model2, test.reg, type = "response")
-as.data.frame(pre.model2)
-#predictions are correct!
-```
-
 
 
 
