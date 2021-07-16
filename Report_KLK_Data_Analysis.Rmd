@@ -18,7 +18,6 @@ csl: cell.csl
 knitr::opts_chunk$set(fig.width=12, fig.height=8)
 ```
 
-
 ```{r Load Libaries, include=FALSE}
 library(affy)
 library(vsn)
@@ -51,6 +50,7 @@ cels.breast <- list.files(pattern = 'CEL')
 setwd(here("Rawdata/GSE149507 lung cancer"))
 cels.lung <- list.files(pattern = 'CEL')
 ```
+
 ```{r Affybatch, include=FALSE}
 #Breast 
 breast <- ReadAffy(filenames = paste(here("Rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB"), cels.breast, sep = "/"), verbose = TRUE)
@@ -74,7 +74,6 @@ rownames(lung@protocolData) <- new.lung
 
 ```
 
-
 ```{r Load in Data, include=FALSE}
 breast.vsnrma <- vsnrma(breast)
 breastExprs = exprs(breast.vsnrma)
@@ -82,6 +81,68 @@ breastExprs = exprs(breast.vsnrma)
 lung.vsnrma <- vsnrma(lung)
 lungExprs = exprs(lung.vsnrma)
 ```
+
+
+```{r Read ensembl, include=FALSE}
+
+setwd(here("Tables"))
+
+ensembl_df = read.csv("ensembl.103.txt",sep="\t")
+```
+
+```{r Dataset breast cancer, include=FALSE}
+breastExprs <- breastExprs[grepl("ENST", rownames(breastExprs)), ]
+dim(breastExprs) #  95659    20
+
+# remove .x_at suffix
+rownames(breastExprs) <- unlist(lapply(strsplit(rownames(breastExprs), split = "\\."), "[", 1))
+
+setwd(here("Scripts"))
+
+# replace ensemble IDs with HGNC symbol
+chipIDs.breast <- rownames(breastExprs)
+noMatchIDs.breast <- chipIDs.breast[!chipIDs.breast %in% transcriptIDs]
+# transcript IDs that are not in ensemble_103.txt
+length(noMatchIDs.breast) #112
+
+newChipIDs.breast <- chipIDs.breast[chipIDs.breast %in% transcriptIDs]
+breastExprs <- breastExprs[newChipIDs.breast, ]
+dim(breastExprs) ## 95547    10
+
+symbol.breast <- geneSymbol[newChipIDs.breast]
+rownames(breastExprs) <- make.names(as.character(symbol.breast), unique = TRUE)  # Matrix to work with
+
+head(breastExprs)
+```
+
+```{r Dataset lung cancer, include=FALSE}
+lungExprs <- lungExprs[grepl("ENST", rownames(lungExprs)), ]
+dim(lungExprs) #  95659    20
+ 
+# remove .x_at suffix
+rownames(lungExprs) <- unlist(lapply(strsplit(rownames(lungExprs), split = "\\."), "[", 1))
+
+setwd(here("Scripts"))
+
+# replace ensemble IDs with HGNC symbol
+chipIDs.lung <- rownames(lungExprs)
+noMatchIDs.lung <- chipIDs.lung[!chipIDs.lung %in% transcriptIDs]
+# transcript IDs that are not in ensemble_103.txt
+length(noMatchIDs.lung) #112
+
+newChipIDs.lung <- chipIDs.lung[chipIDs.lung %in% transcriptIDs]
+lungExprs <- lungExprs[newChipIDs.lung, ]
+dim(lungExprs) ## 95547    10
+
+
+# 
+symbol.lung <- geneSymbol[newChipIDs.lung]
+rownames(lungExprs) <- make.names(as.character(symbol.lung), unique = TRUE)  # Matrix to work with
+
+head(lungExprs)
+
+```
+
 
 # 1. Introduction
 
@@ -113,8 +174,105 @@ knitr::include_graphics("images/breast_scatter_example1.png")
 ```
 Equivalent to the breast cancer microarray, there were no further abnormalities detectable for the lung cancer microarray.
 
-<<<<<<< Updated upstream
+
 # 3. TRA data
+```{r Import TRA data, include=FALSE}
+setwd(here("TRA Daten"))
+
+
+# Import of tra.human.5median
+tra.human.5median=read.csv(file="Human_protein_atlas_TRA_5median_genes_annotated.tsv", sep=",")
+
+# Import of tra.human
+tra.human=read.csv(file="tra.2014.human.5x.table.tsv", sep="\t")
+
+# Import of tra.human.roth
+tra.human.roth=read.csv(file="tra.2014.human.roth.5x.table.tsv", sep="\t")
+
+# Import of tra.mouse.4301
+tra.mouse.4301=read.csv(file="tra.2014.mouse.4301.5x.table.tsv", sep="\t")
+
+# Import of tra.human.gtex
+tra.human.gtex=read.csv(file="tra.2017.human.gtex.5x.table.tsv", sep="\t")
+
+#Import of tra.mouse 
+tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
+
+```
+
+```{r Union of TRA data, include=FALSE}
+### Filter all Klk from the TRA data sets
+
+# For tra.human  
+ind.human=grepl("^KLK",tra.human$gene.symbol)
+ind.human =which(ind.human == TRUE)
+Klk.TRA1 = as.data.frame(tra.human[ind.human,])
+
+# For tra.human.5median
+ind.5median=grepl("^KLK",tra.human.5median$Symbol)
+ind.5median =which(ind.5median == TRUE)
+Klk.TRA2 = as.data.frame(tra.human.5median[ind.5median,])
+
+# For tra.human.roth
+ind.roth=grepl("^KLK",tra.human.roth$gene.symbol)
+ind.roth =which(ind.roth == TRUE)
+Klk.TRA3 = as.data.frame(tra.human.roth[ind.roth,])
+
+# For tra.mouse
+ind.mouse=grepl("^Klk",tra.mouse$gene.symbol)
+ind.mouse =which(ind.mouse == TRUE)
+Klk.TRA4 = as.data.frame(tra.mouse[ind.mouse,])
+
+# For tra.mouse.4301
+ind.4301=grepl("^Klk",tra.mouse.4301$gene.symbol)
+ind.4301 =which(ind.4301 == TRUE)
+Klk.TRA5 = as.data.frame(tra.mouse.4301[ind.4301,])
+
+# For tra.human.gtex 
+ind.gtex=grepl("^KLK",tra.human.gtex$ensembl.symbol)
+ind.gtex=which(ind.gtex == TRUE)
+Klk.TRA6=as.data.frame(tra.human.gtex[ind.gtex,])
+
+
+
+### Creating a unified TRA data set, that only contains important information for our overview
+nrow.x = nrow(Klk.TRA1) + nrow(Klk.TRA2) + nrow(Klk.TRA3) +nrow(Klk.TRA4)+ nrow(Klk.TRA5) + nrow(Klk.TRA6)
+Union.TRA = as.data.frame(matrix(ncol = 6, nrow=nrow.x))
+union.names <- c("ensembl_transcript","ensembl_genes", "Chromosome", "gene.symbol", "max.tissue", "dataset") ## assigning the unified columns
+colnames(Union.TRA) <- union.names 
+## now assign the rows, we poorly need to do this manually since there is no strict order of the columns of the 5 TRA data sets
+## Watch out!! Chromosomes on the mice are not comparable to humans!!!
+Union.TRA[1:nrow(Klk.TRA1),c(1:5)] <- Klk.TRA1[,c(1,2, 7, 3, 11)] # For Klk.TRA1
+Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),c(2:5)] <- Klk.TRA2[,c(1, 2, 6, 11)] # For Klk.TRA2
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),c(1:5)] <- Klk.TRA3[,c(1,2, 7, 3, 11)] # For Klk.TRA3
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),c(1:5)] <- Klk.TRA4[,c(1,2, 7, 3, 11)] # For Klk.TRA4
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),c(1:5)] <- Klk.TRA5[,c(1,2, 7, 3, 11)] # For Klk.TRA5
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),c(1:5)] <- Klk.TRA6[,c(1,2,6,3, 10)] # For Klk.TRA6
+
+## now annotate the the data set
+#->> VERY HELPFUL for later plots -> e.g. selecting rows that only apply for the human KLKs: 
+#(Union.TRA$dataset == "tra.human")!!!!
+Union.TRA[1:nrow(Klk.TRA1), 6] <- "tra.human"
+Union.TRA[nrow(Klk.TRA1)+1:nrow(Klk.TRA2),6] <- "tra.human.5median"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+1:nrow(Klk.TRA3),6] <- "tra.human.roth"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+1:nrow(Klk.TRA4),6] <- "tra.mouse"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+1:nrow(Klk.TRA5),6] <- "tra.mouse.4301"
+Union.TRA[nrow(Klk.TRA1)+nrow(Klk.TRA2)+nrow(Klk.TRA3)+nrow(Klk.TRA4)+nrow(Klk.TRA5)+1:nrow(Klk.TRA6),6] <- "tra.human.gtex"
+
+# Remove identical entries 
+new.union <- rownames(unique(Union.TRA[1:4]))
+Union.TRA <- Union.TRA[new.union,] 
+
+### all human KLK genes across all TRA data sets
+
+ind.all.tra.human.KLK <- grep("^tra.human", Union.TRA$dataset)
+tra.all.human <- Union.TRA[ind.all.tra.human.KLK,]
+
+
+# all unique human KLK names that are present as TRAs
+all.human.KLK.gene.symbols <- unique(Union.TRA$gene.symbol[grep("tra.human", Union.TRA$dataset)])
+all.human.KLK.gene.symbols # These are all the available KLK TRAs we can possibly work with
+```
 To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6 TRA data sets were utilized ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). These TRA data sets were than unified, which allowed the extraction of tissue-restricted KLKs after their transcription number.  
 To get an overview of the distribution of the Tissue Restricted Antigens, especially those that are Kallikrein genes, a pie chart was conducted.
 A pie chart in general allows a quick overview and a first assessment of numerical distribution values. In this pie chart, the distribution of Tissue Restricted Kallikrein-Antigens is displayed. Notable is the high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland. 
@@ -128,8 +286,7 @@ knitr::include_graphics("images/piechart_TRA.png")
 
 
 # 4. Expression Analysis
-## Extraction of KLK and KLK TRA genes
-```{r Isolating KLK genes, eval=FALSE, include=FALSE, results=FALSE}
+```{r Isolating KLK genes, include=FALSE}
 # All KLK genes
 ind.all.KLK=grep("^KLK",symbol)
 Kallikreins.all=symbol[ind.all.KLK]
@@ -137,9 +294,6 @@ Kallikreins.all=symbol[ind.all.KLK]
 ind.all.human =which(as.character(symbol) %in% as.character(Kallikreins.all)) 
 Kallikreins<- as.character(Kallikreins.all)
 Kallikreins
-
-## For first breast cancer data set
-all.KLK.rawdata = rawdataExprs[ind.all.human,]
 
 ## For breast GSE
 all.KLK.breast = breastExprs[ind.all.human,]
@@ -150,9 +304,6 @@ all.KLK.lung = lungExprs[ind.all.human,]
 
 ind.KLK.all.human.tra <- which(as.character(names(symbol))  %in% 
 as.character(unlist(tra.all.human[1])))
-
-## For first breast cancer data set
-TRA.KLK.rawdata = rawdataExprs[ind.KLK.all.human.tra,]
 
 ## For breast GSE
 TRA.KLK.breast = breastExprs[ind.KLK.all.human.tra,]
@@ -166,6 +317,60 @@ The breast cancer microarray data GSE65216 (Maire et al. 2013) consists of 20 sa
 
 ### Clean up identical isoforms
 Having a look onto the data set itself, it is noticeable, that some of the expression values of the KLK isoforms in the microarray are exactly identical. These identical isoforms should be cleared out to increase the real information value of the KLKs. This is easily done by conducting pairwise correlations, here the pearson correlation, between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the later visualization. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK transcripts for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
+```{r cleanup identical transcripts - breast cancer}
+#transform dataset - genes on columns
+df.TRA.KLK.breast <- data.frame(t(TRA.KLK.breast))
+
+#Define function for calculating correlation 
+cor.genes <- function(df){
+  df.cor <- cor(df, method = "pearson")
+  diag(df.cor)=NA
+  df.cor[upper.tri(df.cor)]=NA
+  return(data.frame(df.cor))
+}
+
+#number of identical columns
+cor.TRA.KLK.breast <- cor.genes(df.TRA.KLK.breast)
+length(which(cor.TRA.KLK.breast == 1))
+# 40 entries 
+
+#cleanup function 
+genes.cleanup <- function(df){
+  df[!duplicated(unclass(df))]
+}
+
+#remove identical columns
+TRA.KLK.breast.clean <- genes.cleanup(df.TRA.KLK.breast)
+dim(TRA.KLK.breast.clean)
+
+#check clean dataframe for correlations
+length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
+
+# First we need to clean up the isoforms again
+df.all.KLK.breast <- data.frame(t(all.KLK.breast))
+
+#test function 
+cor.all.KLK.breast <- cor.genes(df.all.KLK.breast)
+length(which(cor.all.KLK.breast == 1))
+# 50 entries 
+#Identical transcripts can cause issues later on for statistical testing etc. 
+
+#remove identical isoforms
+all.KLK.breast.clean <- df.all.KLK.breast[!duplicated(unclass(df.all.KLK.breast))]
+dim(all.KLK.breast.clean) #removed 39 identical isoforms
+
+
+# Use mixedsort function from the gtool package to sort the KLKs correctly
+order.breast <- mixedsort(colnames(all.KLK.breast.clean))
+order.breast <- order.breast[c(1:3,11:17,4:10,18,19,24:27,20:23,28:73)]
+all.KLK.breast.clean <- t(all.KLK.breast.clean[,order.breast]) #sorted all.KLK.breast.clean
+all.KLK.breast.clean <- data.frame(all.KLK.breast.clean)
+
+order.breast1 <- mixedsort(colnames(TRA.KLK.breast.clean))
+order.breast1 <- order.breast1[c(1:3,11:17,4:10,18,19,23:26,20:22,27:63)]
+TRA.KLK.breast.clean <- t(TRA.KLK.breast.clean[,order.breast1])
+TRA.KLK.breast.clean <- data.frame(TRA.KLK.breast.clean)
+```
 
 ### Visualization of gene expression
 #### Overview gene expression
