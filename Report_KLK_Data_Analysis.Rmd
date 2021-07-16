@@ -95,7 +95,7 @@ In the following, a set of in total 32 microarrays will be analysed. 20 of those
 
 # 2. Quality control
 
-After reading in the data, the first step is to verify its quality by following the steps presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. These differences would be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristics will thereby be identified and replaced in the following quality control. The quality control is performed of the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
+After reading in the data, the first step is to verify its quality by following the steps presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. These differences would be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristics will thereby be identified and replaced in the following quality control. The quality control is performed on the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
 
 
 ## 2.1 Quality control - GSE65216 breast cancer
