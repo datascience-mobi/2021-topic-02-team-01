@@ -228,8 +228,23 @@ The main characteristic of the dataset from Marie et al. is the subdivision into
 knitr::include_graphics("images/breast_panel_loadings_test.png")
 
 ```
+The difference in expression between the mutations types, within a gene, were determined with the Wilcoxon-Mann-Whitney-Test. The significant differences are indicated in the panel plot with bars.
+In a previous study (Haritos et al. 2018) KLK6 expression was found to be generally downregulated in breast cancer tissue, but in HER2 and TNBC positive tumors it is overexpressed. These results could only 
 
-The difference in expression between the mutations types, within a gene, were determined with the Wilcoxon-Mann-Whitney-Test. The significant differences are indicated in the panel plot with bars. Results: 
+
+KLK8.4 was not identified as a clear indicator for Her2, in contrast to KLK6 where Her2 was significantly higher expressed then LumB. These results are coherent with Haritos et al. findings that KLK6 is generally downregulated in breast cancer tissue, but in HER2 and TNBC positive tumors it is overexpressed. For TNBC significant overexpression in comparison to the other mutation  samples in KLK6 could not be confirmed, although the boxplot indicates  
+Michaelidou et al. reported a higher expression of KLK8 in TNBC and Her2 positive tumors compared to LumA and LumB positive tumors. However, this analysis could only confirm significant TNBC overexpression for the isoform KLK8.5 compared to LumA and LumB. Nevertheless, the boxplots of KLK8.4 and KLK8.5 show the trend of Her2 and TNBC overexpression. 
+
+
+
+Although, the dataset had no normal tissue to compare the expression to, these results are cohered with the findings of Haritos et al. which confirmed Her2 and TNBC overexpression in TNBC
+KLK11 and KLK11.2 orientation in the PCA loadings suggested a correlation with LumA, but this could not be confirmed by the Hypothesis testing. 
+
+
+Four genes (KLK5,5.3,10,10.3) were significantly higher expressed in the TNBC samples compared to the Her2 samples. The expression values of the TNBC samples were also significantly higher than 
+
+
+Results: 
 -LumB is not highly expressed in any gene
 -Her2 only higher expressed in KLK8.4 and 8.5
 -Pattern in significance: TNBC often higher expressed, in that case mostly significantly higher in comparison to Her2 and LumB
@@ -299,13 +314,23 @@ The basic assumtions for logistsic regression are:
 4. No outliners with a strong influence. 
 5. For every independent variable there should be at least ten outcomes (Jill C.Stoltzfus 2011). 
 
-These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression. First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). Therefore expected problems of high standard error and large beta-coefficients for the independent variables were in encountered when including more then one independent variable. This phenomenon of unstable models is also called overfit-model. In fact, even for most individual genes, which had been identified ro have an significant expression difference, the described problems were encountered. It is worth noting that the data was split into a training dataset of 7 mikrochips and a test dataset of 3 mikrochips. But even with all the available mikrochips, the standard error of all of the individual tested genes, except KLK1.3 and KLK12, could not be decreased significantly. 
+These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression. First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). Therefore expected problems of high standard error and large beta-coefficients for the independent variables were in encountered when including more then one independent variable. This phenomenon of unstable models is also called overfit-model. In fact, even for most individual genes, which had been identified ro have an significant expression difference, the described problems were encountered. It is worth noting that the data was split into a training dataset of 8 mikrochips and a test dataset of 4 mikrochips. But even with all the available mikrochips, the standard error of all of the individual tested genes, except KLK4.4 and KLK12, could not be decreased significantly. These observations are consistent with Feinstein, who recommends 20 outcomes per variable. KLKs are already used in cancer diagnostics to determine the tumor type of sample. Since expression patterns of many different genes are very complex and hard to interpret regression models are a helpful tool to determine the cancer type. 
+For the lung cancer data used in this analysis a binary outcome for the mikrochips (cancer or normal tissue)  is possible. Therefore logistic regression was chosen. 
+The basic assumtions for logistsic regression are:
+1. Independency of errors, every observation has to be  separate from the others.
+2. Linearity of the continuous variables in logit - the relationship between the variable and their logit transformed outcome should be linear. 
+3. Absence of multicollinearity or redundancy.
+4. No outliners with a strong influence. 
+5. For every independent variable there should be at least ten outcomes (Jill C.Stoltzfus 2011). 
+These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression.
+
+First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). Therefore expected problems of high standard error and large beta-coefficients for the independent variables were in encountered when including more then one independent variable. This phenomenon of unstable models is also called overfit-model. In fact, even for most individual genes, which had been identified ro have an significant expression difference, the described problems were encountered. It is worth noting that the data was split into a training dataset of 7 mikrochips and a test dataset of 3 mikrochips. But even with all the available mikrochips, the standard error of all of the individual tested genes, except KLK1.3 and KLK12, could not be decreased significantly. 
 
 Second, although genes with a correlation equal to one were removed, some genes are still highly correlating. This is primarily true for the different isoforms of the same gene, as visualized in figure x, plot B (hypothesis testing KLK12 and isoforms). Therefore, the effect of colliniarity would probably cause problems, even if more mikrochips were included. Hence a second cleanup, removing genes with high correlation (e.g. corr > 0.8), would be necessary. 
 
-As mentioned above KLK1.3 and KLK12 (and its isoforms) were the only gene were the standard error were not abnormaly high, but the p-value (KLK1.3 p=0.199, KLK12 p=0.314) of the independent variable was, in both cases, not significant. Therefore, the prediction rate 
+As mentioned above KLK4.4 and KLK12 (and its isoforms) were the only gene where the standard error of the independent variable was not abnormaly high. But the p-value  was, in both cases, not significant. In contrast, the prediction of these univariant models were surprisingly accurate. The model with KLK4.4 could predict the tissue type of 3 out of 4 mikrochips correctly, the model with KLK12 even predicted every tissue type right.  On closer examination of the probabilities however, it becomes apparent that these models are far from reliable. The probabilities for normal to be cancer tissue were mostly over a quarter, indicating a high uncertainty.   
 
-The 
+In conclusion, the p-values of the independent variable in the models were not significant, the standard errors were still large and the predictions probabilities were not accurate. These results were not surprising considering the low sample size. 
 
 
 ### Discussion
