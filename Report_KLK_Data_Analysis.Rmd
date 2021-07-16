@@ -88,9 +88,15 @@ All 15 kallikrein genes are proteolytic enzymes of steroid hormone regulation an
 Dysregulation of KLKs are frequently associated with cancer. Their expression in different tissues and their involvement in different physiological processes make them potential tumor expression markers (Fischer and Meyer-Hoffert, 2013).  
 Differential expression of different kallikrein genes has been found in different cancer types. While clear cell and papillary renal carcinomas have similar kallikrein expression profiles, chromophobe renal cell carcinoma has a unique expression profile (Tailor et al. 2018).
 
+In the following, a set of in total 32 microarrays will be analysed. 20 of those originate from patients with breast cancer derived from the data set GSE65216 (Maire et al. 2013), 12 from patients with small cell lung cancer from GSE149507 (Cai et al. 2021). In this report, both cancer types are analyzed seperatively and both their results will be discussed later on.
+
 
 # 2. Quality control
+<<<<<<< Updated upstream
 After reading in the microarray data, the first step is to verify its quality by following the steps presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). Controlling the quality of the data is needed to identify samples for which the data characteristics are significantly different. This significantly different expression would then be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristics can then be replaced. The quality control is performed on the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
+=======
+After reading in the data, the first step is to verify its quality by following the steps presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. These differences would be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristics will thereby be identified and replaced in the following quality control. The quality control is performed of the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
+>>>>>>> Stashed changes
 
 ## 2.1 Quality control - GSE65216 breast cancer
 
@@ -107,6 +113,7 @@ knitr::include_graphics("images/breast_scatter_example1.png")
 ```
 Equivalent to the breast cancer microarray, there were no further abnormalities detectable for the lung cancer microarray.
 
+<<<<<<< Updated upstream
 # 3. TRA data
 To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6 TRA data sets were utilized ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). These TRA data sets were than unified, which allowed the extraction of tissue-restricted KLKs after their transcription number.  
 To get an overview of the distribution of the Tissue Restricted Antigens, especially those that are Kallikrein genes, a pie chart was conducted.
@@ -114,6 +121,18 @@ A pie chart in general allows a quick overview and a first assessment of numeric
 Starting by combining the six given TRA data sets, a fusion data frame was created. From this data frame, all genes that are KLKs are extracted. Since six data sets were combined, annotations for the same tissue were different, which needed to be fused manually. For the tissue “skin” as an example there were 3 tissues given: “skin”, “Skin – Sun exposed” and “Skin – not Sun exposed”. All those were combined into “skin”.
 
 ```{r TRA -piechart, echo=FALSE, fig.align="center", fig.cap="Tissue specificy of KLK genes.", out.width="50%"}
+=======
+# 3. Further data acquistion
+## Importing and unification of TRA data
+To distinguish between TRA KLK genes and non-TRA KLK genes, we imported a total of 6 TRA data sets ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). 
+
+To get an overview about the distribution of Tissue Restricted Antigens, especially those that are Kallikrein genes, a pie chart was conducted.
+A pie chart in general allows a quick overview and a first assessment of numerical distribution values. In this pie chart, the distribution of Tissue Restricted Kallikrein-Antigens is displayed. Notable is the high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland. 
+Starting by combining the six given TRA data sets, a fusion data frame was created. From this data frame, all genes that are KLKs are extracted. Since six data sets were combined, annotations for the same tissue were different, which needed to be fused manually. For the tissue “skin” as an example there were 3 tissues given: “skin”, “Skin – Sun exposed” and “Skin – not Sun exposed”. All those were combined into “skin”.
+
+
+```{r TRA -piechart, echo=FALSE, fig.align="center", fig.cap="Tissue specificy of KLK genes - KLK genes from six TRA datasets are combined and sorted for tissue specificity", out.width="50%"}
+>>>>>>> Stashed changes
 knitr::include_graphics("images/piechart_TRA.png")
 ```
 
