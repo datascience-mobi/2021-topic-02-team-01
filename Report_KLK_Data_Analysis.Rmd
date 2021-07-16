@@ -293,7 +293,13 @@ knitr::include_graphics("images/kmeans_5_lung.png")
 ```
 
 ### Hypothesis testing
-The results of the PCA and the k-means indicate that for some KLKs the expression differs, between the cancerous and normal tissue. Since the data the data is not normally distributes the Wilcoxon signed-rank test was applied. In 
+The results of the PCA and the k-means indicate that for some KLKs the expression differs between the cancerous and normal tissue. Plotting the data didn’t indicate a normal distribution, so a Wilcoxon signed-rank test was applied.
+First, the expression values from genes originating from cluster 1 in k-means analysis results were compared. For those genes, KLK10.3, KLK11, KLK4.4 and KLK8.8, expression values of cancerous tissue and normal tissue were compared through Wilcoxon signed rank-testing. (wäre das eher bildunterschrift?)
+Here, KLK10.3 is cleary lower expressed in cancerous tissue compared to normal tissue, whileas KLK4.4 seems to be higher expressed in cancer tissue. For KLK11, expression values have a high variety for cancerous tissue, and only a low expression range in normal tissue. (-> for discussion: a deviation in expression values of KLK11 could maybe be an indication for lung cancer, since the variances are high, it could be that the KLK11 gene is mutated in cancerous tissue)
+For KLK8.8, no significant difference was detectable.
+
+Wilcoxon signed-rank test for cluster 4 of k-means analysis, containing KLK12 and subtypes, showed a clear overexpression of all KLK12 derived KLKs in cancer tissue, compared to normal tissue. 
+
 
 
 ```{r}
