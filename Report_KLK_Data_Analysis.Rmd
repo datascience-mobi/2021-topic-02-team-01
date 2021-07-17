@@ -1,7 +1,8 @@
 ---
-title: "Klk_Genes_Data_Analysis"
+title: "Final Report - Kallikrein genes"
 author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
 date: "06.07.2021"
+
 output:
   pdf_document: default
   html_document:
@@ -428,6 +429,72 @@ For the breast cancer GSE65216 data set, the Within Cluster Sum of Squares – p
 knitr::include_graphics("images/kmeans_6_breast.png")
 
 ```
+
+``` {r k-means for breast cancer dataset, eval=FALSE, include=FALSE}
+
+
+wssplot.breast <- function(breastExprs, nc=15, seed=1234)
+{
+  wss <- (nrow(breastExprs)-1)*sum(apply(breastExprs,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(breastExprs, centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+  
+
+wssplot.breast(breastExprs)
+
+
+
+km.breast <- kmeans(scale(breastExprs),3, nstart=25)
+km.breast$cluster
+
+fviz_cluster(km.breast, data=breastExprs, 
+             palette =c("#2E9FDF","#00AFBB", "#FC4E07"), 
+             geom = "point", 
+             ellipse.type = "convex",
+             ggtheme = theme_bw()
+)
+
+
+#k-means analysis fpr klks from breastcancer
+#(all.KLK.breast.clean.noGSM)
+
+tf.klk.breast.clean = t(all.KLK.breast.clean.noGSM)
+setwd(here("Plots/Plots_breast"))
+pdf("wssplot_breast.pdf")
+wssplot.klk.breast <- function(tf.klk.breast.clean, nc=15, seed=1234)
+{
+  wss <- (nrow(tf.klk.breast.clean)-1)*sum(apply(tf.klk.breast.clean ,2,var))
+  for(i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(tf.klk.breast.clean , centers = i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+}
+
+wssplot.klk.breast(tf.klk.breast.clean)
+
+dev.off()
+
+setwd(here("Plots/Plots_breast"))
+pdf("kmeans6_breast.pdf")
+km.klk.breast <- kmeans(scale(tf.klk.breast.clean),6, nstart=25)
+km.klk.breast$cluster
+
+fviz_cluster(km.klk.breast, data=tf.klk.breast.clean, 
+             palette =c("#009900","#00AFBB", "#FC4E07", "#E7B800", "#003333","#FF66CC"), 
+             geom = c("point","text"), 
+             ellipse.type = "convex",
+             ggtheme = theme_bw(),
+             labelsize = 5,
+             repel=TRUE,
+             main="K-Means-Clustering, GSE65216 (Maire et al.2013)"
+)
+dev.off()
+
+```
+
 
 ### Hypothesis testing
 WILCOX TEST WEITER AUSFÜHREN?! DATENSTRUKTUR ERKLÄREN?!
