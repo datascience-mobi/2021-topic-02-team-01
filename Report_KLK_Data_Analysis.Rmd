@@ -568,20 +568,18 @@ which(km.klk.lung.5$cluster == 3)
 ```
 
 ### Hypothesis testing
-The results of the PCA and the k-means indicate that for some KLKs the expression differs between the cancerous and normal tissue. Plotting the data did not indicate a normal distribution. Therefore, the Wilcoxon signed-rank test was applied.
+The results of the PCA and the k-means indicate that for some KLKs the expression differs between the cancerous and normal tissue. Since the Kallikreins gene expression is not normally distributed, the Wilcoxon signed-rank test was used.
 
 In figure X plot A, KLK4.4 was significantly higher expressed in cancer tissue. Unlike, KLK10.3 which was significantly higher expressed in normal tissue. The findings of decreased KLK11 expression in lung cancer from Sasaki et al. could not be confirmed. In fact, the median of the cancer tissue samples is clearly higher. 
 
-Plot B shows that KLK12 and its isoforms are significantly higher expressed in cancer tissue. The plot also visualizes the high similarity within isoforms, since in the cleanup only identical were removed. Documented KLK12 overexpression could not be found in the literature, but in functional studies KLK12 was identified as a pro-angiogentic factor (Bonda et al. 2018).  
+Plot B shows that KLK12 and its isoforms are significantly higher expressed in cancer tissue. The plot also visualizes the high similarity within isoforms, as only only identical ones were removed during the cleanup. Documented KLK12 overexpression could not be found in the literature, but in functional studies KLK12 was identified as a pro-angiogentic factor (Bonda et al. 2018).  
 
-The last two 
+The genes that pointed towards the normal microchips in the PCA loadings are shown in plot C. There, KLKB1.1 and KLKB1.3 are significantly downregulated in the cancer tissue. 
+The only newly tested significant gene, of those that pointed in the direction of the normal microchips visualized in plot D, was KLK1.3. 
+In summary five out of seven loadings were found to have a significant expression difference between the tissue types. Those results confirm the clear separation of cancer ans normal tissue mikrochips in the PCA, based on Kallikrein gene expression.  
 
-First, the expression values from genes originating from cluster 1 in k-means analysis results were compared. For those genes, KLK10.3, KLK11, KLK4.4 and KLK8.8, expression values of cancerous tissue and normal tissue were compared through Wilcoxon signed-rank testing. (wäre das eher bildunterschrift?)
-Here, KLK10.3 is cleary lower expressed in cancerous tissue compared to normal tissue, whileas KLK4.4 seems to be higher expressed in cancer tissue. For KLK11, expression values have a high variety for cancerous tissue, and only a low expression range in normal tissue. (-> for discussion: a deviation in expression values of KLK11 could maybe be an indication for lung cancer, since the variances are high, it could be that the KLK11 gene is mutated in cancerous tissue)
-For KLK8.8, no significant difference was detectable.
 
-Wilcoxon signed-rank test for cluster 4 of k-means analysis, containing KLK12 and subtypes, showed a clear overexpression of all KLK12 derived KLKs in cancer tissue, compared to normal tissue. 
-
+In conclusion the hypothesis tests confirmm the clear separation of cancer and normal tissue mikrochips in the PCA based on Kallikrein expression. Five out of seven PCA loading genes had an significant expression difference between the tissue types. 
 
 
 ```{r , echo=FALSE, fig.align="center", fig.cap="", out.width="50%"}
@@ -593,8 +591,9 @@ knitr::include_graphics("images/Expr_diff_kmeans_PCA_lung.png")
 
 
 ## 5. Logistsic regression
-KLKs are already used in cancer diagnostics to determine the tumor type of sample. Since expression patterns of many different genes are very complex and hard to interpret regression models are a helpful tool to determine the cancer type. 
-For the lung cancer data used in this analysis a binary outcome for the mikrochips (cancer or normal tissue)  is possible. Therefore logistic regression was chosen. 
+Kallikrein mRNA or protein expression is already used in clinical pratice as biomarkers, especially in prostate cancer (Diamandis et al. 1998).
+To test whether the identified genes with a significant expression difference were likely to predict tissue type, logistic regression was chosen. 
+
 The basic assumtions for logistsic regression are:
 1. Independency of errors, every observation has to be  separate from the others.
 2. Linearity of the continuous variables in logit - the relationship between the variable and their logit transformed outcome should be linear. 
@@ -602,24 +601,19 @@ The basic assumtions for logistsic regression are:
 4. No outliners with a strong influence. 
 5. For every independent variable there should be at least ten outcomes (Jill C.Stoltzfus 2011). 
 
-These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression. First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). Therefore expected problems of high standard error and large beta-coefficients for the independent variables were in encountered when including more then one independent variable. This phenomenon of unstable models is also called overfit-model. In fact, even for most individual genes, which had been identified ro have an significant expression difference, the described problems were encountered. It is worth noting that the data was split into a training dataset of 8 mikrochips and a test dataset of 4 mikrochips. But even with all the available mikrochips, the standard error of all of the individual tested genes, except KLK4.4 and KLK12, could not be decreased significantly. These observations are consistent with Feinstein, who recommends 20 outcomes per variable. KLKs are already used in cancer diagnostics to determine the tumor type of sample. Since expression patterns of many different genes are very complex and hard to interpret regression models are a helpful tool to determine the cancer type. 
-For the lung cancer data used in this analysis a binary outcome for the mikrochips (cancer or normal tissue)  is possible. Therefore logistic regression was chosen. 
-The basic assumtions for logistsic regression are:
-1. Independency of errors, every observation has to be  separate from the others.
-2. Linearity of the continuous variables in logit - the relationship between the variable and their logit transformed outcome should be linear. 
-3. Absence of multicollinearity or redundancy.
-4. No outliners with a strong influence. 
-5. For every independent variable there should be at least ten outcomes (Jill C.Stoltzfus 2011). 
-These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression.
+These assumptions reveal the shortcomings of the used data and explain the experienced problems with logistic regression. First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). The number of microchips has also been further reduced by splitting the data in a training dataset (8 mikrochips) and testing dataset (4 mikrochips).
+Therefore, expected problems of high standard errors and large beta-coefficients for the independent variables were  encountered when including more then one independent variable. This phenomenon is also called overfit-model. In fact, even for most individual genes, which had been identified to have an significant expression difference, the described problems were encountered. The only exceptions were KLK4.4 and KLK12. 
 
-First, main limitation of the used dataset is the low number of included mikrochips (only 12, 6 from cancer and 6 from normal tissue). Therefore expected problems of high standard error and large beta-coefficients for the independent variables were in encountered when including more then one independent variable. This phenomenon of unstable models is also called overfit-model. In fact, even for most individual genes, which had been identified ro have an significant expression difference, the described problems were encountered. It is worth noting that the data was split into a training dataset of 7 mikrochips and a test dataset of 3 mikrochips. But even with all the available mikrochips, the standard error of all of the individual tested genes, except KLK1.3 and KLK12, could not be decreased significantly. 
 
-Second, although genes with a correlation equal to one were removed, some genes are still highly correlating. This is primarily true for the different isoforms of the same gene, as visualized in figure x, plot B (hypothesis testing KLK12 and isoforms). Therefore, the effect of colliniarity would probably cause problems, even if more mikrochips were included. Hence a second cleanup, removing genes with high correlation (e.g. corr > 0.8), would be necessary. 
+Second, although genes with a correlation equal to one were removed, some genes are still highly correlating. This is primarily true for the different isoforms of the same gene, as visualized in figure x, plot B (hypothesis testing KLK12 and isoforms). Therefore, the effect of colliniarity would probably cause problems, even if more mikrochips were included. Hence a second cleanup, removing genes with high correlation (e.g. corr > 0.8), would probably be necessary. 
 
-As mentioned above KLK4.4 and KLK12 (and its isoforms) were the only gene where the standard error of the independent variable was not abnormaly high. But the p-value  was, in both cases, not significant. In contrast, the prediction of these univariant models were surprisingly accurate. The model with KLK4.4 could predict the tissue type of 3 out of 4 mikrochips correctly, the model with KLK12 even predicted every tissue type right.  On closer examination of the probabilities however, it becomes apparent that these models are far from reliable. The probabilities for normal to be cancer tissue were mostly over a quarter, indicating a high uncertainty.   
+As mentioned above KLK4.4 and KLK12 (and its isoforms) were the only gene where the standard error of the independent variable was not abnormaly high. But the p-value  was, in both cases, not significant. In contrast, the prediction of these univariant models were surprisingly accurate. The model with KLK4.4 could predict the tissue type of 3 out of 4 mikrochips correctly, the model with KLK12 even predicted every tissue type right. However, a closer look at the probabilities reveals that these models are anything but reliable. The probabilities for normal to be cancer tissue were mostly over a quarter, indicating a high uncertainty.   
 
 In conclusion, the p-values of the independent variable in the models were not significant, the standard errors were still large and the predictions probabilities were not accurate. These results were not surprising considering the low sample size. 
 
+```{r}
+#Output of the two models !
+```
 
 ## Discussion
 
