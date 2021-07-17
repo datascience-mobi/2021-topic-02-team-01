@@ -2501,31 +2501,31 @@ test.reg
 #If we choose more then one variable the standard error and fisher iterations become extremely high+ p-value=1 -> model gets invalid
 #same is true for every tested gene we put in individually except KLK12
 #show problems with multiple genes 
-modelKLK10.3.12 <- glm(tissue_type ~  KLK12+KLK10.3, family = binomial(), data = train.reg)
+modelKLK10.3.12 <- glm(tissue_type ~  KLK12+KLK10.3, family = binomial(), train.reg)
 summary(modelKLK10.3.12)
 plot(modelKLK10.3.12)
 #model is invalid -> changing train.reg to reg.lung.all with 10 events lowers the standard error not significantly 
 
 #KLK10.3 with training dataset (/ mikrochips)
-modelKLK10.3.7 <- glm(tissue_type ~  KLK10.3, family = binomial(), data = train.reg)
+modelKLK10.3.7 <- glm(tissue_type ~  KLK10.3, family = binomial(), train.reg)
 summary(modelKLK10.3.7)
 
 #KLK10.3 with full dataset (10 mikrochips)
-modelKLK10.3.10 <- glm(tissue_type ~  KLK10.3, family = binomial(), data = reg.lung.all)
+modelKLK10.3.10 <- glm(tissue_type ~  KLK10.3, family = binomial(), reg.lung.all)
 summary(modelKLK10.3.10)
 #KLK10.3 is not suited to predict the tissue type of a mikrochip
 
 
 #KLK1.3
-modelKLK1.3 <- glm(tissue_type ~  KLK1.3, family = binomial(), data = train.reg)
+modelKLK1.3 <- glm(tissue_type ~  KLK1.3, family = binomial(), train.reg)
 summary(modelKLK1.3)
 plot(modelKLK1.3)
-#p.value: 0.198
+#KLK10.3 is not suited to predict the tissue type of a mikrochip
 
 #KLK4.4
-modelKLK4.4 <- glm(tissue_type ~  KLK4.4, family = binomial(), data = train.reg)
+modelKLK4.4 <- glm(tissue_type ~  KLK4.4, family = binomial(), train.reg)
 summary(modelKLK4.4)
-##KLK4.4 is not suited to predict the tissue type of a mikrochip
+#p-value 0.215
 
 #KLKB1.1
 modelKLKB1.1 <- glm(tissue_type ~  KLKB1.1, family = binomial(), data = train.reg)
@@ -2539,10 +2539,9 @@ summary(modelKLKB1.3)
 
 
 #KLK12 model
-modelKLK12 <- glm(tissue_type ~  KLK12, family = binomial(), data = train.reg)
+modelKLK12 <- glm(tissue_type ~  KLK12, family = binomial(), train.reg)
 summary(modelKLK12)
-plot(modelKLK12)
-#p-value is not significant! 
+#p-value 0.344
 
 #test the isoforms 
 modelKLK12.3 <- glm(tissue_type ~  KLK12.3, family = binomial(), data = train.reg)
@@ -2557,22 +2556,32 @@ plot(modelKLK12.5)
 ```
 
 ```{r, models}
-#KLK1.3
-summary(modelKLK1.3)
-predictionKLK1.3 <- predict(modelKLK1.3, test.reg, type="response")
+#KLK4.4
+summary(modelKLK4.4)
+predictionKLK4.4 <- predict(modelKLK4.4, newdata = test.reg, type="response")
+visreg(modelKLK4.4)
 
 #KLK12 
 summary(modelKLK12)
-predictionKLK12 <- predict(modelKLK12, test.reg, type="response")
-
+predictionKLK12 <- predict(modelKLK12, newdata = test.reg, type="response")
+visreg(modelKLK12)
+predictionKLK1.3
 
 #results
-predictionKLK1.3.classes <- ifelse(predictionKLK1.3 > 0.5, "ca", "n")
+predictionKLK4.4.classes <- ifelse(predictionKLK4.4 > 0.5, "ca", "n")
 predictionKLK12.classes <- ifelse(predictionKLK12 > 0.5, "ca", "n")
-predictionKLK1.3.classes
-#
-predictionKLK12.classes
 
+
+
+predictionKLK4.4
+predictionKLK12
+
+summary(modelKLK4.4)
+predictionKLK4.4.classes
+#3/4 right, ca was not identified
+summary(modelKLK12)
+predictionKLK12.classes
+#4/4 right
 ```
 
 
