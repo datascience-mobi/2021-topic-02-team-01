@@ -2163,7 +2163,7 @@ wssplot.klk.lung(all.KLK.lung.clean.noGSM)
 
 dev.off()
 
-#approx 5 or 7 clusters
+#approx 5 clusters
 setwd(here("Plots/Plots_lung"))
 pdf("kmeans5_lung.pdf")
 km.klk.lung.5 <- kmeans(scale(all.KLK.lung.clean.noGSM),5, nstart=25)
@@ -2185,21 +2185,6 @@ dev.off()
 
 km.klk.lung.5
 which(km.klk.lung.5$cluster == 3)
-##labelsize und text bei restlichen noch, repel anpassen
-
-#km.klk.lung.7 <- kmeans(scale(all.KLK.lung.clean.noGSM),7, nstart=25)
-#km.klk.lung.7$cluster
-
-#fviz_cluster(km.klk.lung.7, data=all.KLK.lung.clean.noGSM, 
-            # palette =c("#2E9FDF","#00AFBB", "#FC4E07", "#E7B800", "#009900", "#3399FF", "#003333"), 
-            # geom = "point", 
-            # ellipse.type = "convex",
-            # ggtheme = theme_bw(),
-            
-            
-#)
-
-#i would choose the 5 cluster plot, since clusters are more distinct there
 
 ```
 
