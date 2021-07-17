@@ -503,7 +503,9 @@ The results of the PCA and the k-means indicate that for some KLKs the expressio
 
 In figure X plot A, KLK4.4 was significantly higher expressed in cancer tissue. Unlike, KLK10.3 which was significantly higher expressed in normal tissue. The findings of decreased KLK11 expression in lung cancer from Sasaki et al. could not be confirmed. In fact, the median of the cancer tissue samples is clearly higher. 
 
-Plot B shows that KLK12 and its isoforms are significantly higher expressed in cancer tissue. The plot also visualizes the high similarity within isoforms, since in the cleanup only identical were removed. Documented KLK12 overexpression could not be found in the literature, but in functional studies KLK12 was identified as a pro-angiogentic factor. 
+Plot B shows that KLK12 and its isoforms are significantly higher expressed in cancer tissue. The plot also visualizes the high similarity within isoforms, since in the cleanup only identical were removed. Documented KLK12 overexpression could not be found in the literature, but in functional studies KLK12 was identified as a pro-angiogentic factor (Bonda et al. 2018).  
+
+The last two 
 
 First, the expression values from genes originating from cluster 1 in k-means analysis results were compared. For those genes, KLK10.3, KLK11, KLK4.4 and KLK8.8, expression values of cancerous tissue and normal tissue were compared through Wilcoxon signed-rank testing. (wäre das eher bildunterschrift?)
 Here, KLK10.3 is cleary lower expressed in cancerous tissue compared to normal tissue, whileas KLK4.4 seems to be higher expressed in cancer tissue. For KLK11, expression values have a high variety for cancerous tissue, and only a low expression range in normal tissue. (-> for discussion: a deviation in expression values of KLK11 could maybe be an indication for lung cancer, since the variances are high, it could be that the KLK11 gene is mutated in cancerous tissue)
