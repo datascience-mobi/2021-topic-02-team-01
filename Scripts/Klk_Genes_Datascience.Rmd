@@ -2322,6 +2322,7 @@ tl.cluster1.lung <- which(b.cluster1.lung == TRUE)
 tl.cluster1.lung <- as.data.frame(tl.all.KLK.lung.clean[tl.cluster1.lung, ])
 tl.cluster1.lung
 
+tl.cluster1.lung <- within(tl.cluster1.lung, name <- factor(name, levels = c("KLK4.4", "KLK8.8", "KLK10.3", "KLK11")))
 
 
 #Plot with p.values cluster 5 
@@ -2379,6 +2380,8 @@ b.PCA.lung.ca <- tl.all.KLK.lung.clean[, 1] %in% PCA.lung.names.ca
 tl.PCA.lung.ca <- which(b.PCA.lung.ca == TRUE)
 tl.PCA.lung.ca <- as.data.frame(tl.all.KLK.lung.clean[tl.PCA.lung.ca, ])
 
+tl.PCA.lung.ca <- within(tl.PCA.lung.ca, name <- factor(name, levels = c("KLK1.3", "KLK4.4", "KLK6", "KLK12" )))
+
 #ggplot PCA loading cancer
 ggPCA.ca <- ggplot(tl.PCA.lung.ca, aes(x= name, y=value, fill= factor(tissue_type, levels = c("n", "ca"))))+
   stat_boxplot(geom="errorbar")+
@@ -2394,6 +2397,7 @@ ggPCA.ca <- ggplot(tl.PCA.lung.ca, aes(x= name, y=value, fill= factor(tissue_typ
 
 
 ggPCA.ca
+
 
 #PCA loadings normal
 PCA.lung.names.n <- c("KLK13.1", "KLKB1.1", "KLKB1.3")
@@ -2421,16 +2425,11 @@ ggPCA.n
 ```
 
 
-```{r}
-
-titel <- "Identification of expression differences, GSE149507 (Cai et al. 2021)"
-
-
+```{r, Arrange Plot}
 
 exprdiff <- ggarrange(gg.cluster1 + rremove("legend")+rremove("xlab"), 
-                      gg.cluster4 + rremove("legend")+rremove("ylab")+rremove("xlab"),
-                      ggPCA.ca + rremove("legend"),  
-                      ggPCA.n+ rremove("legend")+rremove("ylab"), 
+                      gg.cluster4 + rremove("legend")+rremove("ylab")+rremove("xlab"),                      ggPCA.n+ rremove("legend"), 
+                      ggPCA.ca + rremove("legend")+rremove("ylab"),  
           labels = c("A", "B", "C", "D"), 
           font.label = list(size=10), 
           hjust = -0.25,
@@ -2441,6 +2440,9 @@ exprdiff <- ggarrange(gg.cluster1 + rremove("legend")+rremove("xlab"),
          )
 
 exprdiff.anno <- annotate_figure(exprdiff, top=text_grob("Identification of Expression Differences, GSE149507 (Cai et al. 2021)", size = 12))
+
+exprdiff.anno
+
 
 setwd(here("Plots/Plots_lung"))
 pdf("Expr_diff_lung_PCA_kmeans.pdf")

@@ -499,8 +499,13 @@ knitr::include_graphics("images/kmeans_5_lung.png")
 ```
 
 ## Hypothesis testing
-The results of the PCA and the k-means indicate that for some KLKs the expression differs between the cancerous and normal tissue. Plotting the data didn’t indicate a normal distribution, so a Wilcoxon signed-rank test was applied.
-First, the expression values from genes originating from cluster 1 in k-means analysis results were compared. For those genes, KLK10.3, KLK11, KLK4.4 and KLK8.8, expression values of cancerous tissue and normal tissue were compared through Wilcoxon signed rank-testing. (wäre das eher bildunterschrift?)
+The results of the PCA and the k-means indicate that for some KLKs the expression differs between the cancerous and normal tissue. Plotting the data did not indicate a normal distribution. Therefore, the Wilcoxon signed-rank test was applied.
+
+In figure X plot A, KLK4.4 was significantly higher expressed in cancer tissue. Unlike, KLK10.3 which was significantly higher expressed in normal tissue. The findings of decreased KLK11 expression in lung cancer from Sasaki et al. could not be confirmed. In fact, the median of the cancer tissue samples is clearly higher. 
+
+Plot B shows that KLK12 and its isoforms are significantly higher expressed in cancer tissue. The plot also visualizes the high similarity within isoforms, since in the cleanup only identical were removed. Documented KLK12 overexpression could not be found in the literature, but in functional studies KLK12 was identified as a pro-angiogentic factor. 
+
+First, the expression values from genes originating from cluster 1 in k-means analysis results were compared. For those genes, KLK10.3, KLK11, KLK4.4 and KLK8.8, expression values of cancerous tissue and normal tissue were compared through Wilcoxon signed-rank testing. (wäre das eher bildunterschrift?)
 Here, KLK10.3 is cleary lower expressed in cancerous tissue compared to normal tissue, whileas KLK4.4 seems to be higher expressed in cancer tissue. For KLK11, expression values have a high variety for cancerous tissue, and only a low expression range in normal tissue. (-> for discussion: a deviation in expression values of KLK11 could maybe be an indication for lung cancer, since the variances are high, it could be that the KLK11 gene is mutated in cancerous tissue)
 For KLK8.8, no significant difference was detectable.
 
@@ -510,6 +515,8 @@ Wilcoxon signed-rank test for cluster 4 of k-means analysis, containing KLK12 an
 
 ```{r , echo=FALSE, fig.align="center", fig.cap="", out.width="50%"}
 knitr::include_graphics("images/Expr_diff_kmeans_PCA_lung.png")
+
+#Bildunterschrift: Figure X: A) Genes from  k-means cluster 1, B) Genes from k-means cluster 4, C) PCA loading genes oriented in the direction of normal tissue, D) PCA lading genes oriented in the direction of cancer tissue. "*" indicate a p-value > 0.05 between the expression in the different tissue types, upper and lower tail Wilcoxon signed-rank test were used. 
 ```
 
 
