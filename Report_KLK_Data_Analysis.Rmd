@@ -2,7 +2,6 @@
 title: "Final Report - Kallikrein genes"
 author: "Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey"
 date: "06.07.2021"
-
 output:
   pdf_document: default
   html_document:
@@ -290,8 +289,7 @@ knitr::include_graphics("images/piechart_TRA.png")
 To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6 TRA data sets were utilized ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). These TRA data sets were than unified, which allowed the extraction of tissue-restricted KLKs after their transcription number.  
 To get an overview of the distribution of the Tissue Restricted Antigens, especially those that are Kallikrein genes, a pie chart was conducted.
 A pie chart in general allows a quick overview and a first assessment of numerical distribution values. In this pie chart, the distribution of Tissue Restricted Kallikrein-Antigens is displayed. Notable is the high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland. 
-Since six data sets were combined, annotations for the same tissue were different, which were fused manually. 
-
+Since six data sets were combined, annotations for the same tissue were different, which were fused manually.
 
 
 ## 4. Expression Analysis
