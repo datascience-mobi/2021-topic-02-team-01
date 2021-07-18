@@ -4,8 +4,8 @@
 %
 \documentclass[
 ]{article}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
@@ -36,8 +36,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Klk\_Genes\_Data\_Analysis},
-  pdfauthor={Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey},
+  pdftitle={Final Report - Kallikrein genes},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -82,7 +81,7 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{graphicx,grffile}
+\usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -99,10 +98,13 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 
-\title{Klk\_Genes\_Data\_Analysis}
-\author{Anouk Dupe, Maria Yemane, Dustin Schilling, David Eckey}
-\date{06.07.2021}
+\title{Final Report - Kallikrein genes}
+\author{}
+\date{\vspace{-2.5em}19.07.2021}
 
 \begin{document}
 \maketitle
@@ -112,9 +114,52 @@
 \tableofcontents
 \pagebreak
 \pagenumbering{arabic}
+\usepackage{float}
+
+\thispagestyle{empty}
+\hrule
+\vspace{0.3cm}
+\begin{center}
+\LARGE
+    Kallikrein genes - Microarray analysis in breast and lung cancer tissue
+    \vspace{0.5cm}
+    \hrule 
+    \vspace{1cm}
+  \large
+    \begin{tabular}[c]{l}
+    Group: \\
+     \\
+    Authors: \\
+     \\
+     \\
+   \\
+   \\
+    Supervisor:\\
+     \\
+    Tutor:
+    \end{tabular}
+    \hspace{1.5cm}
+    \begin{tabular}[c]{l}
+    Topic 2 team 4 \\
+     \\
+    Anouk Dupe \\
+    David Eckey \\
+    Dustin Schilling \\
+    Maria Yemane \\
+     \\
+    Dr. Maria Dinkelacker \\
+     \\
+    Nils Mechtel
+    \end{tabular}
+    \vspace{1cm}
+    \hrule
+    \vspace{0.5cm}
+    Ruprecht-Karls-Universität Heidelberg \vspace{0.3cm} \\
+\end{center}
+\vspace{2cm}
 
 \hypertarget{introduction}{%
-\section{1. Introduction}\label{introduction}}
+\subsection{1. Introduction}\label{introduction}}
 
 KLKs are a family of 15 mammalian secreted serine proteases. Analysis
 has shown that the KLK locus is most likely located on chromosome 19 and
@@ -137,65 +182,38 @@ different cancer types. While clear cell and papillary renal carcinomas
 have similar kallikrein expression profiles, chromophobe renal cell
 carcinoma has a unique expression profile (Tailor et al.~2018).
 
-\hypertarget{overview-tra---klk}{%
-\subsection{1.1 Overview TRA - KLK}\label{overview-tra---klk}}
-
-To get an overview about the distribution of Tissue Restricted Antigens,
-especially those that are Kallikrein genes, a pie chart was conducted. A
-pie chart in general allows a quick overview and a first assessment of
-numerical distribution values. In this pie chart, the distribution of
-Tissue Restricted Kallikrein-Antigens is displayed. Notable is the high
-prevalence of prostatic kallikrein genes, as well as an occurrence in
-esophagus, thyroid and salivary gland. Starting by combining the five
-given TRA datasets, we fused them into one big data frame, and extracted
-all those genes, that are Kallikreins. For the pie chart, we converted
-the only-Kallikrein data frame of TRAs into a table. Since we combined 5
-datasets, annotations for the same tissue were different, so we fused
-them manually. For the tissue ``skin'' as an example there were 3
-tissues given: ``skin'', ``Skin -- Sun exposed'' and ``Skin -- not Sun
-exposed''. All those were combined into ``skin''.
+In the following, a set of in total 32 microarrays will be analysed. 20
+of those originate from patients with breast cancer derived from the
+data set GSE65216 (Maire et al.~2013), 12 from patients with small cell
+lung cancer from GSE149507 (Cai et al.~2021). In this report, both
+cancer types are analyzed seperatively and both their results will be
+discussed later on.
 
 \hypertarget{quality-control}{%
-\section{2. Quality control}\label{quality-control}}
+\subsection{2. Quality control}\label{quality-control}}
 
-After reading in our data, the first step is to verify its quality by
+After reading in the data, the first step is to verify its quality by
 following the steps presented in ``R Course Micoarray Analysis'' by
 Dr.~Maria Dinkelacker (2019). The goal of quality control is to identify
 samples for which the data characteristics are significantly different.
-This significantly different expression would then be difficult to
-remove via variance stabilizing normalisation (vsn) and could interfere
-with the rest of the data. Samples that show odd characteristic will
-thereby be identified and replaced in the following quality control. The
-quality control is performed of the breast cancer microarray data set
-GSE65216 (Maire et al.~2013) and the small cell lung cancer microarray
-data set GSE149507 (Cai et al.~2021).
+These differences would be difficult to remove via variance stabilizing
+normalisation (vsn) and could interfere with the rest of the data.
+Samples that show odd characteristics will thereby be identified and
+replaced in the following quality control. The quality control is
+performed on the breast cancer microarray data set GSE65216 (Maire et
+al.~2013) and the small cell lung cancer microarray data set GSE149507
+(Cai et al.~2021).
 
 \hypertarget{quality-control---gse65216-breast-cancer}{%
-\subsection{2.1 Quality control - GSE65216 breast
+\subsubsection{2.1 Quality control - GSE65216 breast
 cancer}\label{quality-control---gse65216-breast-cancer}}
 
-\hypertarget{single-chip-control}{%
-\subsubsection{Single chip control}\label{single-chip-control}}
-
-An example image of the scanned arrays is displayed. Upon examination of
-each array, there are no scratches or lighter areas detectable, which
-means the arrays themselves are fine.
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/breast_chip_control_example1} 
-
-}
-
-\caption{Working chip of breast cancer microarray GSE65216}\label{fig:unnamed-chunk-1}
-\end{figure}
-
-\hypertarget{meansd-plot}{%
-\subsubsection{meanSd plot}\label{meansd-plot}}
-
-The meanSd plot shows the standard deviation of the vsn normalized data,
-across all samples, plotted against the mean. Here, the logarithmic
-transformation consists with the base of 2.
+Upon examination of each individual array, there are no scratches or
+lighter areas detectable, which means the arrays themselves are fine.
+Furthermore, the meanSd plot is being used to verify the variance
+stabilization. Here, the red line, which stands for the running median,
+should be horizontal. However for the breast cancer data, it follows a
+linear relationship.\\
 
 \begin{figure}
 
@@ -203,105 +221,32 @@ transformation consists with the base of 2.
 
 }
 
-\caption{meanSD plot of breast cancer microarray GSE65216}\label{fig:unnamed-chunk-2}
+\caption{meanSD plot of breast cancer microarray GSE65216.}\label{fig:unnamed-chunk-1}
 \end{figure}
 
-\hypertarget{boxplots-before-and-after-normalisation}{%
-\subsubsection{Boxplots before and after
-normalisation}\label{boxplots-before-and-after-normalisation}}
-
-It is clearly visible, that the differences in intensities between
-arrays is strongly reduced after normalisation. Also the boxplots only
-show little fluctuation in gene expression for the 20 arrays after
-normalisation. This means all chips adjudted through vsnrma
-normalisation
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/breast_box_bfnorm} 
-
-}
-
-\caption{Boxplots before and after normalisation breast cancer GSE65216}\label{fig:Boxplots - breast qc-1}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/breast_box_afnorm} 
-
-}
-
-\caption{Boxplots before and after normalisation breast cancer GSE65216}\label{fig:Boxplots - breast qc-2}
-\end{figure}
-
-\hypertarget{density-function}{%
-\subsubsection{Density function}\label{density-function}}
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/breast_dflog_bfnorm} 
-
-}
-
-\caption{Density functions before and after normalisation breast cancer GSE65216}\label{fig:Density - breast qc-1}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/breast_dflog_afnorm} 
-
-}
-
-\caption{Density functions before and after normalisation breast cancer GSE65216}\label{fig:Density - breast qc-2}
-\end{figure}
-
-\hypertarget{rna-degeneration-plot}{%
-\subsubsection{RNA degeneration plot}\label{rna-degeneration-plot}}
-
----\textgreater{} MUSS NOCH GSE NUMMER IN PLOT ÜBERSCHRIFT EINGEFÜGT
-WERDEN \#\#\# Scatter plots We plotted each sample against the following
-sample. If the scattered points deviate strongly from the red line, like
-for example forming a banana-like shape, then one of the respective
-chips for the sample must be broken. However this seems not to be the
-case here.
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/breast_scatter_example1} 
-
-}
-
-\caption{Example of scatter plot breast cancer GSE65216}\label{fig:Scatter plot - breast qc}
-\end{figure}
+In contrast to that, the quality of the breast cancer data is assured by
+the other plots, which is the reason why our group did not choose other
+chips for the data analysis. For the boxplots, it is clearly visible,
+that the differences in intensities between arrays is strongly reduced
+after normalisation. The boxplots only show little fluctuation in gene
+expression for the 20 arrays after normalisation. In addition to that,
+none of the current chips deviate strongly from each other for the
+density and RNA degradation plot (before and after normalisation). Also,
+the scatter plots show linear relationships between each chip. The
+quality control plots can be seen in the github repository.
 
 \hypertarget{quality-control---gse149507-lung-cancer}{%
-\subsection{2.2 Quality control - GSE149507 lung
+\subsubsection{2.2 Quality control - GSE149507 lung
 cancer}\label{quality-control---gse149507-lung-cancer}}
 
-\hypertarget{single-chip-control-1}{%
-\subsubsection{Single chip control}\label{single-chip-control-1}}
-
-\hypertarget{meansd-plot-1}{%
-\subsubsection{meanSd plot}\label{meansd-plot-1}}
-
-\hypertarget{boxplots-before-and-after-normalisation-1}{%
-\subsubsection{Boxplots before and after
-normalisation}\label{boxplots-before-and-after-normalisation-1}}
-
-\hypertarget{density-function-1}{%
-\subsubsection{Density function}\label{density-function-1}}
-
-\hypertarget{rna-degeneration-plot-1}{%
-\subsubsection{RNA degeneration plot}\label{rna-degeneration-plot-1}}
-
-\hypertarget{scatter-plots}{%
-\subsubsection{Scatter plots}\label{scatter-plots}}
-
-The carcinoma tissue sample of patient number 5 did not show linear
-relationship to all of the other samples. Since the samples of dataset
-GSE149507 for normal and carcinoma tissue are linked to one patient
-each, we consequently replaced the two chips GSM4504109\_SCLC\_05\_ca
-and GSM4504110\_SCLC\_05\_ with new 2 new chips out of the gene
-expression omnibus. When performing the scatter plot control over again,
-there are no discrepancies anymore.
+For the small cell lung cancer microarray, an abnormality was dectable
+in the scatter plots. The carcinoma tissue sample of patient number 5
+did not show linear relationship to all of the other samples. Since the
+samples of dataset GSE149507 for normal and carcinoma tissue are linked
+to one patient each, we consequently replaced the two chips
+GSM4504109\_SCLC\_05\_ca and GSM4504110\_SCLC\_05\_n with new 2 new
+chips out of the gene expression omnibus. When performing the scatter
+plot control over again, there are no discrepancies.\\
 
 \begin{figure}
 
@@ -309,125 +254,130 @@ there are no discrepancies anymore.
 
 }
 
-\caption{Example of scatter plot breast cancer GSE65216}\label{fig:Broken chip - lung qc}
+\caption{Example of scatter plot breast cancer GSE65216.}\label{fig:Broken chip - lung qc}
 \end{figure}
 
-\hypertarget{further-data-acquistion}{%
-\section{3. Further data acquistion}\label{further-data-acquistion}}
+Equivalent to the breast cancer microarray, there were no further
+abnormalities detectable for the lung cancer microarray.
 
-\hypertarget{importing-and-unification-of-tra-data}{%
-\subsection{Importing and unification of TRA
-data}\label{importing-and-unification-of-tra-data}}
+\hypertarget{tra-data}{%
+\subsection{3. TRA data}\label{tra-data}}
 
-To distinguish between TRA KLK genes and non-TRA KLK genes, we imported
-a total of 6 TRA data sets ((Su et al.~2002, 2004), (Roth et al.~2008),
-(Lattin et al.~2006), (human GTEX data 2015), (Uhlén et al.~2015)). Also
-below you can see an overview of the tissues that display TRAs in the
-context of the whole data set.
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{images/piechart_TRA} 
+
+}
+
+\caption{Tissue specificy of KLK genes - KLK genes from six TRA datasets are combined and sorted for tissue specificity}\label{fig:TRA -piechart}
+\end{figure}
+
+To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6
+TRA data sets were utilized ((Su et al.~2002, 2004), (Roth et al.~2008),
+(Lattin et al.~2006), (human GTEX data 2015), (Uhlén et al.~2015)).
+These TRA data sets were than unified, which allowed the extraction of
+tissue-restricted KLKs after their transcription number.\\
+To get an overview of the distribution of the Tissue Restricted
+Antigens, especially those that are Kallikrein genes, a pie chart was
+conducted. A pie chart in general allows a quick overview and a first
+assessment of numerical distribution values. In this pie chart, the
+distribution of Tissue Restricted Kallikrein-Antigens is displayed.
+Notable is the high prevalence of prostatic kallikrein genes, as well as
+an occurrence in esophagus, thyroid and salivary gland. Since six data
+sets were combined, annotations for the same tissue were different,
+which were fused manually.
 
 \hypertarget{expression-analysis}{%
-\section{4. Expression Analysis}\label{expression-analysis}}
-
-\hypertarget{extraction-of-klk-and-klk-tra-genes}{%
-\subsection{Extraction of KLK and KLK TRA
-genes}\label{extraction-of-klk-and-klk-tra-genes}}
-
-With the unified TRA data set Union.TRA, it is possible to extract all
-KLKs that are tissue-restricted by their transcript number.
+\subsection{4. Expression Analysis}\label{expression-analysis}}
 
 \hypertarget{breast-cancer-gse65216-maire-et-al.-2013}{%
-\subsection{4.2 Breast cancer GSE65216 (Maire et
+\subsection{4.1 Breast cancer GSE65216 (Maire et
 al.~2013)}\label{breast-cancer-gse65216-maire-et-al.-2013}}
 
-The breast cancer microarray GSE65216 (Maire et al.~2013) chips consists
-of 20 samples. The samples are all breast cancer tissue differentiated
-by four types of mutations. These are Triple negative breast cancer
-(TNBC), Her2, Luminal A and Luminal B.\\
-\#\#\# Clean up identical isoforms Having a look onto the data set
-itself, it is noticeable, that some of the Expression values of the KLK
-isoforms in our microarray are exactly identical. These identical
-isoforms will be cleared out of our data frame. This is easily done by
-performing correlation, here the pearson correlation, between all KLK
-genes in a diagonal matrix. If the correlation yields a value of 1 then
-the two gene isoforms are the same and the latter one of both will be
-removed. Furthermore, the KLKs are sorted after their names in ascending
-order for the visualization via the boxplots. In the end, 39 identical
+The breast cancer microarray data GSE65216 (Maire et al.~2013) consists
+of 20 samples. The samples are all breast cancer tissue, differentiated
+by the four mutation types: Triple negative breast cancer (TNBC), Her2,
+Luminal A and Luminal B.
+
+\hypertarget{clean-up-identical-isoforms}{%
+\subsubsection{Clean up identical
+isoforms}\label{clean-up-identical-isoforms}}
+
+Having a look onto the data set itself, it is noticeable, that some of
+the expression values of the KLK isoforms in the microarray are exactly
+identical. These identical isoforms should be cleared out to increase
+the real information value of the KLKs. This is easily done by
+conducting pairwise correlations, here the pearson correlation, between
+all KLK genes in a diagonal matrix. If the correlation yields a value of
+1 then the two gene isoforms are the same and the latter one of both
+will be removed. Furthermore, the KLKs are sorted after their names in
+ascending order for the later visualization. In the end, 39 identical
 isoforms are removed, whereas a total of 73 KLK transcripts for the 15
 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while
 only 10 are regarded as tissue restricted.
 
-\hypertarget{visualization-of-gene-expression}{%
-\subsubsection{Visualization of gene
-expression}\label{visualization-of-gene-expression}}
-
-\hypertarget{overview-gene-expression}{%
-\paragraph{Overview gene expression}\label{overview-gene-expression}}
-
-Since the data is vsnrma normalized, the median does not fluctuate too
-much for all samples. The lowest gene expression value is about 5 while
-the highest gene expression value is around 15. Due to the logarithmic
-scale with a base of 2, a log-fold change of +1 represents a two times
-as high gene expression.
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{gene.summary <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x)\{}
- \KeywordTok{round}\NormalTok{(}\KeywordTok{apply}\NormalTok{(x, }\DecValTok{2}\NormalTok{, summary), }\DataTypeTok{digits =} \DecValTok{2}\NormalTok{)}
+\CommentTok{\# transform dataset {-} genes on columns}
+\NormalTok{df.TRA.KLK.breast }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(TRA.KLK.breast))}
+
+\CommentTok{\# Define function for calculating correlation }
+\NormalTok{cor.genes }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(df)\{}
+\NormalTok{  df.cor }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(df, }\AttributeTok{method =} \StringTok{"pearson"}\NormalTok{)}
+  \FunctionTok{diag}\NormalTok{(df.cor)}\OtherTok{=}\ConstantTok{NA}
+\NormalTok{  df.cor[}\FunctionTok{upper.tri}\NormalTok{(df.cor)]}\OtherTok{=}\ConstantTok{NA}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(df.cor))}
 \NormalTok{\}}
-\KeywordTok{gene.summary}\NormalTok{(breastExprs)}
+
+\CommentTok{\# amount of identical columns}
+\NormalTok{cor.TRA.KLK.breast }\OtherTok{\textless{}{-}} \FunctionTok{cor.genes}\NormalTok{(df.TRA.KLK.breast)}
+\FunctionTok{length}\NormalTok{(}\FunctionTok{which}\NormalTok{(cor.TRA.KLK.breast }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##         GSM1588970_Tum01_TNBC GSM1588972_Tum02_Her2 GSM1588974_Tum03_TNBC
-## Min.                     5.57                  5.56                  5.79
-## 1st Qu.                  6.76                  6.78                  6.80
-## Median                   7.50                  7.49                  7.50
-## Mean                     7.81                  7.78                  7.81
-## 3rd Qu.                  8.54                  8.47                  8.49
-## Max.                    15.95                 14.87                 14.28
-##         GSM1588975_Tum04_TNBC GSM1588976_Tum05_TNBC GSM1588977_Tum06_TNBC
-## Min.                     5.82                  5.55                  5.63
-## 1st Qu.                  6.79                  6.83                  6.81
-## Median                   7.48                  7.57                  7.57
-## Mean                     7.80                  7.87                  7.87
-## 3rd Qu.                  8.47                  8.62                  8.61
-## Max.                    14.28                 14.84                 14.65
-##         GSM1588989_Tum020_Her2 GSM1588990_Tum015_Her2 GSM1588991_Tum016_Her2
-## Min.                      5.63                   5.58                   5.67
-## 1st Qu.                   6.78                   6.84                   6.82
-## Median                    7.48                   7.53                   7.55
-## Mean                      7.83                   7.88                   7.80
-## 3rd Qu.                   8.54                   8.59                   8.47
-## Max.                     14.67                  14.59                  14.70
-##         GSM1588992_Tum016_Her2 GSM1589064_Tum071_LumA GSM1589065_Tum073_LumA
-## Min.                      5.71                   5.65                   5.58
-## 1st Qu.                   6.80                   6.84                   6.83
-## Median                    7.49                   7.61                   7.58
-## Mean                      7.76                   7.85                   7.87
-## 3rd Qu.                   8.40                   8.56                   8.59
-## Max.                     14.68                  14.77                  14.94
-##         GSM1589066_Tum074_LumA GSM1589067_Tum075_LumA GSM1589068_Tum076_LumA
-## Min.                      5.51                   5.61                   5.62
-## 1st Qu.                   6.81                   6.83                   6.81
-## Median                    7.45                   7.52                   7.46
-## Mean                      7.70                   7.78                   7.75
-## 3rd Qu.                   8.32                   8.44                   8.39
-## Max.                     15.05                  14.66                  14.56
-##         GSM1589093_Tum101_LumB GSM1589094_Tum102_LumB GSM1589095_Tum103_LumB
-## Min.                      5.45                   5.63                   5.65
-## 1st Qu.                   6.77                   6.76                   6.77
-## Median                    7.53                   7.54                   7.46
-## Mean                      7.83                   7.85                   7.80
-## 3rd Qu.                   8.58                   8.59                   8.49
-## Max.                     14.91                  14.90                  14.88
-##         GSM1589097_Tum104_LumB GSM1589098_Tum105_LumB
-## Min.                      5.61                   5.54
-## 1st Qu.                   6.79                   6.78
-## Median                    7.46                   7.52
-## Mean                      7.78                   7.81
-## 3rd Qu.                   8.43                   8.53
-## Max.                     14.49                  14.80
+## [1] 45
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# cleanup function }
+\NormalTok{genes.cleanup }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(df)\{}
+\NormalTok{  df[}\SpecialCharTok{!}\FunctionTok{duplicated}\NormalTok{(}\FunctionTok{unclass}\NormalTok{(df))]}
+\NormalTok{\}}
+
+\CommentTok{\# remove identical columns}
+\NormalTok{TRA.KLK.breast.clean }\OtherTok{\textless{}{-}} \FunctionTok{genes.cleanup}\NormalTok{(df.TRA.KLK.breast)}
+\FunctionTok{dim}\NormalTok{(TRA.KLK.breast.clean)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 20 63
+\end{verbatim}
+
+\hypertarget{overview-gene-expression}{%
+\subsubsection{Overview gene
+expression}\label{overview-gene-expression}}
+
+Since the data is vsnrma normalized, the median does not fluctuate too
+much for all samples. The lowest gene expression value of the first chip
+is roughly 6 while the highest gene expression value is around 16. Due
+to the logarithmic scale with a base of 2, gene expression is double as
+high between two samples if the log-fold change is +1.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gene.summary }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+ \FunctionTok{round}\NormalTok{(}\FunctionTok{apply}\NormalTok{(x, }\DecValTok{2}\NormalTok{, summary), }\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+\FunctionTok{gene.summary}\NormalTok{(breastExprs)[,}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    4.24    6.28    7.24    7.50    8.43   15.97
 \end{verbatim}
 
 The histogram represent the frequency of the present gene expression in
@@ -442,11 +392,11 @@ perspective of the whole genome. (Yousef et al.~2004)
 
 }
 
-\caption{Histogram of breast cancer gene expression}\label{fig:Histogram - breast }
+\caption{Histogram of breast cancer gene expression.}\label{fig:Histogram - breast }
 \end{figure}
 
 \hypertarget{boxplots}{%
-\paragraph{Boxplots}\label{boxplots}}
+\subsubsection{Boxplots}\label{boxplots}}
 
 \begin{figure}
 
@@ -454,11 +404,11 @@ perspective of the whole genome. (Yousef et al.~2004)
 
 }
 
-\caption{Boxplot of KLK gene expression in breast cancer}\label{fig:Boxplot - breast }
+\caption{Boxplot of KLK gene expression in breast cancer.}\label{fig:Boxplot - breast }
 \end{figure}
 
 Here, the pattern for the fairly low gene expression of KLKs is also
-recognizable. Most of the boxpots of the single KLK gene isoforms are
+recognizable. Most of the boxplots of the single KLK gene isoforms are
 lower than the median expression of the whole breast cancer genome. Some
 KLK isoforms like KLK2.3 are even below a gene expression value of 6, so
 KLK isoforms like these are clearly down-regulated. This is compatible
@@ -469,15 +419,14 @@ the breast cancer set. These are the isoforms KLK4.4 and KLK8.8.\\
 KLK4 gene expression was found by Schmitt et al.~to be up-regulated in
 breast cancer tissue as in comparison to healthy breast tissue. This
 seems to correspond with the finding shown in the boxplot, but only for
-the KLK4.4 isoform. So KLK4.4 needs to be investigated more carefully.
-In contrast to that, KLK8 seems to be higher expressed in both normal
-and cancer tissue.(Schmitt et al.~2013)
+the KLK4.4 isoform. Thereby, KLK4.4 needs to be looked on more
+carefully. In contrast to that, KLK8 seems to be higher expressed in
+both normal and cancer tissue.(Schmitt et al.~2013)
 
 \hypertarget{heatmap}{%
-\paragraph{Heatmap}\label{heatmap}}
+\subsubsection{Heatmap}\label{heatmap}}
 
 The dendrogram is the core for the emerging clustering in heatmaps.
-Here, clustering is performed after the complete-linkage method.
 
 \begin{figure}
 
@@ -485,15 +434,16 @@ Here, clustering is performed after the complete-linkage method.
 
 }
 
-\caption{Dendrogram of KLK genes in breast cancer}\label{fig:Dendrogram - breast }
+\caption{Dendrogram of KLK genes in breast cancer. Clustering is performed after the complete-linkage method. The genes are separated into 3 clusters.}\label{fig:Dendrogram - breast }
 \end{figure}
 
 Interesting in this respect is, that KLK4.4 forms its own branch
-independent of all the others. As already shown in the boxplot, KLK4.4
+independent of all the others. As already shown in the boxplots, KLK4.4
 was distinctly up-regulated. Looking onto the other branches of the
 dendrogram, it is notable that besides KLK4.4 there are more possible
-clusters. To increase the clarity of the heatmap 3 distinguished are
-used. Optimal clusters via K-means will still be performed later on.\\
+clusters. To increase the clarity of the heatmap, KLKs are separated
+into 3 clusters. Optimal clustering via K-means will still be performed
+later on.\\
 
 \begin{figure}
 
@@ -501,82 +451,163 @@ used. Optimal clusters via K-means will still be performed later on.\\
 
 }
 
-\caption{Heatmap of KLK gene expression in breast cancer}\label{fig:Heatmap - breast }
+\caption{Heatmap of KLK gene expression in breast cancer. The samples are annotated corresponding to their mutation type. Additionally, the KLKs are differentiated by their cluster and potential tissue restriction.}\label{fig:Heatmap - breast }
 \end{figure}
 
-KLK4.4 clearly stands out (cluster 2) with an overall higher expression
-across all sample. Furthermore, as it is annotated KLK4.4 belongs to TRA
-group. Also in cluster 1 the expression values are higher than in the
-third. In addition there are a few samples which seem to have
-up-regulated KLK isoforms. For instance, the tumor sample number 1 with
-TNBC got one of the highest expression values across the KLKs: KLK10.3,
-KLK6 and KLK5.
+KLK4.4 clearly stands out (cluster 2) with an overall up-regulated gene
+expression across all sample. Furthermore, as it is annotated KLK4.4
+belongs to the TRA group. Moreover, gene expression in cluster 1 is
+higher than in the third cluster. There are only few samples which seem
+to have up-regulated KLK isoforms. For instance, the tumor sample number
+1 and 6 (Tum01\_TNBC and Tum01´6\_TNBC) got one of the highest
+expression values across all the KLKs for KLK10.3, KLK6 and KLK5. As
+well as the tumor sample number 71 and 76 (Tum71\_LumA, Tum76\_LumA) for
+the transcripts KLK11 and KLK11.2.
 
 \hypertarget{pca}{%
 \subsubsection{PCA}\label{pca}}
 
 The principal component analysis was conducted over the samples.
 Centering was enabled, while scaling was not included, due to the data
-being vsnrma normalized.\\
+being vsnrma normalized. The cumulative variance of the first two
+principal components (PCs) yield 72\% of the total variance. Thereby,
+these two PCs explain 72\% of the total information value. PC1 and PC2
+are sufficient for the analysis. The breast cancer samples are
+distributed after their respective loadings of KLK gene expression.\\
+\textbackslash begin\{figure\}
 
-\begin{figure}
+\{\centering \includegraphics[width=0.5\linewidth]{images/PCAplot_breast}
 
-{\centering \includegraphics[width=0.5\linewidth]{images/PCA_variance_breast} 
+\}
 
-}
-
-\caption{Variance plot of the principal components for breast cancer}\label{fig:PCA variance - breast }
-\end{figure}
-
-The cumulative variance shows, that 72\% of the total variance or of the
-total information is explained by the first 2 principal components
-(PCs). These two PCs are sufficient for the analysis of the distribution
-of the breast cancer samples across the loadings of the KLK gene
-expression.\\
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/PCAplot_breast} 
-
-}
-
-\caption{PC1 vs. PC2 with their respective loadings for breast cancer}\label{fig:PCA plot - breast }
-\end{figure}
-
-The loadings consists of the (SHOW CODE OF THE PCA plot) the top 10 most
-differentiated KLK isoforms. This was conducted by adding up the values
-of the rotation matrix for each individual KLK isoform. As it is
-displayed in Fig. \#NR some samples are more characterized by the
+\textbackslash caption\{PC1 (46,49\%) is plotted against PC2 (25,39\%).
+The upper part shows the distribution of the breast cancer samples
+annotated by their mutation type, while the lower part depicts the 12
+highest loadings of the KLK genes.\}\label{fig:PCA plot - breast }
+\textbackslash end\{figure\} The loadings consists of the the top 12
+most differentiated KLK isoforms. This was conducted by adding the
+absolute values of the rotation matrix for each individual KLK isoform.
+As the PCA displays, some samples are more characterized by the
 expression of KLK11 and KLK11.2. This is mostly the case for two of the
 LumA samples. This was also observable in the heatmap by the higher
-expression of KLK11 in the tumor samples 71 and 76. Another result of
-the PCA is that TNBC mutations are affected by KLK5 and KLK6 expression,
-which is also observable in the heatmap. For the up-regulation of KLK5
-and KLK6 for some of the TNBC samples it woud be interesting if this
-does also hold truth for a higher sample size. If so, KLK5 and KLK6
-expression could presumably be used as biomarker for TNBC breast cancer.
-We assume that KLK4.4 is not part of the top 10 loadings, since it is
-higher expressed across all tumor samples. \#\#\# K-means clustering
-\#\#\# Hypothesis testing
+expression of KLK11 and KLK11.2 for the tumor samples 71 and 76. Another
+finding of the PCA is that TNBC mutations are affected by KLK5 and KLK6
+expression, also observable in the heatmap. Presumably KLK4.4 is not
+part of the top 12 loadings, since it is higher expressed across all
+tumor samples.
 
-\hypertarget{discussion}{%
-\subsubsection{Discussion}\label{discussion}}
+\hypertarget{k-means-clustering}{%
+\subsubsection{K-means clustering}\label{k-means-clustering}}
+
+K-means was performed to be able to draw conclusions on characteristics
+and the distribution of different Kallikrein genes. Here, the optimal
+number k of clusters was determined in doing a Within Cluster Sum of
+Squares -- plot, also called the elbow method. A kink in the curve of a
+plot, in which the number k of clusters is plotted against the within
+cluster sum of squares, displays the optimal number of k clusters.
+Rising numbers of k will not cause a significant decline in the within
+cluster sum of squares anymore. For the breast cancer GSE65216 data set,
+the Within Cluster Sum of Squares -- plot predicted an optimal number of
+k = 6, so k-means was performed using 6 clusters. The function of
+k-means automatically reduces dimensions to 2 if a dataset consists of 3
+or more dimensions, so the k-means clustering does not directly cluster
+genes of interest according to their expression values, but cluster
+according to two dimensions that are influenced by expression values, as
+those explain most of the variance of the data. Due to this influence,
+k-means is still suited for clustering and thus comparing KLK expression
+patterns. Outstanding cluster is here marked as cluster 1 in green,
+containing KLKs4.4 and KLK8.8. Those genes already stood out in the
+heatmap analysis. Interestingly, cluster 4 is also very distinct but on
+the very other direction on the graph of two dimensions.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{images/kmeans_6_breast} 
+
+}
+
+\caption{K-means cluster analysis with k = 6 clusters for the breast cancer data set}\label{fig:K-means plot - breast }
+\end{figure}
+
+\hypertarget{hypothesis-testing}{%
+\subsubsection{Hypothesis testing}\label{hypothesis-testing}}
+
+WILCOX TEST WEITER AUSFÜHREN?! DATENSTRUKTUR ERKLÄREN?!
+
+The expression values of the Kallikrein genes obtained from Marie et
+al.~were not normally distributed. Therefore the non- parametric
+Wilcoxon-Mann-Whitney-Test was used.
+
+(First, cluster 1 (KLK4.4 and KLK8.8) were tested for overexpression
+against all other KLKs individually from the dataset. KLK4.4 (TRA) was
+significantly higher expressed than all other KLK genes from the
+dataset. Likewise, KLK8.8 (non-TRA) was significantly higher expressed
+than all KLK genes, except KLK4.4. Those results conform with the
+observations from the heatmap and the k-means clustering. Cluster-4
+(KLK5,5.3,6,10.3) was isolated in the k-means clustering. On the heatmap
+it was conspicuous that for some tumor types the genes of this cluster
+were higher expressed. Thus the upper-tail Wilcoxon-test was used. In
+contrast to Cluster-1, Cluster-4 could not be clearly identified as an
+overexpression cluster. KLK5.3 and KLK6 were higher expressed than two
+thirds of the other KLK genes, wereas KLK5,10.3 were not significantly
+higher expressed than most of the other KLKs.)
+
+The main characteristic of the dataset from Marie et al.~is the
+subdivision into the samples with different mutations (Her2, LumA, LumB,
+TNBC). In the heatmap four genes were identified, which were
+overexpressed in at least two of the five mutation specific mikrochips.
+KLK10.3,6 for Her2, KLK11,11.2 for LumA. Those four genes are also
+identified as one of the twelve main loadings of the PCA.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{images/breast_panel_loadings_test} 
+
+}
+
+\caption{Panel plot of the PCA loading genes with significant bars. *: p-value <= 0.5, **: p-value <= 0.01 }\label{fig:Hypothesis test panel plot with significant bars}
+\end{figure}
+
+In Figure X, these genes are shown with the subdivision into the
+different mutation types. Significant expression differences between
+mutation samples are indicated with brackets.
+
+In a previous study (Haritos et al.~2018) KLK6 expression was found to
+be generally downregulated in breast cancer tissue, but in HER2 and TNBC
+positive tumors KLK6 was overexpressed. Those findings are only
+reflected to a limited extend in this analysis. Only Her2 was found to
+be significantly higher expressed than LumA. TNBC was not significantly
+higher expressed compared to the other mutations.
+
+Another study from Michaelidou et al.~reported a higher expression of
+KLK8 in TNBC and Her2 positive tumors compared to LumA and LumB positive
+tumors. However, this analysis could only confirm significant TNBC
+overexpression for the isoform KLK8.5 compared to LumA and LumB.
+Nevertheless, the boxplots of KLK8.4 and KLK8.5 show the trend of Her2
+and TNBC overexpression.
+
+In contrast, a recurring pattern in figure X is the significant
+overexpression of TNBC in comparison to Her2. This observation includes
+KLK5, KLK5.3, KLK10, KLK10.3.
+
+In summary, the conducted analysis could partially conform the findings
+from other research groups. The differences can probably be explained by
+the small amount of samples used in this analysis. In conclusion
+Kallikrein gene expression can be used for identifying tumor subtypes
+and even predict the outcome for a patient (Haritos et al.~2018).
 
 \hypertarget{lung-cancer-gse149507-cai-et-al.-2021}{%
-\subsection{4.3 Lung cancer GSE149507 (Cai et
+\subsection{4.2 Lung cancer GSE149507 (Cai et
 al.~2021)}\label{lung-cancer-gse149507-cai-et-al.-2021}}
 
-The lung cancer microarray GSE149507 (Cai et al.~2021) were taken out of
-6 patients with small cell lung cancer. The healthy lung tissue is
-adjacent to the carcinoma and the data set thereby consists of a total
-of 12 samples.
-
-\hypertarget{visualization-of-gene-expression-1}{%
-\subsubsection{Visualization of gene
-expression}\label{visualization-of-gene-expression-1}}
+The lung cancer microarray GSE149507 (Cai et al.~2021) derives from six
+patients with small cell lung cancer. The data set consists of a total
+of 12 samples. Carcinoma tissue and healthy lung tissue, which is
+adjacent to the carcinoma, make up 6 samples each.
 
 \hypertarget{overview-gene-expression-1}{%
-\paragraph{Overview gene expression}\label{overview-gene-expression-1}}
+\subsubsection{Overview gene
+expression}\label{overview-gene-expression-1}}
 
 \begin{figure}
 
@@ -584,11 +615,18 @@ expression}\label{visualization-of-gene-expression-1}}
 
 }
 
-\caption{Histogram of lung cancer gene expression}\label{fig:Histogram - lung }
+\caption{Histogram of lung cancer gene expression.}\label{fig:Histogram - lung }
 \end{figure}
 
+Just as for the breast cancer data set, the median expression of the
+KLKs is beneath the the median of the overall gene expression, since
+KLKs are mostly down-regulated (Yousef et al.~2004). However for the
+lung cancer data set, it appears that the gene expression values are
+distributed more evenly, while the breast cancer histogram represents a
+right-skewed distribution.
+
 \hypertarget{boxplots-1}{%
-\paragraph{Boxplots}\label{boxplots-1}}
+\subsubsection{Boxplots}\label{boxplots-1}}
 
 \begin{figure}
 
@@ -596,11 +634,28 @@ expression}\label{visualization-of-gene-expression-1}}
 
 }
 
-\caption{Boxplot of KLK gene expression in lung cancer}\label{fig:Boxplot - lung }
+\caption{Boxplot of KLK gene expression in lung cancer.}\label{fig:Boxplot - lung }
 \end{figure}
 
+Most of the KLK boxplots seem to be lower than the overall median gene
+expression and thereby are clearly down-regulated. Interestingly, KLK4.4
+clearly stands out again as the highest expressed KLK gene. However, it
+needs to be considered that the expression of KLK4.4 is around the value
+8, which does not really correspond with an over-expression in the
+context of the whole genome. Another interesting observation is that the
+boxplots of the KLK11 and KLK12 transcripts are big. With the whiskers
+of the boxplots, the gene expression spreads from a value of around 6 to
+about 9.5. This correlates with a high variety in gene expression for
+these gene transcripts. KLK11 and KLK12 gene expression therefore has a
+high information value that should be recognizable in the following
+methods. This could also be due to the fact that the lung cancer data
+set consists of of both normal and healthy tissue, as in comparison to
+the breast cancer data set. Here, KLK11 and KLK12 are clear subject for
+further investigation in whether they are differently expressed between
+normal and carcinoma samples.
+
 \hypertarget{heatmap-1}{%
-\paragraph{Heatmap}\label{heatmap-1}}
+\subsubsection{Heatmap}\label{heatmap-1}}
 
 \begin{figure}
 
@@ -608,8 +663,13 @@ expression}\label{visualization-of-gene-expression-1}}
 
 }
 
-\caption{Dendrogram of KLK genes in lung cancer}\label{fig:Dendrogram - lung }
+\caption{Dendrogram of KLK genes in lung cancer. Clustering is performed after the complete-linkage method. The genes are separated into 3 clusters.}\label{fig:Dendrogram - lung }
 \end{figure}
+
+The same strategy as for the breast cancer data set is applied to
+improve the quality of the heatmap. The dendrogram shows that multiple
+KLK11 and KLK12 isoforms, as well as KLK4.4 are part of one out of the
+three clusters.
 
 \begin{figure}
 
@@ -617,100 +677,263 @@ expression}\label{visualization-of-gene-expression-1}}
 
 }
 
-\caption{Heatmap of KLK gene expression in lung cancer}\label{fig:Heatmap - lung }
+\caption{Heatmap of KLK gene expression in breast cancer. Carcinoma and normal samples are annotated. Additionally, the KLKs are differentiated by their cluster and potential tissue restriction.}\label{fig:Heatmap - lung }
 \end{figure}
+
+Notably, the samples are clustered according to their tissue type being
+lung carcinoma or healthy tissue. As you can see in the dendrogram at
+the top, the normal samples are clustered into one group with
+additionally two more cancer samples. The other four cancer samples all
+form their own distinct group. This distribution by sample type clearly
+reflects itself in the KLK11 and KLK12 gene expression. While KLK4.4 is
+higher expressed for both normal and carcinoma samples, KLK11 and KLK12
+isoforms are mainly higher expressed for the carcinoma sample. The only
+exception are the already mentioned carcinoma samples SCLC\_01 and
+SCLC\_03. Apart from this, the up-regulated gene expression for KLK11
+and KLK12 are accompanied by the sample deriving from carcinoma
+tissue.\\
+As stated by Borgoño et Diamandis, KLK11 up-regulation in lung cancer
+was found to have a unfavourable prognosis for the patient. A total of
+four out of the six cancer samples have slightly up-regulated KLK11
+values. The significance will be tested. The two aforementioned
+carcinoma samples SCLC\_01 and SCLC\_03 even got down-regulated KLK11
+expression, which thereby might indicate a good chance of treatment
+success. (Borgoño et Diamandis 2004)
 
 \hypertarget{pca-1}{%
 \subsubsection{PCA}\label{pca-1}}
 
-\begin{figure}
+\textbackslash begin\{figure\}
 
-{\centering \includegraphics[width=0.5\linewidth]{images/PCA_variance_lung} 
+\{\centering \includegraphics[width=0.5\linewidth]{images/PCAplot_lung}
 
-}
+\}
 
-\caption{Variance plot of the principal components for lung cancer}\label{fig:PCA variance - lung }
-\end{figure}
-
-The cumulative variance shows, that 84\% of the total variance or of the
-total information is explained by the first 2 principal components
-(PCs). These two PCs are sufficient for the analysis of the distribution
-of the breast cancer samples across the loadings of the KLK gene
-expression.\\
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.5\linewidth]{images/PCAplot_lung} 
-
-}
-
-\caption{PC1 vs. PC2 with their respective loadings for lung cancer}\label{fig:PCA plot - lung }
-\end{figure}
+\textbackslash caption\{PC1 (73,40\%) is plotted against PC2 (10,54\%).
+The upper part shows the distribution of the lung cancer samples
+annotated by their tissue type, while the lower part depicts the top 7
+loadings of the KLKs.\}\label{fig:PCA plot - lung }
+\textbackslash end\{figure\} The cumulative variance shows, that 84\% of
+the total variance is explained by the first two PCs. These two PCs are
+more than sufficient for the analysis. However the first two PCs
+covering such a huge proportion of the whole variance corresponds with
+an overall low information value of the lung cancer data set.
+Considering the heatmap, in which most of expression values were
+down-regulated, there is only a low amount of differential gene
+expression going on. This explains the high cumulative variance.
+Nevertheless, the PCA still shows a clear separation between normal and
+carcinoma samples. Considering the loadings, four of the cancer samples
+are characterized by KLK12, while the other two tumor samples
+SCLC\_01\_ca and SCLC\_03\_ca are mainly represented by KLK4.4 and KLK6
+expression. Just as shown in the heatmap, while four out of the six
+cancer samples have up-regulated KLK12 expression values, the two cancer
+samples SCLC\_01\_ca and SCLC\_03\_ca form an exception. These two do
+not go along with the KLK12 loading and are rather defined by KLK6 and
+KLK4.4 expression.
 
 \hypertarget{clustering---kmeans}{%
 \subsubsection{Clustering - kmeans}\label{clustering---kmeans}}
 
-\hypertarget{hypothesis-testing}{%
-\subsubsection{Hypothesis testing}\label{hypothesis-testing}}
+K-means performed for the lung cancer GSE149507 dataset showed an
+interesting and distinct cluster, which only consisted of KLK-subtypes
+of KLK12. Other genes that stood out in the heatmap analysis, for
+example KLK4.4 and KLK8.8, were found in the first cluster on the top
+left corner. The finding of optimal k clusters happened following the
+same procedure as for the breast cancer data set, described above. An
+optimal number of k = 5 clusters was determined using a Within Cluster
+Sum of Squares -- plot.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{images/kmeans_5_lung} 
+
+}
+
+\caption{K-means cluster analysis with k = 5 clusters for the lung cancer data set}\label{fig:K-means plot - lung }
+\end{figure}
+
+\hypertarget{hypothesis-testing-1}{%
+\subsubsection{Hypothesis testing}\label{hypothesis-testing-1}}
 
 The results of the PCA and the k-means indicate that for some KLKs the
-expression differs, between the cancerous and normal tissue. Since the
-data the data is not normally distributes (QQ-PLOT?) the Wilcoxon
-signed-rank test was applied.
+expression differs between the cancerous and normal tissue. Since the
+Kallikreins gene expression is not normally distributed, the Wilcoxon
+signed-rank test was used. In figure X plot A, KLK4.4 was significantly
+higher expressed in cancer tissue. Unlike, KLK10.3 which was
+significantly higher expressed in normal tissue. The findings of
+decreased KLK11 expression in lung cancer from Sasaki et al.~could not
+be confirmed. In fact, the median of the cancer tissue samples is
+clearly higher. Plot B shows that KLK12 and its isoforms are
+significantly higher expressed in cancer tissue. The plot also
+visualizes the high similarity within isoforms, as only only identical
+ones were removed during the clean up. Documented KLK12 overexpression
+could not be found in the literature, but in functional studies KLK12
+was identified as a pro-angiogentic factor (Bonda et al.~2018).\\
+The genes that pointed towards the normal microchips in the PCA loadings
+are shown in plot C. There, KLKB1.1 and KLKB1.3 are significantly
+downregulated in the cancer tissue. The only newly tested significant
+gene, of those that pointed in the direction of the normal microchips
+visualized in plot D, was KLK1.3. In summary five out of seven loadings
+were found to have a significant expression difference between the
+tissue types. Those results confirm the clear separation of cancer and
+normal tissue microchips in the PCA, based on Kallikrein gene
+expression.\\
+In conclusion the hypothesis tests confirm the clear separation of
+cancer and normal tissue microchips in the PCA based on Kallikrein
+expression. Five out of seven PCA loading genes had an significant
+expression difference between the tissue types.
 
-\hypertarget{discussion-1}{%
-\subsubsection{Discussion}\label{discussion-1}}
+\begin{figure}
 
-\hypertarget{text-k-means-but-for-both}{%
-\subsection{Text k means but for both}\label{text-k-means-but-for-both}}
+{\centering \includegraphics[width=0.5\linewidth]{images/Expr_diff_kmeans_PCA_lung} 
 
-K-means was performed to be able to draw conclusions on characteristics
-and the distribution of different Kallikrein genes. Here, we first
-determined the optimal number k of clusters in doing a Within Cluster
-Sum of Squares -- plot, also called the elbow method. A kink in the
-curve of a plot, in which the number k of clusters is plotted against
-the within cluster sum of squares, displays the optimal number of k
-clusters. Rising numbers of k will not cause a significant decline in
-the within cluster sum of squares anymore. For the lung cancer dataset,
-the Within Cluster Sum of Squares -- plot predicted an optimal number of
-k = 5, so k-means was performed using 5 clusters. The function of
-k-means automatically reduces dimensions to 2 if a dataset consists of 3
-or more dimensions, so the k-means clustering does not directly cluster
-genes of interest according to their expression values, but since
-dimension reduction always consists of variables that explain most of
-the variance of the data, in this case k-means is still suitable to
-compare clusters of Kallikrein genes. K-means performed for the lung
-cancer dataset showed an interesting and distinct cluster, which only
-consisted of KLK-subtypes of Kallikrein 12. Kallikrein 4.4 was found on
-the top left corner. For the breast-cancer dataset, an optimal number of
-k = 6 was determined. Here, another cluster was highly distinct,
-containing KLK 4.4, which is also examined in the hypothesis testing.
-Interestingly, here we could find the cluster containing Kallikrein of
-the top right corner, on the opposite side than in the lung cancer
-dataset.
+}
+
+\end{figure}
+
+\hypertarget{logistsic-regression}{%
+\subsection{5. Logistsic regression}\label{logistsic-regression}}
+
+Kallikrein mRNA or protein expression is already used in clinical
+pratice as biomarkers, especially in prostate cancer (Diamandis et
+al.~1998). To test whether the identified genes with a significant
+expression difference were likely to predict tissue type, logistic
+regression was chosen. The basic assumtions for logistsic regression
+are: 1. Independency of errors, every observation has to be separate
+from the others. 2. Linearity of the continuous variables in logit - the
+relationship between the variable and their logit transformed outcome
+should be linear. 3. Absence of multicollinearity or redundancy. 4. No
+outliners with a strong influence. 5. For every independent variable
+there should be at least ten outcomes (Jill C.Stoltzfus 2011).
+
+These assumptions reveal the shortcomings of the used data and explain
+the experienced problems with logistic regression. First, main
+limitation of the used dataset is the low number of included microchips
+(only 12, 6 from cancer and 6 from normal tissue). The number of
+microchips has also been further reduced by splitting the data in a
+training dataset (8 microchips) and testing dataset (4 microchips).
+Therefore, expected problems of high standard errors and large
+beta-coefficients for the independent variables were encountered when
+including more then one independent variable. This phenomenon is also
+called overfit-model. In fact, even for most individual genes, which had
+been identified to have an significant expression difference, the
+described problems were encountered. The only exceptions were KLK4.4 and
+KLK12. Second, although genes with a correlation equal to one were
+removed, some genes are still highly correlating. This is primarily true
+for the different isoforms of the same gene, as visualized in figure x,
+plot B (hypothesis testing KLK12 and isoforms). Therefore, the effect of
+collinearity would probably cause problems, even if more microchips were
+included. Hence a second cleanup, removing genes with high correlation
+(e.g.~corr \textgreater{} 0.8), would probably be necessary. As
+mentioned above KLK4.4 and KLK12 (and its isoforms) were the only gene
+where the standard error of the independent variable was not abnormaly
+high. But the p-value was, in both cases, not significant. In contrast,
+the prediction of these univariant models were surprisingly accurate.
+The model with KLK4.4 could predict the tissue type of 3 out of 4
+microchips correctly, the model with KLK12 even predicted every tissue
+type right. However, a closer look at the probabilities reveals that
+these models are anything but reliable. The probabilities for normal to
+be cancer tissue were mostly over a quarter, indicating a high
+uncertainty.\\
+In conclusion, the p-values of the independent variable in the models
+were not significant, the standard errors were still large and the
+predictions probabilities were not accurate. These results were not
+surprising considering the low sample size.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Output of the two models !}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
 
 \hypertarget{references}{%
-\section{References}\label{references}}
+\subsection{References}\label{references}}
 
-\begin{itemize}
-\tightlist
-\item
-  Maire V, Némati F, Richardson M, Vincent-Salomon A et al.~Polo-like
-  kinase 1: a potential therapeutic option in combination with
-  conventional chemotherapy for the management of patients with
-  triple-negative breast cancer. Cancer Res 2013 Jan 15
-\item
-  Cai L, Liu H, Huang F, Fujimoto J et al.~Cell-autonomous immune gene
-  expression is repressed in pulmonary neuroendocrine cells and small
-  cell lung cancer. Commun Biol 2021 Mar 9
-\item
-  Dinkelacker 2019. Chromosomal clustering of tissue restricted
-  antigens, Dissertation, University Heidelberg, Germany.
-\item
-  Dinkelacker 2007. A database of genes that are expressed in a
-  tissue-restricted manner to analyse promiscous gene expression in
-  medullary thymic epithelial cells. Diplomarbeit,
-  Albert-Ludwigs-Universitaet, Freiburg, Germany.
-\end{itemize}
+Ardlie, K.G., Deluca, D.S., Segre, A.V., Sullivan, T.J., Young, T.R.,
+Gelfand, E.T., Trowbridge, C.A., Maller, J.B., Tukiainen, T., Lek, M.,
+et al.~(2015). The Genotype-Tissue Expression (GTEx) pilot analysis:
+Multitissue gene regulation in humans. Science 348, 648-660. Borgoño,
+C.A., and Diamandis, E.P. (2004). The emerging roles of human tissue
+kallikreins in cancer. Nature Reviews Cancer 4, 876-890. Cai, L., Liu,
+H., Huang, F., Fujimoto, J., Girard, L., Chen, J., Li, Y., Zhang, Y.-A.,
+Deb, D., Stastny, V., et al.~(2021). Cell-autonomous immune gene
+expression is repressed in pulmonary neuroendocrine cells and small cell
+lung cancer. Communications Biology 4. Dinkelacker, M. (2007). A
+database of genes that are expressed in a tissue-restricted manner to
+analyse promiscous gene expression in medullary thymic epithelial cells.
+Diplomarbeit (Albert-Ludwigs-Universitaet). Dinkelacker, M. (2019).
+Chromosomal clustering of tissue restricted antigens. Dissertation
+(University Heidelberg). Dubey, A.K., Gupta, U., and Jain, S. (2016).
+Analysis of k-means clustering approach on the breast cancer Wisconsin
+dataset. International Journal of Computer Assisted Radiology and
+Surgery 11, 2033-2047. Fischer, J., and Meyer-Hoffert, U. (2013).
+Regulation of kallikrein-related peptidases in the skin -- from
+physiology to diseases to therapeutic options. Thromb Haemost 110,
+442-449. Haritos, C., Michaelidou, K., Mavridis, K., Missitzis, I.,
+Ardavanis, A., Griniatsos, J., and Scorilas, A. (2018).
+Kallikrein-related peptidase 6 (KLK6) expression differentiates tumor
+subtypes and predicts clinical outcome in breast cancer patients.
+Clinical and Experimental Medicine 18, 203-213. Kont, V., Laan, M.,
+Kisand, K., Merits, A., Scott, H.S., and Peterson, P. (2008). Modulation
+of Aire regulates the expression of tissue-restricted antigens.
+Molecular Immunology 45, 25-33. 10.1016/j.molimm.2007.05.014. Lattin JE,
+S.K., Su AI, Walker JR, Zhang J, Wiltshire T, Saijo K, Glass CK, Hume
+DA, Kellie S, Sweet MJ (2008). Expression analysis of G Protein-Coupled
+Receptors in mouse macrophages. Immunome Res. 4:5. Lenga Ma Bonda, W.,
+Iochmann, S., Magnen, M., Courty, Y., and Reverdiau, P. (2018).
+Kallikrein-related peptidases in lung diseases. Biol Chem 399, 959-971.
+Lonsdale, J., Thomas, J., Salvatore, M., Phillips, R., Lo, E., Shad, S.,
+Hasz, R., Walters, G., Garcia, F., Young, N., et al.~(2013). The
+Genotype-Tissue Expression (GTEx) project. Nature Genetics 45, 580-585.
+Maire, V., Némati, F., Richardson, M., Vincent-Salomon, A., Tesson, B.,
+Rigaill, G., Gravier, E., Marty-Prouvost, B., De Koning, L., Lang, G.,
+et al.~(2013). Polo-like Kinase 1: A Potential Therapeutic Option in
+Combination with Conventional Chemotherapy for the Management of
+Patients with Triple-Negative Breast Cancer. Cancer Research 73,
+813-823. Michaelidou, K., Ardavanis, A., and Scorilas, A. (2015).
+Clinical relevance of the deregulated kallikrein-related peptidase 8
+mRNA expression in breast cancer: a novel independent indicator of
+disease-free survival. Breast Cancer Research and Treatment 152,
+323-336. Roth, R.B., Hevezi, P., Lee, J., Willhite, D., Lechner, S.M.,
+Foster, A.C., and Zlotnik, A. (2006). Gene expression analyses reveal
+molecular relationships among 20 regions of the human CNS. Neurogenetics
+7, 67-80. Sasaki, H., Kawano, O., Endo, K., Suzuki, E., Haneda, H.,
+Yukiue, H., Kobayashi, Y., Yano, M., and Fujii, Y. (2006). Decreased
+Kallikrein 11 Messenger RNA Expression in Lung Cancer. Clinical Lung
+Cancer 8, 45-48. Schmitt, M., Magdolen, V., Yang, F., Kiechle, M.,
+Bayani, J., Yousef, G.M., Scorilas, A., Diamandis, E.P., and Dorn, J.
+(2013). Emerging clinical importance of the cancer biomarkers
+kallikrein-related peptidases (KLK) in female and male reproductive
+organ malignancies. Radiology and Oncology 47, 319-329. Su, A.I., Cooke,
+M.P., Ching, K.A., Hakak, Y., Walker, J.R., Wiltshire, T., Orth, A.P.,
+Vega, R.G., Sapinoso, L.M., Moqrich, A., et al.~(2002). Large-scale
+analysis of the human and mouse transcriptomes. Proceedings of the
+National Academy of Sciences 99, 4465-4470. Su, A.I., Wiltshire, T.,
+Batalov, S., Lapp, H., Ching, K.A., Block, D., Zhang, J., Soden, R.,
+Hayakawa, M., Kreiman, G., et al.~(2004). A gene atlas of the mouse and
+human protein-encoding transcriptomes. Proceedings of the National
+Academy of Sciences 101, 6062-6067. Tailor, P.D., Kodeboyina, S.K., Bai,
+S., Patel, N., Sharma, S., Ratnani, A., Copland, J.A., She, J.-X., and
+Sharma, A. (2018). Diagnostic and prognostic biomarker potential of
+kallikrein family genes in different cancer types. Oncotarget 9,
+17876-17888. 10.18632/oncotarget.24947. Uhlen, M., Fagerberg, L.,
+Hallstrom, B.M., Lindskog, C., Oksvold, P., Mardinoglu, A., Sivertsson,
+A., Kampf, C., Sjostedt, E., Asplund, A., et al.~(2015). Tissue-based
+map of the human proteome. Science 347, 1260419-1260419. Yousef, G.M.,
+Chang, A., Scorilas, A., and Diamandis, E.P. (2000). Genomic
+Organization of the Human Kallikrein Gene Family on Chromosome
+19q13.3--q13.4. Biochemical and Biophysical Research Communications 276,
+125-133. 10.1006/bbrc.2000.3448. Yousef, G.M., Magklara, A., and
+Diamandis, E.P. (2000). KLK12 Is a Novel Serine Protease and a New
+Member of the Human Kallikrein Gene Family---Differential Expression in
+Breast Cancer. Genomics 69, 331-341. Yousef, G.M., Yacoub, G.M.,
+Polymeris, M.E., Popalis, C., Soosaipillai, A., and Diamandis, E.P.
+(2004). Kallikrein gene downregulation in breast cancer. British Journal
+of Cancer 90, 167-172. Zhang, Y., Bhat, I., Zeng, M., Jayal, G., Wazer,
+D.E., Band, H., and Band, V. (2006). Human kallikrein 10, a predictive
+marker for breast cancer. 387, 715-721.
 
 \end{document}
