@@ -5,14 +5,40 @@ output:
   pdf_document: default
   html_document:
     df_print: paged
+---
+\thispagestyle{empty}
+\hrule
+\vspace{0.3cm}
+\begin{center}
+	\vspace{1cm}
+  \large
+	\begin{tabular}[c]{l}
+	 \\
+
+Anouk Dupe, David Eckey, Dustin Schilling, Maria Yemane \\
+\\
+	 \\
+	Supervisor:
+	Dr. Maria Dinkelacker \\
+	 \\
+	Tutor:
+	Nils Mechtel \\
+	 \\
+	 \\
+	Data Analysis for students of Molecular Biotechnology \\
+	\\
+	Heidelberg University 
+	\vspace{0.3cm} \\
+	\end{tabular}
+	\end{center}
 
 ---
+
 \pagenumbering{gobble}
 \pagebreak
 \tableofcontents
 \pagebreak
 \pagenumbering{arabic}
-\usepackage{float} 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(fig.width=12, fig.height=8)
@@ -151,47 +177,6 @@ head(lungExprs)
 
 ```
 
-\thispagestyle{empty}
-\hrule
-\vspace{0.3cm}
-\begin{center}
-\LARGE
-	Kallikrein genes - Microarray analysis in breast and lung cancer tissue
-	\vspace{0.5cm}
-	\hrule 
-	\vspace{1cm}
-  \large
-	\begin{tabular}[c]{l}
-	Group: \\
-	 \\
-	Authors: \\
-	 \\
-	 \\
-   \\
-   \\
-	Supervisor:\\
-	 \\
-	Tutor:
-	\end{tabular}
-	\hspace{1.5cm}
-	\begin{tabular}[c]{l}
-	Topic 2 team 4 \\
-	 \\
-	Anouk Dupe \\
-	David Eckey \\
-	Dustin Schilling \\
-	Maria Yemane \\
-	 \\
-	Dr. Maria Dinkelacker \\
-	 \\
-	Nils Mechtel
-	\end{tabular}
-	\vspace{1cm}
-	\hrule
-	\vspace{0.5cm}
-	Ruprecht-Karls-Universität Heidelberg \vspace{0.3cm} \\
-\end{center}
-\vspace{2cm}
 
 ## 1. Introduction
 
