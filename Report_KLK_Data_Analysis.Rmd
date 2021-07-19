@@ -353,14 +353,7 @@ TRA.KLK.lung = lungExprs[ind.KLK.all.human.tra,]
 ```
 
 ## 4.1 Breast cancer GSE65216 (Maire et al. 2013) and cleanup
-The breast cancer microarray data GSE65216 (Maire et al. 2013) consists of 20 samples.
-Respectively, five samples derive from four mutation positive tissue: triple negative breast cancer (TNBC), Her2, Luminal A and Luminal B.
-
-Notable, in the microarry data some of the expression values of KLK isoforms were identical. Therefore, the Pearson-correlation was determined between all transcripts.  Since isoforms with the correlation of one did not contain additional information, one of the correlating gene was removed. 
-
-they were removed by conducting Pearson-correlation between all transcripts. Only one of the transcripts that yield the correlation of one were kept. 
-
-If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the later visualization. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK transcripts for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
+The breast cancer microarray data GSE65216 (Maire et al. 2013) consists of 20 samples. Respectively, five samples derive from four mutation positive tissue: triple negative breast cancer (TNBC), Her2, Luminal A and Luminal B. Notable, in the microarry data some of the expression values of KLK isoforms were identical. Therefore, the Pearson-correlation was determined between all transcripts.Since isoforms with the correlation of one did not contain additional information, all of the identical isofroms besindes one were removed. In the end, 39 identical isoforms are removed, leaving 73 KLK transcripts for the 15 KLK genes for further analysis. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted. Furthermore, the KLKs are sorted after their names in ascending order for the later visualization.
 ```{r cleanup identical transcripts - breast cancer}
 # transform dataset - genes on columns
 df.TRA.KLK.breast <- data.frame(t(TRA.KLK.breast))
@@ -417,47 +410,49 @@ TRA.KLK.breast.clean <- data.frame(TRA.KLK.breast.clean)
 ```
 
 ### Overview gene expression
-Since the data is vsnrma normalized, the median does not fluctuate too much for all samples. The lowest gene expression value of the first chip is roughly 6 while the highest gene expression value is around 16. Due to the logarithmic scale with a base of 2, gene expression is double as high between two samples if the log-fold change is +1.
+The lowest gene expression value of the first chip is roughly 4, while the highest gene expression value is around 16. Due to the logarithmic scale with a base of 2, gene expression doubles every log-fold change of one.
 ```{r Overview and Histogram breast cancer}
 gene.summary <- function(x){
  round(apply(x, 2, summary), digits = 2)
 }
 gene.summary(breastExprs)[,1]
 ```
-The histogram represent the frequency of the present gene expression in breast cancer samples. It also shows, that the median gene expression of KLKs is much lower than the overall median gene expression. This means that most of the KLK gene expression is normally down-regulated in the perspective of the whole genome. (Yousef et al. 2004)
+The histogram represent the frequency of the present gene expression in breast cancer samples. It is conspicuous, that the median gene expression of KLKs is much lower than the overall median gene expression. This means that most of the KLK gene expression is normally down-regulated in relation to the whole genome. (Yousef et al. 2004)
 ```{r Histogram - breast , echo=FALSE, fig.align="center", fig.cap="Histogram of breast cancer gene expression.", out.width="50%"}
 knitr::include_graphics("images/Histogram_breast.png")
 ```
 
 
 ### Boxplots
+The boxplots confirm the fairly low gene expression of KLKs. There are only two isoforms that exceed the median of the whole genome expression of the breast cancer set, KLK4.4 and KLK8.8. KLK4 gene expression was found by Schmitt et al. to be up-regulated in breast cancer tissue as in comparison to healthy breast tissue. Thereby, KLK4.4 is part of the further analysis. In contrast to that, KLK8 seems to be higher expressed in both normal and cancer tissue (Schmitt et al. 2013).
+
 ```{r Boxplot - breast , echo=FALSE, fig.align="center", fig.cap="Boxplot of KLK gene expression in breast cancer.", out.width="50%"}
 knitr::include_graphics("images/Boxplot_breast.png")
 ```
-Here, the pattern for the fairly low gene expression of KLKs is also recognizable. Most of the boxplots of the single KLK gene isoforms are lower than the median expression of the whole breast cancer genome. Some KLK isoforms like KLK2.3 are even below a gene expression value of 6, so KLK isoforms like these are clearly down-regulated. This is compatible with the finding of Yousef et al. in which they state an overall down-regulation of KLK gene expression in breast cancer. There are only two isoforms that exceed the median of the whole genome expression of the breast cancer set. These are the isoforms KLK4.4 and KLK8.8.  
-KLK4 gene expression was found by Schmitt et al. to be up-regulated in breast cancer tissue as in comparison to healthy breast tissue. This seems to correspond with the finding shown in the boxplot, but only for the KLK4.4 isoform. Thereby, KLK4.4 needs to be looked on more carefully. In contrast to that, KLK8 seems to be higher expressed in both normal and cancer tissue.(Schmitt et al. 2013)
+
 
 
 ### Heatmap
-The dendrogram is the core for the emerging clustering in heatmaps. 
 ```{r Dendrogram - breast , echo=FALSE, fig.align="center", fig.cap="Dendrogram of KLK genes in breast cancer. Clustering is performed after the complete-linkage method. The genes are separated into 3 clusters.", out.width="50%"}
 knitr::include_graphics("images/Dendrogram_breast.png")
 ```
-Interesting in this respect is, that KLK4.4 forms its own branch independent of all the others. As already shown in the boxplots, KLK4.4 was distinctly up-regulated. Looking onto the other branches of the dendrogram, it is notable that besides KLK4.4 there are more possible clusters. To increase the clarity of the heatmap, KLKs are separated into 3 clusters. Optimal clustering via K-means will still be performed later on.  
+In figure X, KLK4.4 forms its own branch independent of all the others. As already shown in the boxplots, KLK4.4 was distinctly up-regulated. To increase the clarity of the heatmap, KLKs are separated into 3 clusters. Optimal clustering via K-means will still be performed later on. The dendrogram is the core for the emerging clustering in the heatmap. 
 ```{r Heatmap - breast , echo=FALSE, fig.align="center", fig.cap="Heatmap of KLK gene expression in breast cancer. The samples are annotated corresponding to their mutation type. Additionally, the KLKs are differentiated by their cluster and potential tissue restriction.", out.width="50%"}
 knitr::include_graphics("images/Heatmap_breast.png")
 ```
-KLK4.4 clearly stands out (cluster 2) with an overall up-regulated gene expression across all sample. Furthermore, as it is annotated KLK4.4 belongs to the TRA group. Moreover, gene expression in cluster 1 is higher than in the third cluster. There are only few samples which seem to have up-regulated KLK isoforms. For instance, the tumor sample number 1 and 6 (Tum01_TNBC and Tum016_TNBC) got one of the highest expression values across all the KLKs for KLK10.3, KLK6 and KLK5. As well as the tumor sample number 71 and 76 (Tum71_LumA and Tum76_LumA) for the transcripts KLK11 and KLK11.2.
+Once again, KLK4.4 clearly stands out (cluster 3) with an overall up-regulated gene expression across all samples. In addition, KLK4.4 belongs to the TRA group. Moreover, gene expression in cluster 1 is higher than within the second cluster. There are only few samples which seem to have up-regulated KLK transcrips for certain mutation types. For instance, the tumor sample number 1 and 6 (Tum01_TNBC and Tum016_TNBC) got one of the highest expression values across all the KLKs for KLK10.3, KLK6 and KLK5. As well as the tumor sample number 71 and 76 (Tum71_LumA and Tum76_LumA) for the transcripts KLK11 and KLK11.2.
 
-### PCA
-The principal component analysis was conducted over the samples. Centering was enabled, while scaling was not included, due to the data being vsnrma normalized. The cumulative variance of the first two principal components (PCs) yield 72\% of the total variance. Thereby, these two PCs explain 72\% of the total information value. PC1 and PC2 are sufficient for the analysis. The breast cancer samples are distributed after their respective loadings of KLK gene expression.  
-```{r PCA plot - breast , echo=FALSE, fig.align="center", fig.cap="PC1 is plotted against PC2. The upper part shows the distribution of the breast cancer samples annotated by their mutation type, while the lower part depicts the 12 highest loadings of the KLK genes.", out.width="50%"}
+### Pprinciple component analysis
+The principal component analysis was conducted over the samples. Scaling was not included, due to the data being vsn-normalized. The cumulative variance of the first two principal components (PCs) yield 72\% of the total variance. Thus, PC1 and PC2 are sufficient for the analysis. The breast cancer samples are distributed after their respective loadings of KLK gene expression.  
+```{r PCA plot - breast , echo=FALSE, fig.align="center", fig.cap="PC1 is plotted against PC2. The upper part shows the distribution of the breast cancer samples annotated by their mutation type, while the lower part depicts the 12 highest loadings of the KLK genes. Centering was enabled, scaling was not included.", out.width="50%"}
 knitr::include_graphics("images/PCAplot_breast.png")
 ```
-The loadings consists of the the top 12 most differentiated KLK isoforms. This was conducted by adding the absolute values of the rotation matrix for each individual KLK isoform. As the PCA displays, some samples are more characterized by the expression of KLK11 and KLK11.2. This is mostly the case for two of the LumA samples. This was also observable in the heatmap by the higher expression of KLK11 and KLK11.2 for the tumor samples 71 and 76. Another finding of the PCA is that TNBC mutations are affected by KLK5 and KLK6 expression, also observable in the heatmap. Presumably KLK4.4 is not part of the top 12 loadings, since it is higher expressed across all tumor samples.  
+The loadings consists of the the top twelve most differentiated KLK isoforms. This was conducted by adding absolute values of the rotation matrix for each individual KLK isoform. Some samples are more characterized by the expression of KLK11 and KLK11.2. This is mostly the case for two of the LumA samples. Also, higher expression of KLK11 and KLK11.2 for the tumor samples 71 and 76 is observable in the heatmap. Another finding of the PCA is that TNBC mutations are affected by KLK5 and KLK6 expression. Presumably, KLK4.4 is not part of the top twelve loadings, since it is higher expressed across all tumor samples.  
 
 ### K-means clustering
-K-means was performed to be able to draw conclusions on characteristics and the distribution of different Kallikrein genes. Here, the optimal number k of clusters was determined in doing a Within Cluster Sum of Squares – plot, also called the elbow method. A kink in the curve of a plot, in which the number k of clusters is plotted against the within cluster sum of squares, displays the optimal number of k clusters. Rising numbers of k will not cause a significant decline in the within cluster sum of squares anymore. 
+In order to draw conclusions on characteristics and distribution of different KLKs, k-means was performed.
+
+Here, the optimal number k of clusters was determined in doing a Within Cluster Sum of Squares – plot, also called the elbow method. A kink in the curve of a plot, in which the number k of clusters is plotted against the within cluster sum of squares, displays the optimal number of k clusters. Rising numbers of k will not cause a significant decline in the within cluster sum of squares anymore. 
 For the breast cancer GSE65216 data set, the Within Cluster Sum of Squares – plot predicted an optimal number of k = 6, so k-means was performed using 6 clusters. The function of k-means automatically reduces dimensions to 2 if a dataset consists of 3 or more dimensions, so the k-means clustering does not directly cluster genes of interest according to their expression values, but cluster according to two dimensions that are influenced by expression values, as those explain most of the variance of the data. Due to this influence, k-means is still suited for clustering and thus comparing KLK expression patterns. Outstanding cluster is here marked as cluster 1 in green, containing KLKs4.4 and KLK8.8. Those genes already stood out in the heatmap analysis. Interestingly, cluster 4 is also very distinct but on the very other direction on the graph of two dimensions.
 
 
