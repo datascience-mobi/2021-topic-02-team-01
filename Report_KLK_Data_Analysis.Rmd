@@ -5,6 +5,8 @@ output:
   pdf_document: default
   html_document:
     df_print: paged
+header-includes:
+   - \usepackage{float}
 ---
 \thispagestyle{empty}
 \hrule
@@ -201,7 +203,7 @@ The boxplots showed low fluctuation in gene expression for the 20 arrays after n
 ### 2.2 Quality control - GSE149507 lung cancer
 One of the chips of the small cell lung cancer microarrays displayed non-linear relationships in the scatterplots. 
 Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each. Therefore,  the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_n were replaced. The substitute microarrays were tested again and did not show any discrepancies. 
-```{r Broken chip - lung qc, echo=FALSE, fig.align="center", fig.cap="Example of scatter plot breast cancer GSE65216.", out.width="50%"}
+```{r Broken chip - lung qc, echo=FALSE, fig.align="center", fig.cap="Example of scatter plot breast cancer GSE65216.", out.width="50%", fig.pos="H", out.extra =''}
 knitr::include_graphics("images/broken_chip_lung.jpg")
 ```
 
@@ -308,7 +310,7 @@ all.human.KLK.gene.symbols # These are all the available KLK TRAs we can possibl
 To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6 TRA datasets were utilized (see appendix). These TRA datasets were than unified, which allowed the extraction of tissue-restricted KLKs according to their transcription number. To get an overview of the distribution of the KLK tissue restriction, a pie chart was conducted. Pie charts allow a quick overview of the proportional distribution. The high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland is notable.
 Since six datasets were combined, annotations that differed for the same tissue type were fused.
 
-```{r TRA -piechart, echo=FALSE, fig.align="center", fig.cap="Tissue specificy of KLK genes - KLK genes from six TRA datasets are combined and sorted for tissue specificity", out.width="50%"}
+```{r TRA -piechart, echo=FALSE, fig.align="center", fig.cap="Tissue specificy of KLK genes - KLK genes from six TRA datasets are combined and sorted for tissue specificity", out.width="50%", fig.pos="H", out.extra =''}
 
 knitr::include_graphics("images/piechart_TRA.png")
 ```
@@ -409,7 +411,7 @@ gene.summary(breastExprs)[,1]
 ```
 
 The histogram represent the frequency of the present gene expression in breast cancer samples. It is conspicuous, that the median gene expression of KLKs is much lower than the overall median gene expression. This means that most of the KLK gene expression is normally down-regulated in relation to the whole genome (Yousef et al. 2004).
-```{r Histogram - breast , echo=FALSE, fig.align="center", fig.cap="Histogram of breast cancer gene expression.", out.width="50%"}
+```{r Histogram - breast , echo=FALSE, fig.align="center", fig.cap="Histogram of breast cancer gene expression.", out.width="50%", fig.pos="H", out.extra =''}
 knitr::include_graphics("images/Histogram_breast.png")
 ```
 
