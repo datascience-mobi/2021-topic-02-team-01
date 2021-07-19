@@ -182,7 +182,7 @@ head(lungExprs)
 
 
 ## 1. Introduction
-
+Tissue-restricted antigens (TRAs) are good drug targets in cancer and cancer immunotherapy. In general, TRAs are genes, which are highly expressed in specific tissue compared to others (Kont et al., 2008). One group of TRAs are kallikrein genes (KLK).
 KLKs are a family of 15 mammalian secreted serine proteases. Analysis has shown that the KLK locus is located on chromosome 19 and forms the largest cluster of contiguous proteases in the entire genome. (Yousef et al. 2000).  
 All 15 Kallikrein genes are proteolytic enzymes under steroid hormone regulation and are involved in the regulation of blood pressure, tissue remodeling, skin desquamation, and many other processes. The structure of KLK are similar with two beta-drums, two alpha-helices and a distinct loop involved in the regulation of activity and selectivity. Currently, the specific role of each Kallikrein is unclear. It is known that they are involved in the complex regulatory processes, more specifically in those different signaling cascades.  
 Dysregulation of KLKs are frequently associated with cancer. Their expression in different tissues and their involvement in different physiological processes make them potential tumor expression markers (Fischer and Meyer-Hoffert, 2013).   Different expression of Kallikrein genes has been found in many cancer types.
@@ -714,7 +714,7 @@ In normal tissue KLK10.3 was expressed significantly higher. The finding of decr
 Although over-expression of KLK12 and its isoforms could not be found in the literature, functional studies showed KLK12 to be an pro-angiogenic factor (Kryzer et al. 2013).
 
 
-In conclusion, the analyzed altered expression of KLKs in different mutation and tissue type could partially confirmed by the literature. In the breast cancer dataset KLK8.8 was the only non-TRA over-expressed gene that, which could be a subject of further investigation. In the lung cancer dataset KLK12 over-expression in lung cancer was 
+To conclude, the analyzed altered expression of KLKs in different mutation and tissue type could partially confirmed by the literature. In the breast cancer dataset KLK8.8 was the only non-TRA over-expressed gene that, which could be a subject of further investigation. In the lung cancer dataset KLK12 over-expression in lung cancer was 
 
 
 be a lung KLK12
