@@ -70,7 +70,7 @@ here::here()
 ```
 
 
-```{r Read CEL Files, include=FALSE}
+```{r Read CEL Files, eval=FALSE, include=FALSE}
 #creating a list of the CEL file names, for all three datasets
 setwd(here("Rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB"))
 cels.breast <- list.files(pattern = 'CEL')
@@ -79,7 +79,7 @@ setwd(here("Rawdata/GSE149507 lung cancer"))
 cels.lung <- list.files(pattern = 'CEL')
 ```
 
-```{r Affybatch, include=FALSE}
+```{r Affybatch, eval=FALSE, include=FALSE}
 #Breast 
 breast <- ReadAffy(filenames = paste(here("Rawdata/GSE65216 breast cancer TNBC Her2 LumA LumB"), cels.breast, sep = "/"), verbose = TRUE)
 breast@cdfName <- "HGU133Plus2_Hs_ENST"
@@ -102,7 +102,7 @@ rownames(lung@protocolData) <- new.lung
 
 ```
 
-```{r Load in Data, include=FALSE}
+```{r Load in Data, eval=FALSE, include=FALSE}
 breast.vsnrma <- vsnrma(breast)
 breastExprs = exprs(breast.vsnrma)
 
@@ -111,14 +111,14 @@ lungExprs = exprs(lung.vsnrma)
 ```
 
 
-```{r Read ensembl, include=FALSE}
+```{r Read ensembl, eval=FALSE, include=FALSE}
 
 setwd(here("Tables"))
 
 ensembl_df = read.csv("ensembl.103.txt",sep="\t")
 ```
 
-```{r Dataset breast cancer, include=FALSE}
+```{r Dataset breast cancer, eval=FALSE, include=FALSE}
 breastExprs <- breastExprs[grepl("ENST", rownames(breastExprs)), ]
 dim(breastExprs) #  95659    20
 
@@ -150,7 +150,7 @@ head(breastExprs)
 ```
 
 
-```{r Dataset lung cancer, include=FALSE}
+```{r Dataset lung cancer, eval=FALSE, include=FALSE}
 lungExprs <- lungExprs[grepl("ENST", rownames(lungExprs)), ]
 dim(lungExprs) #  95659    20
  
@@ -206,7 +206,7 @@ knitr::include_graphics("images/broken_chip_lung.jpg")
 ```
 
 ## 3. TRA data
-```{r Import TRA data, include=FALSE}
+```{r Import TRA data, eval=FALSE, include=FALSE}
 setwd(here("TRA Daten"))
 
 
@@ -230,7 +230,7 @@ tra.mouse=read.csv(file="tra.2014.mouse.5x.table.tsv",sep="\t")
 
 ```
 
-```{r Union of TRA data, include=FALSE}
+```{r Union of TRA data, eval=FALSE, include=FALSE}
 ### Filter all Klk from the TRA datasets
 
 # For tra.human  
@@ -314,7 +314,7 @@ knitr::include_graphics("images/piechart_TRA.png")
 ```
 
 ## 4. Expression Analysis
-```{r Isolating KLK genes, include=FALSE}
+```{r Isolating KLK genes, eval=FALSE, include=FALSE}
 # All KLK genes
 ind.all.KLK=grep("^KLK",symbol)
 Kallikreins.all=symbol[ind.all.KLK]
@@ -585,7 +585,7 @@ knitr::include_graphics("images/kmeans_5_lung.png")
 ```
 
 
-``` {r k-means for lung cancer dataset, eval=FALSE, include=FALSE}
+```{undefined eval=FALSE, include=FALSE}
 
 
 wssplot.lung <- function(lungExprs, nc=15, seed=1234)
@@ -693,10 +693,6 @@ The model with KLK4.4 could predict the tissue type of three out of four microch
 However, a closer look at the probabilities reveals that these models are not reliable. The probabilities for normal to be cancer tissue were mostly over a quarter, indicating a high uncertainty.   
 In conclusion, the p-values of the independent variable in the models were not significant, the standard errors were high and the predictions probabilities were not accurate. These results were not surprising considering the low sample size.
 
-
-```{r}
-#Output of the two models !
-```
 
 ## Discussion
 
