@@ -445,7 +445,7 @@ The loadings consists of the the top twelve most differentiated KLK isoforms. Th
 ### K-means clustering
 In order to draw conclusions on characteristics and distribution of different KLKs, k-means was performed. The optimal number of clusters k was determined with the elbow method. For different cluster counts the respective within sum of squares (WSS) was computed, a sudden decrease results in a kink. In this case, the optimal number of clusters is six. In figure X two of the six clusters are clearly separated. Cluster 1 contains KLK4.4 and KLK8.8, while cluster 4 contains KLK5, KLK5.3, KLK6 and KLK10.3. The respective KLKs out of these two clusters will be further analyzed.   
 
-```{r K-means plot - breast , echo=FALSE, fig.align="center", fig.cap="K-means cluster analysis with k = 6 clusters for the breast cancer dataset", out.width="50%", fig.pos="H", out.extra =''}
+```{r K-means plot - breast , echo=FALSE, fig.align="center", fig.cap="K-means cluster analysis with k = 6 clusters for the breast cancer dataset", out.width="35%", fig.pos="H", out.extra =''}
 
 knitr::include_graphics("images/kmeans_6_breast.png")
 
@@ -525,7 +525,7 @@ Cluster 4 (KLK5, KLK5.3, KLK6, KLK10.3) was isolated in the k-means clustering. 
 
 The main characteristic of the dataset from Marie et al. is the subdivision into the samples with different mutations (Her2, LumA, LumB, TNBC). In Figure X, these genes are shown with the subdivision into the different mutation types. A recurring pattern in Figure X is the significant over-expression of TNBC compared with Her2. This observation includes KLK5, KLK5.3, KLK10, KLK10.3. 
 
-```{r, Hypothesis test panel plot with significant bars, echo=FALSE, fig.align="center", fig.cap="Panel plot of the PCA loading genes with significant bars. *: p-value <= 0.5, **: p-value <= 0.01 ", out.width="50%"}
+```{r, Hypothesis test panel plot with significant bars, echo=FALSE, fig.align="center", fig.cap="Panel plot of the PCA loading genes with significant bars. *: p-value <= 0.5, **: p-value <= 0.01 ", out.width="52%", fig.pos="H", out.extra =''}
 knitr::include_graphics("images/breast_panel_loadings_test.png")
 
 ```
