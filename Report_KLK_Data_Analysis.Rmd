@@ -181,12 +181,10 @@ head(lungExprs)
 
 ## 1. Introduction
 
-KLKs are a family of 15 mammalian secreted serine proteases. Analysis has shown that the KLK locus is most likely located on chromosome 19 and forms the largest cluster of contiguous proteases in the entire genome. (Yousef et al. 2000).  
-All 15 kallikrein genes are proteolytic enzymes of steroid hormone regulation and are involved in the regulation of blood pressure, tissue remodeling, skin desquamation, and many other processes. The structure of KLK are similar with two beta-drums, two alpha-helices and a distinct loop involved in the regulation of activity and selectivity. Currently, the specific role of each kallikrein is unclear. It is known that they are involved in the complex regulatory processes, more specifically in those different signaling cascades.  
+KLKs are a family of 15 mammalian secreted serine proteases. Analysis has shown that the KLK locus is located on chromosome 19 and forms the largest cluster of contiguous proteases in the entire genome. (Yousef et al. 2000).  
+All 15 Kallikrein genes are proteolytic enzymes under steroid hormone regulation and are involved in the regulation of blood pressure, tissue remodeling, skin desquamation, and many other processes. The structure of KLK are similar with two beta-drums, two alpha-helices and a distinct loop involved in the regulation of activity and selectivity. Currently, the specific role of each Kallikrein is unclear. It is known that they are involved in the complex regulatory processes, more specifically in those different signaling cascades.  
 Dysregulation of KLKs are frequently associated with cancer. Their expression in different tissues and their involvement in different physiological processes make them potential tumor expression markers (Fischer and Meyer-Hoffert, 2013).  
-Differential expression of different kallikrein genes has been found in different cancer types. While clear cell and papillary renal carcinomas have similar kallikrein expression profiles, chromophobe renal cell carcinoma has a unique expression profile (Tailor et al. 2018).
-
-In the following, a set of in total 32 microarrays will be analysed. 20 of those originate from patients with breast cancer derived from the data set GSE65216 (Maire et al. 2013), 12 from patients with small cell lung cancer from GSE149507 (Cai et al. 2021). In this report, both cancer types are analyzed seperatively and both their results will be discussed later on.
+Different expression of Kallikrein genes has been found in many cancer types.
 
 
 ## 2. Quality control
