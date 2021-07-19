@@ -372,7 +372,7 @@ genes.cleanup <- function(df){
 ```
 
 
-```{r order transcripts - breast cancer, include=FALSE}
+```{r order transcripts - breast cancer, eval=FALSE, include=FALSE}
 # check clean dataframe for correlations
 length(which(cor.genes(TRA.KLK.breast.clean)==1)) #0 correlations
 
