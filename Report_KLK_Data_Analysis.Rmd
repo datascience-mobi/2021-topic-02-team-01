@@ -184,7 +184,7 @@ head(lungExprs)
 
 
 ## 1. Introduction
-Tissue-restricted antigens (TRAs) are good drug targets in cancer and cancer immunotherapy. In general, TRAs are genes, which are highly expressed in specific tissue compared to others (Kont et al., 2008). One group of TRAs are kallikrein genes (KLK).
+Tissue-restricted antigens (TRAs) are good drug targets in cancer and cancer immunotherapy. In general, TRAs are genes, which are highly expressed in specific tissue compared to others (Kont et al., 2008). One group of TRAs are Kallikrein genes (KLK).
 KLKs are a family of 15 mammalian secreted serine proteases. Analysis has shown that the KLK locus is located on chromosome 19 and forms the largest cluster of contiguous proteases in the entire genome. (Yousef et al., 2000).  
 All 15 Kallikrein genes are proteolytic enzymes under steroid hormone regulation and are involved in the regulation of blood pressure, tissue remodeling, skin desquamation, and many other processes. The structure of KLK are similar with two beta-drums, two alpha-helices and a distinct loop involved in the regulation of activity and selectivity. Currently, the specific role of each Kallikrein is unclear. It is known that they are involved in the complex regulatory processes, more specifically in those different signaling cascades.  
 Dysregulation of KLKs are frequently associated with cancer. Their expression in different tissues and their involvement in different physiological processes make them potential tumor expression markers (Fischer and Meyer-Hoffert, 2013).   Different expression of Kallikrein genes has been found in many cancer types.
@@ -559,22 +559,13 @@ The first two PCs explain 84\% of the total variance. This high cumulative varia
 
 As in the heatmap, four out of the six cancer samples have up-regulated KLK12 expression values, the two cancer samples SCLC_01_ca and SCLC_03_ca form an exception. They are rather defined by KLK6 and KLK4.4 expression.
 
-```{r PCA plot - lung , echo=FALSE, fig.align="center", fig.cap="PC1 is plotted against PC2. The upper part shows the distribution of the lung cancer samples annotated by their tissue type, while the lower part depicts the top 7 loadings of the KLKs.", out.width="50%", fig.pos="H", out.extra =''}
+```{r PCA plot - lung , echo=FALSE, fig.align="center", fig.cap="PC1 is plotted against PC2. The upper part shows the distribution of the lung cancer samples annotated by their tissue type, while the lower part depicts the top 7 loadings of the KLKs.", out.width="39%", fig.pos="H", out.extra =''}
 knitr::include_graphics("images/PCAplot_lung.png")
 ```
 
 
-
 ### Clustering - kmeans
 The optimal cluster count was determined with the same method as for the breast cancer dataset and equaled five. Cluster 5 only consists of KLK12 and its isoforms. KLK4.4 and KLK8.8, which were conspicuous in the heatmap, are part of cluster 1. The other three clusters containing genes, which were low expressed in the heatmap, are located next to each other. 
-
-
-```{r K-means plot - lung , echo=FALSE, fig.align="center", fig.cap="K-means cluster analysis with k = 5 clusters for the lung cancer dataset", out.width="38%", fig.pos="H", out.extra =''}
-
-knitr::include_graphics("images/kmeans_5_lung.png")
-
-```
-
 
 ```{r plotswss, eval=FALSE, include=FALSE}
 
@@ -652,8 +643,7 @@ The results of the PCA and the k-means indicate that for some KLKs the expressio
 In figure X plot A, KLK4.4 was significantly higher expressed in cancer tissue. Unlike KLK10.3, which was significantly higher expressed in normal tissue. Plot B shows that KLK12 and its isoforms are significantly higher expressed in cancer tissue. Also, the plot visualizes the high similarity within isoforms because only identical transcripts were removed during the clean up. 
 KLKs that characterize normal samples in the PCA are shown in plot C. In this respect, KLKB1.1 and KLKB1.3 are significantly down-regulated in the cancer tissue.
 The KLKs which characterized the cancer tissue are shown in plot D. Here, KLK1.3, KLK4.4, and KLK12 were significantly higher expressed in cancerous tissue. 
-In summary, five out of seven loadings were found to have a significant expression difference between the tissue types. Those results confirm the clear separation of cancer and normal tissue microchips in the PCA based on KLK expression.  
-In conclusion, the hypothesis tests confirm the clear separation of cancer and normal tissue sample in the PCA based on KLK expression.
+In summary, five out of seven loadings were found to have a significant expression difference between the tissue types. Those results confirm the clear separation of cancer and normal tissue microchips in the PCA based on KLK expression. In conclusion, the hypothesis tests confirm the clear separation of cancer and normal tissue sample in the PCA based on KLK expression.
 
 ```{r , echo=FALSE, fig.align="center", fig.cap="A) Genes from  k-means cluster 1, B) Genes from k-means cluster 4, C) PCA loading genes oriented in the direction of normal tissue, D) PCA lading genes oriented in the direction of cancer tissue. * indicate a p-value > 0.05 between the expression in the different tissue types, upper and lower tail Wilcoxon signed-rank test were used.", out.width="50%", fig.pos="H", out.extra =''}
 knitr::include_graphics("images/Expr_diff_kmeans_PCA_lung.png")
@@ -678,35 +668,15 @@ However, a closer look at the probabilities reveals that these models are not re
 
 
 
-## Discussion
+## 6. Discussion
 
+The aim of this project was to analyze whether the expression of Kallikrein genes in given datasets show potential biomarker characteristics.  
+In previous studies regarding breast cancer, a higher expression of KLK8 in TNBC and Her2 positive tumors compared to LumA and LumB positive tumors was reported (Michaelidou et al., 2018). However, the conducted analysis could only confirm significant TNBC over-expression for the isoform KLK8.5 compared to LumA and LumB. Nevertheless, the boxplots of KLK8.4 and KLK8.5 showed the trend of Her2 and TNBC over-expression. 
+The expression pattern that TNBC is significantly higher than Her2 (KLK5 and KLK10) could not be validated in the literature. This could be subject for further investigations. In summary, the conducted analysis could partially conform the findings from other research groups. The differences can probably be explained by the small amount of samples used in this analysis. In conclusion Kallikrein gene expression can be used for identifying tumor subtypes and even predict the outcome for a patient (Haritos et al., 2018). 
+Analysis of the lung cancer microarray GSE149507 (Cai et al., 2021) demonstrated differences in the expression of some KLKs between the cancerous and normal tissues. KLK4.4 was significantly higher expressed in cancer tissue, although it was not obviously shown in the heatmap. In normal tissue KLK10.3 was expressed significantly higher. The finding of decreased KLK11 expression in lung cancer by Sasaki et al. could not be confirmed. Rather, the median of cancer tissue samples was higher. Although over-expression of KLK12 and its isoforms could not be found in the literature, functional studies showed KLK12 to be an pro-angiogenic factor (Kryzer et al., 2013). 
+Regression analysis shows the capability of identifying cancerous tissue according to specific KLKs. Since the sample size was not sufficient enough to include more than one independent variable, it should be increased for further studies.  
+In conclusion, our results show the potential of the Kallikrein genes to differentiate between cancerous and healthy tissue, as well as between certain mutation types. Furthermore, the over-expression of certain tissue-restricted KLKs allows for their potential use as drug targets.
 
-The aim of this project was to analyse whether the expression of Kallikrein genes in given datasets show potential biomarker characteristics. Moreover, the output of statistical analysis should be compared to already existing literature to verify the results.
-
-In the heatmap of breast cancer microarray data GSE65216 (Maire et al., 2013) four genes were identified, which were over-expressed in at least two of the five mutation specific microchips. KLK10.3, KLK6 for Her2, KLK11, KLK11.2 for LumA. Those four genes are also identified as one of the twelve main loadings of the PCA. 
-Furthermore, in the PCA some samples were more dominated by KLK11 and KLK11.2 expression. In addition, TNBC mutations were influenced by the expression of KLK5 and KLK6.
-In a previous study (Haritos et al., 2018) KLK6 expression was found to be generally down-regulated in breast cancer tissue, but in HER2 and TNBC positive tumors KLK6 was over-expressed. Those findings are only reflected to a limited extend in hypothesis testing analysis. 
-Another study from Michaelidou et al. reported a higher expression of KLK8 in TNBC and Her2 positive tumors compared to LumA and LumB positive tumors. However, the conducted analysis could only confirm significant TNBC over-expression for the isoform KLK8.5 compared to LumA and LumB. Nevertheless, the boxplots of KLK8.4 and KLK8.5 showed the trend of Her2
-and TNBC over-expression. 
-In summary, the conducted analysis could partially conform the findings from other research groups. The differences can probably be explained by the small amount of samples used in this analysis. In conclusion Kallikrein gene expression can be used for identifying tumor subtypes and even predict the outcome for a patient (Haritos et al., 2018). 
-
-Analysis of the lung cancer microarray GSE149507 (Cai et al., 2021) demonstrated differences in the expression of some KLKs between the cancerous and normal tissues.
-KLK4.4 was significantly higher expressed in cancer tissue, although it was not obviously shown in the heatmap. 
-In normal tissue KLK10.3 was expressed significantly higher. The finding of decreased KLK11 expression in lung cancer by Sasaki et al. could not be confirmed. Rather, the median of cancer tissue samples was higher.
-Although over-expression of KLK12 and its isoforms could not be found in the literature, functional studies showed KLK12 to be an pro-angiogenic factor (Kryzer et al., 2013).
-
-
-To conclude, the analyzed altered expression of KLKs in different mutation and tissue type could partially confirmed by the literature. In the breast cancer dataset KLK8.8 was the only non-TRA over-expressed gene that, which could be a subject of further investigation. In the lung cancer dataset KLK12 over-expression in lung cancer was 
-
-
-be a lung KLK12
-
-investigated biomarker expression has been found and also verified by comparison with literature. High overlap of our results with literature confirms the (right usage of methods), and also indicate that results who couldn’t be verified by literature comparison, like expression values for KLK12, could be potentially interesting to investigate.
-
-
-KLK11 up-regulation in lung cancer was found to have an unfavorable prognosis for the patient (Borgoño et Diamandis 2004).
-
-In conclusion, the p-values of the independent variable in the models were not significant, the standard errors were high and the predictions probabilities were not accurate. These results were not surprising considering the low sample size.
 
 \newpage
 ## References
