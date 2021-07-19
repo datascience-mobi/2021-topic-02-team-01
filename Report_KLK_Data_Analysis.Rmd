@@ -189,28 +189,29 @@ Different expression of Kallikrein genes has been found in many cancer types.
 
 ## 2. Quality control
 
-After reading in the data, the first step is to verify its quality by following the steps presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019). The goal of quality control is to identify samples for which the data characteristics are significantly different. These differences would be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristics will thereby be identified and replaced in the following quality control. The quality control is performed on the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
+To assure the qualtity of the data the steps  presented in "R Course Micoarray Analysis" by Dr. Maria Dinkelacker (2019) were followed.
+The main goal of the quality control is to identify and remove mikrochips, which show significantly altered gene expression. 
+These differences would be difficult to remove via variance stabilizing normalisation (vsn) and could interfere with the rest of the data. Samples that show odd characteristics will be identified and replaced in the following quality control. The quality control was performed on the breast cancer microarray data set GSE65216 (Maire et al. 2013) and the small cell lung cancer microarray data set GSE149507 (Cai et al. 2021).
 
 
 ### 2.1 Quality control - GSE65216 breast cancer
 
-Upon examination of each individual array, there are no scratches or lighter areas detectable, which means the arrays themselves are fine. Furthermore, the meanSd plot is being used to verify the variance stabilization. Here, the red line, which stands for the running median, should be horizontal. However for the breast cancer data, it follows a linear relationship.   
-
+The examination of the individual arrays showed no alteration which indicate physical damage. However, for the meansd plot indicated a slight linear relationship between mean and the varicance.  This could suggest a mean-variance-dependency. 
 
 ```{r echo=FALSE, fig.align="center",  fig.cap="meanSD plot of breast cancer microarray GSE65216.", out.width="50%"}
 knitr::include_graphics("images/breast_meansdPlot.png")
 
 ```
 
-In contrast to that, the quality of the breast cancer data is assured by the other plots, which is the reason why our group did not choose other chips for the data analysis. For the boxplots, it is clearly visible, that the differences in intensities between arrays is strongly reduced after normalisation. The boxplots only show little fluctuation in gene expression for the 20 arrays after normalisation. In addition to that, none of the current chips deviate strongly from each other for the density and RNA degradation plot (before and after normalisation). Also, the scatter plots show linear relationships between each chip. The quality control plots can be seen in the github repository.
+In contrast, further quality control did not show any abnormalities. This the reason why the mikrochips were not exchangend. 
+The boxplots showed low fluctuation in gene expression for the 20 arrays after normalisation. In addition, none of the chips deviate strongly from each other. In both the density and RNA degradation plot (before and after normalisation). Also, in scatter plots only  linear relationships were observable. The quality control plots can be viewed in the Github repository.
 
 ### 2.2 Quality control - GSE149507 lung cancer
-For the small cell lung cancer microarray, an abnormality was dectable in the scatter plots. The carcinoma tissue sample of patient number 5 did not show linear relationship to all of the other samples. Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each, we consequently replaced the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_n with new 2 new chips out of the gene expression omnibus. When performing the scatter plot control over again, there are no discrepancies.  
+One of the chips of the small cell lung cancer microarrays displayed non-linear relationships in the scatterplots. 
+Since the samples of dataset GSE149507 for normal and carcinoma tissue are linked to one patient each. Therefore,  the two chips GSM4504109_SCLC_05_ca and GSM4504110_SCLC_05_n were replaced. The substitute microarrays were tested again and did not show any discrepancies. 
 ```{r Broken chip - lung qc, echo=FALSE, fig.align="center", fig.cap="Example of scatter plot breast cancer GSE65216.", out.width="50%"}
-knitr::include_graphics("images/breast_scatter_example1.png")
+knitr::include_graphics("images/broken_chip_lung.jpg")
 ```
-Equivalent to the breast cancer microarray, there were no further abnormalities detectable for the lung cancer microarray.
-
 
 ## 3. TRA data
 ```{r Import TRA data, include=FALSE}
@@ -311,15 +312,18 @@ all.human.KLK.gene.symbols <- unique(Union.TRA$gene.symbol[grep("tra.human", Uni
 all.human.KLK.gene.symbols # These are all the available KLK TRAs we can possibly work with
 ```
 
+
+To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6 TRA data sets were utilized ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). These TRA data sets were than unified, which allowed the extraction of tissue-restricted KLKs according to their transcription number.  
+To get an overview of the distribution of the KLK tissue restriction, a pie chart was conducted.
+
+
+Pie charts allow a quick overview of the proportional distribution. The high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland is notable.
+Since six data sets were combined, annotations that differed for the same tissue type were fused.
+
 ```{r TRA -piechart, echo=FALSE, fig.align="center", fig.cap="Tissue specificy of KLK genes - KLK genes from six TRA datasets are combined and sorted for tissue specificity", out.width="50%"}
 
 knitr::include_graphics("images/piechart_TRA.png")
 ```
-To distinguish between TRA KLK genes and non-TRA KLK genes, a total of 6 TRA data sets were utilized ((Su et al. 2002, 2004), (Roth et al. 2008), (Lattin et al. 2006), (human GTEX data 2015), (Uhlén et al. 2015)). These TRA data sets were than unified, which allowed the extraction of tissue-restricted KLKs after their transcription number.  
-To get an overview of the distribution of the Tissue Restricted Antigens, especially those that are Kallikrein genes, a pie chart was conducted.
-A pie chart in general allows a quick overview and a first assessment of numerical distribution values. In this pie chart, the distribution of Tissue Restricted Kallikrein-Antigens is displayed. Notable is the high prevalence of prostatic kallikrein genes, as well as an occurrence in esophagus, thyroid and salivary gland. 
-Since six data sets were combined, annotations for the same tissue were different, which were fused manually.
-
 
 ## 4. Expression Analysis
 ```{r Isolating KLK genes, include=FALSE}
@@ -348,11 +352,15 @@ TRA.KLK.breast = breastExprs[ind.KLK.all.human.tra,]
 TRA.KLK.lung = lungExprs[ind.KLK.all.human.tra,]
 ```
 
-## 4.1 Breast cancer GSE65216 (Maire et al. 2013)
-The breast cancer microarray data GSE65216 (Maire et al. 2013) consists of 20 samples. The samples are all breast cancer tissue, differentiated by the four mutation types: Triple negative breast cancer (TNBC), Her2, Luminal A and Luminal B. 
+## 4.1 Breast cancer GSE65216 (Maire et al. 2013) and cleanup
+The breast cancer microarray data GSE65216 (Maire et al. 2013) consists of 20 samples.
+Respectively, five samples derive from four mutation positive tissue: triple negative breast cancer (TNBC), Her2, Luminal A and Luminal B.
 
-### Clean up identical isoforms
-Having a look onto the data set itself, it is noticeable, that some of the expression values of the KLK isoforms in the microarray are exactly identical. These identical isoforms should be cleared out to increase the real information value of the KLKs. This is easily done by conducting pairwise correlations, here the pearson correlation, between all KLK genes in a diagonal matrix. If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the later visualization. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK transcripts for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
+Notable, in the microarry data some of the expression values of KLK isoforms were identical. Therefore, the Pearson-correlation was determined between all transcripts.  Since isoforms with the correlation of one did not contain additional information, one of the correlating gene was removed. 
+
+they were removed by conducting Pearson-correlation between all transcripts. Only one of the transcripts that yield the correlation of one were kept. 
+
+If the correlation yields a value of 1 then the two gene isoforms are the same and the latter one of both will be removed. Furthermore, the KLKs are sorted after their names in ascending order for the later visualization. In the end, 39 identical isoforms are removed, whereas a total of 73 KLK transcripts for the 15 KLK genes are being kept. Out of the 73 isoforms, 63 are TRAs, while only 10 are regarded as tissue restricted.
 ```{r cleanup identical transcripts - breast cancer}
 # transform dataset - genes on columns
 df.TRA.KLK.breast <- data.frame(t(TRA.KLK.breast))
