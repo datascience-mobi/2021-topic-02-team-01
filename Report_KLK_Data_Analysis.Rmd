@@ -536,13 +536,7 @@ knitr::include_graphics("images/breast_panel_loadings_test.png")
 The lung cancer microarray GSE149507 (Cai et al. 2021) derives from six patients with small cell lung cancer. The dataset consists of a total of twelve samples. Carcinoma tissue and healthy lung tissue, which is adjacent to the carcinoma, make up six samples each.  
 
 ### Overview gene expression
-```{r Histogram - lung , echo=FALSE, fig.align="center", fig.cap="Histogram of lung cancer gene expression.", out.width="50%"}
-knitr::include_graphics("images/Histogram_lung.png")
-```
-Just as for the breast cancer dataset, the median expression of the KLKs is beneath the the median of the overall gene expression, since KLKs are mostly down-regulated (Yousef et al. 2004). However, for the lung cancer dataset the gene expression values are distributed more evenly, while the breast cancer histogram represents a right-skewed distribution.  
-
-### Boxplots
-Most of the KLK boxplots are lower than the overall median gene expression and thereby clearly down-regulated. KLK4.4 clearly stands out again as the highest expressed KLK gene. In regard to the whole genome KLK4.4 with an expression value of eight is only slightly above the overall median gene expression. The boxplot demonstrates that KLK12 and its isoforms have a high variance and their expression patterns are similar. A possible reason is that the lung cancer dataset consists of both normal and healthy tissue, as in comparison to the breast cancer dataset. In this case, KLK12 and its isofroms a subject for further investigation to determine whether they are differently expressed between normal and carcinoma samples.
+Just as for the breast cancer dataset, the median expression of the KLKs is beneath the the median of the overall gene expression, since KLKs are mostly down-regulated . Most of the KLK boxplots are lower than the overall median gene expression and thereby clearly down-regulated (Yousef et al. 2004). KLK4.4 clearly stands out again as the highest expressed KLK gene. In regard to the whole genome KLK4.4 with an expression value of eight is only slightly above the overall median gene expression. The boxplot demonstrates that KLK12 and its isoforms have a high variance and their expression patterns are similar. A possible reason is that the lung cancer dataset consists of both normal and healthy tissue, as in comparison to the breast cancer dataset. In this case, KLK12 and its isofroms a subject for further investigation to determine whether they are differently expressed between normal and carcinoma samples.
 
 ```{r Boxplot - lung , echo=FALSE, fig.align="center", fig.cap="Boxplot of KLK gene expression in lung cancer.", out.width="50%"}
 knitr::include_graphics("images/Boxplot_lung.png")
